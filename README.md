@@ -87,6 +87,5 @@ Dokuti instance deployed using the `docker-compose` method in the Quickstart abo
 
 All project documentation is currently available within the `/doc` folder.
 
-
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti?ref=badge_large)
