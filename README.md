@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/GrindrodBank/dokuti.svg?style=svg)](https://circleci.com/gh/GrindrodBank/dokuti)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti?ref=badge_shield)
 
 # Dokuti
 Dokuti is a batteries-included, enterprise-grade, open-source, free-standing microservice document service suitable for use as a back-end for document storage and versioning needs.
@@ -85,3 +86,7 @@ Dokuti instance deployed using the `docker-compose` method in the Quickstart abo
 # Project Documentation
 
 All project documentation is currently available within the `/doc` folder.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti?ref=badge_large)
