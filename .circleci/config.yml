@@ -54,7 +54,7 @@ jobs:
             org.jacoco:jacoco-maven-plugin:prepare-agent \
             sonar:sonar \
                 -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.projectKey=dokuti \
+                -Dsonar.projectKey=GrindrodBank_dokuti \
                 -Dsonar.organization=grindrodbank \
                 -Dsonar.login=$SONAR_AUTH_TOKEN \
                 -Dsonar.exclusions=srcgen/**/*
