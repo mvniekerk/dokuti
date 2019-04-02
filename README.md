@@ -1,4 +1,5 @@
-[![CircleCI](https://circleci.com/gh/GrindrodBank/dokuti.svg?style=svg)](https://circleci.com/gh/GrindrodBank/dokuti)
+[![CircleCI](https://circleci.com/gh/GrindrodBank/dokuti.svg?style=svg)](https://circleci.com/gh/GrindrodBank/dokuti)   ```
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti?ref=badge_shield)
 
 # Dokuti
 Dokuti is a batteries-included, enterprise-grade, open-source, free-standing microservice document service suitable for use as a back-end for document storage and versioning needs.
