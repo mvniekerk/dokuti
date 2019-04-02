@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:h2_init.sql'
+    initialization-mode: always
+    username: ""
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties: 
+      hibernate:
+        dialect: "org.hibernate.dialect.H2Dialect"
+        temp:
+          use_jdbc_metadata_defaults: true
+  test:
+    database:
+      replace: none
+  flyway:
+    #enabled: true
+    enabled: false
+     
+storage:
+  location: "/tmp/dokuti-local-uploads"
+
+#Security Properties
+rest:
+  security:
+    # This property toggles whether Oauth 2.0 based security is enabled. A 'disabled' value removes all security.
+    enabled: true
+    issuerUri: "http://keycloak.local/auth/realms/Dokuti"
+    apiMatcher: "/**"
+    cors:
+      allowedOrigins: "*"
+      allowed-headers: "*"
+      allowed-methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+      maxAge: 3600
+
+# This section is only used of rest.security.enabled = true
+security:
+  oauth2:
+    resource:
+      id: dokuti
+      tokenInfoUri: ${rest.security.issuerUri}/protocol/openid-connect/token/introspect
+      userInfoUri: ${rest.security.issuerUri}/protocol/openid-connect/userinfo
+      jwt:
+        keyValue: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAse9KSL+ZuZTXdMgqmPyYSfox+v+W+olboYfDNuZNNDxgscK/uWNM3A/nJaN3xqGpmB37Thv27G17eUNBRToy+OmCsDymfeqTP+MGsgh+VOujkdFGQkOWzX02uQTVngPkyOaLY52fwZUsTvGXj4D+sci5N52/IpXf3SsnTCz0LW2d7+hP9ne6qZ6z7IHBAUHNTxU9Kzkg7DdIyy3JfACWnky40vFycglI21OQEOr22fYS5MZMbhGkHcrUE3f+OLZKGY+aI+ePDJi6onz7YiPpCEb2942S9PmVfL9vcEjp1RimCNxUWJIfSz5Wh6ghkcHngye2vaRK50neNk0WURG2LQIDAQAB\n-----END PUBLIC KEY-----"
+
+# This setting exposes all the actuator routes, some of which expose sensitive info. Ensure that only the /health route is exposed
+# publically for readiness and liveness probes in non-dev environments.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        
+logging:
+  level:
+    root: INFO
+    za.co.grindrodbank.dokuti: DEBUG

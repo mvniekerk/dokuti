@@ -1,0 +1,43 @@
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/.vagrant
+
+### Eclipse ###
+.DS_Store
+
+/bin
+
+### Source Code Generation ###
+/srcgen
+
+### HELM
+#don't include dependent charts
+helm-chart/dokuti/charts/*
+
+### JMeter test results
+jmeter-result.xml
+jmeter.log
+

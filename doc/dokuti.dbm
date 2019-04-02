@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.2-alpha" last-position="0,0" last-zoom="1"
+	 default-schema="public" default-owner="postgres">
+<database name="dokuti" encoding="UTF8" is-template="false" allow-conns="true">
+	<role name="postgres"/>
+	<tablespace name="pg_default"/>
+</database>
+
+<schema name="public" rect-visible="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="_documents" rect-visible="true" fill-color="#3bddec">
+	<role name="postgres"/>
+</schema>
+
+<table name="document">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<comment><![CDATA[All documents]]></comment>
+	<position x="40" y="42"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="256"/>
+		<comment><![CDATA[Document name]]></comment>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+		<comment><![CDATA[Optional description for the document]]></comment>
+	</column>
+	<column name="content_type">
+		<type name="text" length="0"/>
+		<comment><![CDATA[mime/type ppt, pdf, csv, docx, odf etc]]></comment>
+	</column>
+	<column name="__updated_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="__updated_by" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<constraint name="pk_document" type="pk-constr" table="_documents.document">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="document_attribute">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<comment><![CDATA[for custom attributes added at run time by users]]></comment>
+	<position x="36" y="246"/>
+	<column name="id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="document_id">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="attribute_value">
+		<type name="text" length="0"/>
+		<comment><![CDATA[eg. contract expiry date : 21/09/2023]]></comment>
+	</column>
+	<column name="attribute_label" not-null="true">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="__updated_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="__updated_by" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<constraint name="pk_document_attribute" type="pk-constr" table="_documents.document_attribute">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="attribute_label">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<comment><![CDATA[eg. Contract Renewal Date, and the validation regex will be dd-mm-yyyy would be:
+^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$.]]></comment>
+	<position x="45" y="488"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="32767" cache="1">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+		<comment><![CDATA[human readable label]]></comment>
+	</column>
+	<column name="attribute_validaton">
+		<type name="text" length="0"/>
+		<comment><![CDATA[regular expression to validate the attribute]]></comment>
+	</column>
+	<column name="__updated_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="__updated_by" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<constraint name="pk_document_attribute_label" type="pk-constr" table="_documents.attribute_label">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="document_attribute_label_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="32767" cache="1" sql-disabled="true">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="document_tag">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<comment><![CDATA[DENORMALISED for performance]]></comment>
+	<position x="481" y="266"/>
+	<column name="document_id">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="tag">
+		<type name="text" length="0"/>
+	</column>
+</table>
+
+<index name="idx_tag" table="_documents.document_tag"
+	 concurrent="false" unique="false" fast-update="false" buffering="false"
+	 index-type="gin" factor="0">
+		<idxelement use-sorting="false">
+			<expression><![CDATA[to_tsvector('english', tag)]]></expression>
+		</idxelement>
+</index>
+
+<table name="document_status">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<position x="422" y="453"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="document_id">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="updated_on" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="status" not-null="true">
+		<type name="text" length="0"/>
+		<comment><![CDATA[CREATED, UPDATED, EDITED, DELETED, DESTROYED, ROLLBACK
+Suggest using a databasetype for this]]></comment>
+	</column>
+	<constraint name="pk_document_status" type="pk-constr" table="_documents.document_status">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="document_status_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1" sql-disabled="true">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="document_version">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<comment><![CDATA[this table holds the various instance meta-data of a particular document]]></comment>
+	<position x="841" y="395"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="document_id">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="version_id" not-null="true">
+		<type name="uuid" length="0"/>
+		<comment><![CDATA[The uuid of the version instance that gets saved to the data store]]></comment>
+	</column>
+	<column name="checksum" not-null="true">
+		<type name="text" length="0"/>
+		<comment><![CDATA[an MD5 digest to ensure file integrity]]></comment>
+	</column>
+	<column name="__uploaded_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="__uploaded_by" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<constraint name="pk_document_version" type="pk-constr" table="_documents.document_version">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="un_version_id" type="uq-constr" table="_documents.document_version">
+		<columns names="version_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="document_version_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1" sql-disabled="true">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="document_acl">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<position x="384" y="22"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="document_id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="user_uuid" not-null="true">
+		<type name="uuid" length="0"/>
+		<comment><![CDATA[the user_uuid as stored in Keycloak (or other identity storage) or
+the group_uuid as stored in the _documents schema]]></comment>
+	</column>
+	<column name="permission" not-null="true" default-value="'read'">
+		<type name="text" length="0"/>
+		<comment><![CDATA[READ < WRITE (and modify meta-data), < ROLLBACK < UN/ARCHIVE]]></comment>
+	</column>
+	<column name="may_assign" not-null="true" default-value="false">
+		<type name="boolean" length="0"/>
+		<comment><![CDATA[able to assign document rights to others]]></comment>
+	</column>
+	<column name="_granted_by" not-null="true">
+		<type name="uuid" length="0"/>
+		<comment><![CDATA[uuid of the user who granted these acl rights]]></comment>
+	</column>
+	<column name="_granted_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="document_share_acl_pk" type="pk-constr" table="_documents.document_acl">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="document_share_acl_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1" sql-disabled="true">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+</sequence>
+
+<sequence name="group_acl_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1" sql-disabled="true">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="document_version_parts">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<position x="1228" y="399"/>
+	<column name="document_version_id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="sequence" not-null="true">
+		<type name="smallint" length="0"/>
+		<comment><![CDATA[sequence number of the document blob]]></comment>
+	</column>
+	<column name="part_uuid" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="checksum" not-null="true">
+		<type name="text" length="0"/>
+		<comment><![CDATA[an MD5 digest to ensure part integrity]]></comment>
+	</column>
+	<constraint name="uq_document_version_id" type="uq-constr" table="_documents.document_version_parts">
+		<columns names="document_version_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="document_group">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<comment><![CDATA[group of users to which acl rights may be asigned]]></comment>
+	<position x="761" y="34"/>
+	<column name="id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="__updated_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="__updated_by" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<constraint name="document_usergroup_pk" type="pk-constr" table="_documents.document_group">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="document_group_user">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<position x="887" y="188"/>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="group_uuid" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="user_uuid">
+		<type name="uuid" length="0"/>
+		<comment><![CDATA[the user uuid as stored in Keycloak (or other identity storage)]]></comment>
+	</column>
+	<column name="__updated_by" not-null="true">
+		<type name="uuid" length="0"/>
+		<comment><![CDATA[uuid of the user who granted these acl rights]]></comment>
+	</column>
+	<column name="__updated_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="document_group_user_pk" type="pk-constr" table="_documents.document_group_user">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_attribute">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_attribute.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.attribute_label" table="_documents.document_attribute">
+	<columns names="attribute_label" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_tag">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_status">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_version">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_acl">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_document_version_version.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document_version" table="_documents.document_version_parts">
+	<columns names="document_version_id" ref-type="src-columns"/>
+	<columns names="version_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_usergroup.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document_group" table="_documents.document_group_user">
+	<columns names="group_uuid" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_document_attribute_document" type="relfk"
+	 custom-color="#dc8529"
+	 src-table="_documents.document_attribute"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_tag_document" type="relfk"
+	 custom-color="#c04536"
+	 src-table="_documents.document_tag"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_status_document" type="relfk"
+	 custom-color="#65a6d7"
+	 src-table="_documents.document_status"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_version_document" type="relfk"
+	 custom-color="#d63c2c"
+	 src-table="_documents.document_version"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_share_acl_document" type="relfk"
+	 custom-color="#39ee8c"
+	 src-table="_documents.document_acl"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_version_parts_document_version" type="relfk"
+	 custom-color="#892d82"
+	 src-table="_documents.document_version_parts"
+	 dst-table="_documents.document_version" reference-fk="fk_document_version_version.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_usergroup_user_document_usergroup" type="relfk"
+	 src-table="_documents.document_group_user"
+	 dst-table="_documents.document_group" reference-fk="fk_usergroup.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_attribute_attribute" type="relfk"
+	 src-table="_documents.document_attribute"
+	 dst-table="_documents.attribute_label" reference-fk="fk_attribute.id"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

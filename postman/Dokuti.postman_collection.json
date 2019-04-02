@@ -1,0 +1,1133 @@
+{
+	"info": {
+		"_postman_id": "4f0408f5-4476-4f5e-b40e-e30869263199",
+		"name": "Dokuti - Documentation Collection",
+		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Key Session Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+						"exec": [
+							"pm.test(\"Set session_access_token environment variable.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('access_token');",
+							"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "test-user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "test-user",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "dokuti",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{DOKUTI_CLIENT_SECRET}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
+					"host": [
+						"{{KEYCLOAK_BASE_URL}}"
+					],
+					"path": [
+						"auth",
+						"realms",
+						"{{KEYCLOAK-REALM}}",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Set document ID environment variable.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
+							"    pm.environment.set(\"documentId\", jsonData.id);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "postman/testResources/test-file.txt"
+						},
+						{
+							"key": "description",
+							"value": "test initial description.",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents"
+					]
+				},
+				"description": "Creates a new document on the service."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Document Meta-Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "88be4c3f-e712-4075-9a19-ffc39354502c",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check the correct document ID is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get('documentId'));",
+							"});",
+							"",
+							"pm.test(\"Check the correct document name is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql('test-file.txt');",
+							"});",
+							"",
+							"pm.test(\"Check that a document version is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('documentVersions');",
+							"    pm.expect(jsonData.documentVersions[0]).to.have.property('id');",
+							"    pm.environment.set(\"documentVersionId\", jsonData.documentVersions[0].id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download Latest Document Version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4278aa2f-ac57-4bf4-bb5d-5d6d3ede762f",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/download",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b3769c37-5256-4fab-8ffa-6730fa42770f",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "postman/testResources/test-file-v2.txt"
+						},
+						{
+							"key": "description",
+							"value": "new description v2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}"
+					]
+				},
+				"description": "Updates a document identified by it's UUID."
+			},
+			"response": []
+		},
+		{
+			"name": "Download Document Version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4278aa2f-ac57-4bf4-bb5d-5d6d3ede762f",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/versions/{{documentVersionId}}/download",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"versions",
+						"{{documentVersionId}}",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDocuments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1030e90e-db70-42e8-8e52-4b7914d4d61e",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/?page=0&size=10",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Document Tags",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ade50be5-6a79-431e-9aca-57e138d18d09",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n\t{\n\t\t\"tag\": \"test-tag-1\"\n\t},\n\t{\n\t\t\"tag\": \"test-tag-2\"\n\t},\n\t{\n\t\t\"tag\": \"test-tag-3\"\n\t}\n]"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/tags",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"tags"
+					]
+				},
+				"description": "Creates document tags for a given document."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Tags",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aac0023c-a766-479c-b84b-414feb093526",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/tags?page=0&size=10",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"tags"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete All Document Tags",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9c0df3ee-d5eb-49d1-9c24-ee2f52117f86",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/tags",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"tags"
+					]
+				},
+				"description": "Deletes all tags assigned to a document."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3aa29730-2dd0-444d-b2ad-d72d74296e2c",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Set group ID environment variable.\", function () {",
+							"    pm.environment.set(\"groupId\", jsonData.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"test-group\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/groups",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"groups"
+					]
+				},
+				"description": "Creates a new group on the document service."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Group by ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc5e71e4-d399-485f-abcd-a67f4998bdd5",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/groups/{{groupId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"groups",
+						"{{groupId}}"
+					]
+				},
+				"description": "Gets a Cats a Group by it's primary identifier."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Groups",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2356de5-e7d1-4a85-a45d-a7884921ef01",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/groups",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"groups"
+					]
+				},
+				"description": "Gets groups based on certain search params."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9b20a500-2867-4bfd-92f9-82fad58745bd",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"test-group-update\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/groups/{{groupId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"groups",
+						"{{groupId}}"
+					]
+				},
+				"description": "Updates an existing Group."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Document Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0364d6c6-02c8-416b-8107-003a2aeffed4",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/groups/{{groupId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"groups",
+						"{{groupId}}"
+					]
+				},
+				"description": "Associates a Document with a group."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Document Group",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bc6a0854-8797-4045-9164-f35c2017e668",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/groups/{{groupId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"groups",
+						"{{groupId}}"
+					]
+				},
+				"description": "Unassociates a document from a group."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Attribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7285df48-34aa-4aff-bf22-7bb4dc836fad",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Set attribute ID environment variable.\", function () {",
+							"    pm.environment.set(\"attributeId\", jsonData.id);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"test-name-one\",\n\t\"validationRegex\": \"[a-y]\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/attributes",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"attributes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAttribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "082349e2-73be-4127-bf92-3e66e9fd8ae8",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/attributes/{{attributeId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"attributes",
+						"{{attributeId}}"
+					]
+				},
+				"description": "Gets a document attribute by it's ID."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Attribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0ba36d54-dbce-4427-946e-6c173a9d38a8",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"test-name-updated\",\n\t\"validationRegex\": \"[a-z]\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/attributes/{{attributeId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"attributes",
+						"{{attributeId}}"
+					]
+				},
+				"description": "Updates an individual attribute."
+			},
+			"response": []
+		},
+		{
+			"name": "GetAttributes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "becf1d9b-b8e7-48e5-bea9-32ea17b15592",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/attributes?page=0&size=5",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"attributes"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				},
+				"description": "Gets lists of attributes."
+			},
+			"response": []
+		},
+		{
+			"name": "CreateDocumentAttribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7c93677a-d50d-493f-a7da-16086903e803",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": \"test-attribute-value-one\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/attributes/{{attributeId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"attributes",
+						"{{attributeId}}"
+					]
+				},
+				"description": "Assigns an attribute to a document."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Document Attribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d8f304a2-b686-40e7-8268-f348b74cbb93",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"value\": \"doc-attribute-val-updated\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/attributes/{{attributeId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"attributes",
+						"{{attributeId}}"
+					]
+				},
+				"description": "Updates the state of a Document Attribute."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Document Atribute",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "55ba2de8-347a-48db-8207-eaf98080e217",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/attributes/{{attributeId}}",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"attributes",
+						"{{attributeId}}"
+					]
+				},
+				"description": "Deletes a document attribute."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "accessToken",
+				"value": "{{session_access_token}}",
+				"type": "string"
+			},
+			{
+				"key": "tokenType",
+				"value": "bearer",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "ce91e9fb-b99d-4664-9c2b-0a5909f97bf7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "e0aa9414-7239-4336-a5ac-71a580d87b4f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "819b838f-aade-4fb8-a12b-15d792191407",
+			"key": "session_access_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,1840 @@
+openapi: 3.0.0
+info:
+  description: >-
+    API Definition for the Document Utility Service. This service allows
+    uploading and sharing of documents.
+  version: 0.2.0
+  title: Document Utility Service
+paths:
+  /documents:
+    get:
+      tags:
+        - Documents
+      summary: Get Documents associated with the signed in user
+      description: Returns list of all documents associated with the logged in user
+      operationId: getDocuments
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: The page to view.
+          schema:
+            type: integer
+            minimum: 0
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: The size of a page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            format: int32
+            default: 10
+        - name: filterName
+          in: query
+          required: false
+          description: >-
+            A search query filter on the Document name.
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 255
+          example: Regulatory%20Document%20Name
+        - name: filterGroupNames
+          in: query
+          required: false
+          description: >-
+            A search query filter on the names of Document Groups that will filter documents that are assigned to the groups. The search uses logical AND between the search parameters.
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 0
+              maxLength: 255
+          example: Regulatory%20Document%20Name
+        - name: filterTags
+          in: query
+          required: false
+          description: >-
+            A search query filter on the Document tags that will filter on all
+            matching tags. The search uses logical AND between the search
+            parameters.
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 0
+              maxLength: 255
+          style: form
+          explode: false
+          example:
+            - kyc
+            - oc
+            - omm
+        - name: filterAttributes
+          in: query
+          required: false
+          description: >-
+            A search query filter on the Document Attributes that will filter
+            on all matching attribute names (not their values). The search uses
+            logical AND between the search parameters.
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 0
+              maxLength: 255
+          style: form
+          explode: false
+          example:
+            - expiry-date
+            - renewal-date
+            - contract-date
+        - name: orderBy
+          in: query
+          required: false
+          style: form
+          explode: false
+          description: >-
+            a comma separated list of fields in their sort order. Ascending
+            order is assumed. Append desc after a field to indicate descending
+            order.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            oneFieldDescending:
+              summary: Example of a single sort field requested in descending order
+              value:
+                - Description desc
+            multipleFields:
+              summary: Example of a multiple sort fields
+              value:
+                - Description
+                - tags
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Pagination:
+              description: Pagination header
+              schema:
+                $ref: '#/components/schemas/PaginationHeaderResponse'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentList'
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: You are not authorized to access the report templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Report templates not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Documents
+      summary: Add a new document.
+      description: Upload a new document.
+      operationId: addDocument
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - description
+                - file
+              properties:
+                description:
+                  type: string
+                  description: A description for the document.
+                  example: A useful description for this document
+                file:
+                  type: string
+                  format: binary
+                  description: The binary data for the file to create the document for.
+      responses:
+        '200':
+          description: Successful. Document Added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDocumentResponse'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to create Documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}':
+    put:
+      tags:
+        - Documents
+      summary: Uploads a new version of the document.
+      description: Upload a new document.
+      operationId: UpdateDocument
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                description:
+                  type: string
+                  description: A description for the document.
+                  example: A useful description for this document
+                file:
+                  type: string
+                  format: binary
+                  description: The binary data for the file to create the document for
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+      responses:
+        '200':
+          description: Successful. Document Updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentVersion'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Documents
+      summary: Gets the document meta-data for a document.
+      description: Gets a document's meta-data.
+      operationId: getDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+      responses:
+        '200':
+          description: Successful. Document Metadata obtained.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '204':
+          description: No content.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get Document Metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Documents
+      summary: Delete document.
+      description: >-
+        Deletes a document and all associated components, such as versions,
+        document groups, documents tags and document status.
+      operationId: deleteDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+      responses:
+        '204':
+          description: Document deleted.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to delete Documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/download':
+    get:
+      tags:
+        - Documents
+      summary: Get document file binary.
+      description: >-
+        Gets the document binary for a the uploaded file. If there are multiple
+        versions of the file only the latest version is returned.
+      operationId: downloadDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+      responses:
+        '200':
+          description: >-
+            The binary data of the file. The content type has been modelled as
+            an octet-stream. This is not in fact accurate. The content type will
+            be dynamically-set to the content-type that the file was uploaded
+            as, but figuring out how to model this using the swagger openaip3.0
+            specification has not been achieved yet.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to download Documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '419':
+          description: Checksum failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/versions/{documentVersionId}/download':
+    get:
+      tags:
+        - Document Versions
+      summary: Get document version file binary data.
+      description: Gets the document version binary data for a specific document version.
+      operationId: downloadDocumentVersion
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: documentVersionId
+          schema:
+            $ref: '#/components/schemas/documentVersionId'
+          required: true
+      responses:
+        '200':
+          description: >-
+            The binary data of the file at the specific version. The content
+            type has been modelled as an octet-stream. This is not in fact
+            accurate. The content type will be dynamically-set to the
+            content-type that the file was uploaded as, but figuring out how to
+            model this using the swagger openaip3.0 specification has not been
+            achieved yet.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get Document Version Data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document Version not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/tags':
+    post:
+      tags:
+        - Document Tags
+      summary: Applies tags to document.
+      description: >-
+        Applies the array of tags to the document. An array of Document tags to
+        apply to the document. Empty array removes will return 400. If a new tag
+        array does not include existing tags on the server, the existing
+        server-side tags will be removed.
+      operationId: addDocumentTags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LookupTagList'
+      responses:
+        '201':
+          description: Successful. Tags Added to Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTagList'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Document Tags.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+    delete:
+      tags:
+        - Document Tags
+      summary: Removes all tags from a document.
+      description: Clears all tags from a document
+      operationId: removeAllDocumentTags
+      responses:
+        '204':
+          description: Successful. Tags removed from the Document.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Document Tags.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+  /groups:
+    post:
+      tags:
+        - Groups
+      summary: Creates a new group.
+      description: Creates a new group.
+      operationId: createGroup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+      responses:
+        '201':
+          description: The newly created group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to create Group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Groups
+      summary: Gets all groups.
+      description: Return a paginated list of all groups
+      operationId: getGroups
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: The page to view.
+          schema:
+            type: integer
+            minimum: 0
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: The size of a page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            format: int32
+            default: 10
+        - name: filterName
+          in: query
+          required: false
+          description: A search query filter on Group name.
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 255
+          example: Example group
+        - name: orderBy
+          in: query
+          required: false
+          style: form
+          explode: false
+          description: >-
+            list of fields in their sort order. Ascending order is assumed. In
+            the format ($propertyname,)+[asc|desc]?. For example:- 
+              ?orderBy=name,desc
+              ?orderBy=name,asc&orderBy=numberOfHands,desc
+              ?orderBy=name     defaults to asc 
+          schema:
+            type: array
+            nullable: true
+            items:
+              type: string
+            minItems: 0
+          examples:
+            oneFieldDescending:
+              summary: Example of a single sort field requested in descending order
+              value:
+                - name desc
+            multipleFields:
+              summary: Example of a multiple sort fields
+              value:
+                - name
+                - tags
+      responses:
+        '200':
+          description: OK. A list of gropus matching the filter criteria.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupList'
+          headers:
+            X-Pagination:
+              description: Pagination header
+              schema:
+                $ref: '#/components/schemas/PaginationHeaderResponse'
+        '204':
+          description: No content
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get groups.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/groups/{groupId}':
+    get:
+      tags:
+        - Groups
+      summary: Gets a group by ID.
+      description: Gets a group by ID.
+      operationId: getGroup
+      parameters:
+        - in: path
+          name: groupId
+          schema:
+            $ref: '#/components/schemas/groupId'
+          required: true
+      responses:
+        '200':
+          description: The group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '204':
+          description: No content.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document Group not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Groups
+      summary: Updates a group.
+      description: Replaces the group name for the given groupId.
+      operationId: updateGroup
+      parameters:
+        - in: path
+          name: groupId
+          schema:
+            $ref: '#/components/schemas/groupId'
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupRequest'
+      responses:
+        '200':
+          description: The updated group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Group not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Groups
+      summary: Deletes a group by Id.
+      description: Deletes a group using the groupId.
+      operationId: deleteGroup
+      parameters:
+        - in: path
+          name: groupId
+          schema:
+            $ref: '#/components/schemas/groupId'
+          required: true
+      responses:
+        '204':
+          description: The group has been deleted.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to delete Group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Group not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/groups/{groupId}':
+    post:
+      tags:
+        - Document Groups
+      summary: Applies a group to a document.
+      description: Applies a group to a document
+      operationId: createDocumentGroup
+      responses:
+        '201':
+          description: Successful. Updated group associations for the document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update document groups.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Resource (Document or Group) not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: groupId
+          schema:
+            $ref: '#/components/schemas/groupId'
+          required: true
+    delete:
+      tags:
+        - Document Groups
+      summary: Delete a document group.
+      description: Removes the association of a given group from the given document.
+      operationId: deleteDocumentGroup
+      responses:
+        '204':
+          description: OK
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to delete document groups.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Resource (Document or Group) not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: groupId
+          schema:
+            $ref: '#/components/schemas/groupId'
+          required: true
+  '/documents/{documentId}/attributes/{attributeId}':
+    post:
+      tags:
+        - Document Attributes
+      summary: Creates a new document attribute.
+      description: Creates a new document attribute.
+      operationId: createDocumentAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentAttributeRequest'
+      responses:
+        '201':
+          description: Successful. Created document attribute
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentAttribute'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to create document attributes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: attributeId
+          schema:
+            $ref: '#/components/schemas/attributeId'
+          required: true
+    put:
+      tags:
+        - Document Attributes
+      summary: Updates a document attribute.
+      description: Updates a document attribute.
+      operationId: updateDocumentAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentAttributeRequest'
+      responses:
+        '200':
+          description: Successful. Updated document attribute
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentAttribute'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update document attributes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Resource (Document or Document Attribute) not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: attributeId
+          schema:
+            $ref: '#/components/schemas/attributeId'
+          required: true
+    delete:
+      tags:
+        - Document Attributes
+      summary: Deletes a document attribute.
+      description: Deletes document attribute by it's ID.
+      operationId: deleteDocumentAttribute
+      responses:
+        '204':
+          description: Successful. Document attribute deleted.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get document attribute.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document attribute not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: attributeId
+          schema:
+            $ref: '#/components/schemas/attributeId'
+          required: true
+  /tags:
+    get:
+      tags:
+        - Tags
+      summary: Get a list of tags
+      description: Return a paginated list of tags
+      operationId: getTags
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: The page to view.
+          schema:
+            type: integer
+            minimum: 0
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: The size of a page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            format: int32
+            default: 10
+        - name: filterTags
+          in: query
+          required: false
+          description: >-
+            A search query filter on the tags that will return on all matching
+            tags. The search uses logical AND between the search parameters.
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 0
+              maxLength: 255
+          style: form
+          explode: false
+          example:
+            - kyc
+            - oc
+            - omm
+        - name: orderBy
+          in: query
+          required: false
+          style: form
+          explode: false
+          description: >-
+            a comma separated list of fields in their sort order. Ascending
+            order is assumed. Append desc after a field to indicate descending
+            order.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            oneFieldDescending:
+              summary: Example of a single sort field requested in descending order
+              value:
+                - tags desc
+            multipleFields:
+              summary: Example of a multiple sort fields
+              value:
+                - tags
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupTagList'
+          headers:
+            X-Pagination:
+              description: Pagination header
+              schema:
+                $ref: '#/components/schemas/PaginationHeaderResponse'
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: You are not authorized to access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Tags were not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /attributes:
+    get:
+      tags:
+        - Attributes
+      summary: Get a list of attributes
+      description: Return a paginated list of attributes
+      operationId: getAttributes
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: The page to view.
+          schema:
+            type: integer
+            minimum: 0
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: The size of a page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            format: int32
+            default: 10
+        - name: filterAttributes
+          in: query
+          required: false
+          description: >-
+            A search query filter on the attributes that will filter on all
+            matching attribute names (contains). The search uses logical AND
+            between the search parameters.
+          schema:
+            type: array
+            items:
+              type: string
+              minLength: 0
+              maxLength: 255
+          style: form
+          explode: false
+          example:
+            - kyc
+            - oc
+            - omm
+        - name: orderBy
+          in: query
+          required: false
+          style: form
+          explode: false
+          description: >-
+            a comma separated list of fields in their sort order. Ascending
+            order is assumed. Append desc after a field to indicate descending
+            order.
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            oneFieldDescending:
+              summary: Example of a single sort field requested in descending order
+              value:
+                - name desc
+            multipleFields:
+              summary: Example of a multiple sort fields
+              value:
+                - name
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributeList'
+          headers:
+            X-Pagination:
+              description: Pagination header
+              schema:
+                $ref: '#/components/schemas/PaginationHeaderResponse'
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: You are not authorized to access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attributes were not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Attributes
+      summary: Create an attribute
+      description: Creates an attribute without associating it with any document.
+      operationId: addAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeRequest'
+      responses:
+        '201':
+          description: Successful. Attribute successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to create Attribute.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/attributes/{attributeId}':
+    parameters:
+      - in: path
+        name: attributeId
+        schema:
+          $ref: '#/components/schemas/attributeId'
+        required: true
+    get:
+      tags:
+        - Attributes
+      summary: Get the requested attribute
+      description: Return the requested attribute
+      operationId: getAttribute
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: You are not authorized to access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attribute was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Attributes
+      summary: Update the requested attribute
+      description: Updates the requested attribute
+      operationId: updateAttribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeRequest'
+      responses:
+        '200':
+          description: Successful. Attribute updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Attribute.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attribute not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+tags:
+  - name: Groups
+    description: APIs for managing groups that can be applied to documents.
+  - name: Document Groups
+    description: APIs for managing and accessing document group associations.
+  - name: Documents
+    description: APIS for managing documents.
+  - name: Document Versions
+    description: APIs for accessing versioned components of documents.
+  - name: Document Tags
+    description: APIs for managing the application of tags to documents.
+  - name: Document Attributes
+    description: APIs for managing the application of attributes to documents.
+  - name: Tags
+    description: APIs for managing tags.
+  - name: Attributes
+    description: API's for managing attributes
+components:
+  schemas:
+    AttributeRequest:
+      type: object
+      description: Object modelling a document attribute request (create/update).
+      properties:
+        name:
+          type: string
+          description: The attribute name.
+          example: Attribute Name
+        validationRegex:
+          type: string
+          description: The attribute validation regular expression.
+          example: Some validation regex
+    Attribute:
+      type: object
+      description: Object modelling a document attribute.
+      properties:
+        id:
+          $ref: '#/components/schemas/attributeId'
+        name:
+          type: string
+          description: The attribute name.
+          example: Attribute Name
+        validationRegex:
+          type: string
+          description: The attribute validation regular expression.
+          example: Some validation regex
+    AttributeList:
+      type: array
+      description: A list of attributes
+      items:
+        $ref: '#/components/schemas/Attribute'
+    Group:
+      type: object
+      description: A group that can be applied to a document.
+      properties:
+        id:
+          $ref: '#/components/schemas/groupId'
+        name:
+          type: string
+          example: example group
+    GroupRequest:
+      type: object
+      description: Object modelling a group request (create/update).
+      properties:
+        name:
+          type: string
+          description: The group name.
+          example: Attribute Name
+    GroupList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Group'
+    groupId:
+      type: string
+      format: uuid
+      description: The ID of the group. This is the primary identifier for a group.
+      example: 421b770f-b03c-4c4f-93ec-c74bc12c3cfa
+    dateTime:
+      type: string
+      format: date
+    Document:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/documentId'
+        name:
+          type: string
+          example: Test
+        description:
+          type: string
+          example: A test description for the file.
+        contentType:
+          type: string
+          example: text/plain
+        documentVersions:
+          $ref: '#/components/schemas/DocumentVersionList'
+        tags:
+          $ref: '#/components/schemas/LookupTagList'
+        groups:
+          $ref: '#/components/schemas/GroupList'
+        attributes:
+          $ref: '#/components/schemas/DocumentAttributeList'
+    DocumentList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Document'
+    CreateDocumentResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/documentId'
+        name:
+          type: string
+          example: Test
+        description:
+          type: string
+          example: A test description for the file.
+        contentType:
+          type: string
+          example: text/plain
+    DocumentAttributeRequest:
+      type: object
+      description: Object modelling a document attribute request.
+      properties:
+        value:
+          type: string
+          description: The attribute value.
+    DocumentAttribute:
+      type: object
+      description: Object modelling a document attribute.
+      properties:
+        value:
+          type: string
+          description: The attribute value.
+          example: Attribute Value
+        name:
+          type: string
+          description: The attribute name.
+          example: Attribute Name
+        validationRegex:
+          type: string
+          description: The attribute validation regular expression.
+          example: Some validation regex
+    DocumentAttributeList:
+      type: array
+      description: List of document attributes
+      items:
+        $ref: '#/components/schemas/DocumentAttribute'
+    documentId:
+      type: string
+      format: uuid
+      description: The UUID of the document. This is the primary identifier for a document.
+      example: aede8743-1bb8-407d-a975-77f3085a0d76
+    attributeId:
+      type: integer
+      format: int32
+      description: The ID of the attribute. This is the primary identifier for an attribute
+      example: 32
+    documentVersionId:
+      type: string
+      format: uuid
+      description: >-
+        The UUID of the document version. This is the primary identifier for a
+        document version.
+      example: 8b28f970-8028-4acc-bc21-c9004a288f30
+    documentAttributeId:
+      type: integer
+      format: int32
+      description: >-
+        The ID of the document attribute. This is the primary identifier for a
+        document assignment.
+      example: '11'
+    DocumentTagList:
+      type: object
+      description: The document tags model for a given Document.
+      properties:
+        documentId:
+          $ref: '#/components/schemas/documentId'
+        tags:
+          $ref: '#/components/schemas/LookupTagList'
+    DocumentVersion:
+      type: object
+      description: >-
+        The data structure returned when a PUT or update (upload new version)
+        operation is performed on a Document.
+      properties:
+        id:
+          $ref: '#/components/schemas/documentVersionId'
+        checksum:
+          type: string
+          example: A test description for the file.
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2019-02-15T13:58:34.144Z'
+    DocumentVersionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/DocumentVersion'
+    DocumentVersionMetaData:
+      type: object
+      description: The meta-data model for a given DocumentVersion.
+      properties:
+        documentVersionId:
+          $ref: '#/components/schemas/documentVersionId'
+        createdDateTime:
+          $ref: '#/components/schemas/dateTime'
+        contentType:
+          type: string
+          example: text/plain
+    ErrorResponse:
+      description: Error response object to give more info with HTTP status code
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    PaginationHeaderResponse:
+      description: >-
+        This is the standard response for requests that have paginated
+        collections
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int32
+          minimum: 1
+          description: The total number of pages in the resultset
+        count:
+          type: integer
+          format: int32
+          minimum: 1
+          description: The total number of results in the resultset
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 20
+          default: 10
+          description: >-
+            The number items to include in a page of results. The page size for
+            the resultset
+        current:
+          type: integer
+          format: int32
+          minimum: 1
+          description: >-
+            The position of the page in the paged resultset that is being
+            returned
+        first:
+          type: string
+          format: url
+          description: >-
+            The link to the first page of results containing [size] results.
+            This link includes the page, size, filter, orderBy and fields query
+            parameters.
+        last:
+          type: string
+          format: url
+          description: >-
+            The link to the last page of results containing [size] results. This
+            link includes the page, size, filter, orderBy and fields query
+            parameters. If this is the first page in the resultset then this
+            will be [null].
+        prev:
+          type: string
+          format: url
+          description: >-
+            The link to the previous page of results containing [size] results.
+            This link includes the page, size, filter, orderBy and fields query
+            parameters. If this is the first page in the resultset then this
+            will be [null].
+        next:
+          type: string
+          format: url
+          description: >-
+            The link to the next page of results containing [size] results. This
+            link includes the page, size, filter, orderBy and fields query
+            parameters. If this is the last page in the resultset then this will
+            be [null].
+    LookupTag:
+      description: A single Tag
+      required:
+        - tag
+      type: object
+      properties:
+        tag:
+          type: string
+          minLength: 1
+          maxLength: 255
+    LookupTagList:
+      description: A list of tags
+      type: array
+      items:
+        $ref: '#/components/schemas/LookupTag'
+      example:
+        - tag: kyc
+        - tag: oc
+        - tag: regulatory
