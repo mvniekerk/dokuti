@@ -26,5 +26,5 @@ services:
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_IMPORT: "/tmp/dokuti-realm.json"
     volumes:
-      - ../../helm-chart/dokuti/static-files/dokuti-realm.json:/tmp/dokuti-realm.json
+      - ./dokuti-realm.json:/tmp/dokuti-realm.json
 
