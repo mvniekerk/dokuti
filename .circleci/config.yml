@@ -57,6 +57,7 @@ jobs:
                 -Dsonar.projectKey=GrindrodBank_dokuti \
                 -Dsonar.organization=grindrodbank \
                 -Dsonar.login=$SONAR_AUTH_TOKEN \
+                -Dsonar.branch.name=$CIRCLE_BRANCH \
                 -Dsonar.exclusions=srcgen/**/*
   docker-build:
     docker:
@@ -77,10 +78,7 @@ workflows:
   build-master:
     jobs:
       - test
-      - sonarqube:
-          filters:
-            branches:
-              only: master
+      - sonarqube
       - docker-build:
           requires:
             - test
