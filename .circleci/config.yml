@@ -66,24 +66,15 @@ jobs:
       - image: golang:1.10.0-stretch
     working_directory: ~/dokuti-build
     steps:
+      # Install Fossa
       - run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: ~/dokuti-build
+      # Install Maven
       - run: apt-get update
       - run: apt-get -y install maven
-      - run: pwd
-      - run: ls -lah
-      - run: 
-          command: ls -lah
-          working_directory: dokuti-build
-      - run: 
-          command: fossa init
-          working_directory: dokuti-build
-      - run:
-          command: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
-          working_directory: dokuti-build
+      - checkout
+      - run: fossa init
+      - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
   compile:
     docker:
       - image: maven:3.5.3-jdk-8-alpine
