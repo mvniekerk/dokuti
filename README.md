@@ -2,6 +2,7 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGrindrodBank%2Fdokuti?ref=badge_shield)
 
 # Dokuti
+
 Dokuti is a batteries-included, enterprise-grade, open-source, free-standing microservice document service suitable for use as a back-end for document storage and versioning needs.
 
 This service is implemented in Java using [Spring Boot](https://spring.io/projects/spring-boot).
