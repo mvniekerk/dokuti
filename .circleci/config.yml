@@ -67,7 +67,8 @@ jobs:
     steps:
       - run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-      - run: apt-get install maven
+      - run: sudo apt-get update
+      - run: sudo apt-get install maven
       - checkout
       - run: mvn compile
       - run: fossa init
