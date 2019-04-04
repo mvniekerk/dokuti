@@ -72,7 +72,7 @@ jobs:
           keys:
             - dokuti-build-{{ checksum "pom.xml" }}
       - run:
-        command: mvn compile
+          command: mvn compile
       - run:
           command: fossa init
       - run:
