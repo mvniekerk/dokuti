@@ -88,6 +88,7 @@ jobs:
             - dokuti-compile-{{ checksum "pom.xml" }}
 
       - run: mvn compile
+      - run: ls -lah
 
       - save_cache:
           paths:
@@ -96,9 +97,7 @@ jobs:
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
           # taken to be the root directory of the workspace.
-          root: ~/
-          paths: 
-            - dokuti-build
+          root: ~/dokuti-build
 workflows:
   version: 2
   build-master:
