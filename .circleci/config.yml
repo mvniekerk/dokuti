@@ -70,10 +70,8 @@ jobs:
       - checkout
       - run:
           command: fossa init
-          working_directory: ~/dokuti-fossa-build
       - run:
           command: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
-          working_directory: ~/dokuti-fossa-build
 workflows:
   version: 2
   build-master:
