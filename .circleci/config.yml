@@ -61,7 +61,7 @@ jobs:
           docker build -t grindrodbank/dokuti:$TAG .     
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push grindrodbank/dokuti:$TAG
-  fossa-build:
+  fossa-scan:
     docker:
       - image: circleci/golang:1.8
     steps:
@@ -72,7 +72,7 @@ jobs:
           command: fossa init
           working_directory: ~/dokuti-fossa-build
       - run:
-          command: fossa --help
+          command: fossa analyze
           working_directory: ~/dokuti-fossa-build
 workflows:
   version: 2
@@ -80,7 +80,7 @@ workflows:
     jobs:
       - test
       - sonarqube
-      - fossa-build
+      - fossa-scan
       - docker-build:
           requires:
             - test
