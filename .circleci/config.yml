@@ -64,6 +64,7 @@ jobs:
   fossa-scan:
     docker:
       - image: circleci/golang:1.8
+    working_directory: ~/dokuti-build
     steps:
       - run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
