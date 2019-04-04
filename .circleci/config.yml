@@ -107,14 +107,12 @@ workflows:
     jobs:
       - test
       - sonarqube
-      - compile
       - fossa-scan:
-          requires:
-            - compile
       - docker-build:
           requires:
             - test
             - sonarqube
+            - fossa-scan
           filters:
             branches:
               only: master
