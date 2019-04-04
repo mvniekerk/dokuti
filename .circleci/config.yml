@@ -69,7 +69,7 @@ jobs:
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
-          at: ./
+          at: .
       - run: fossa init
       - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
   compile:
@@ -95,9 +95,6 @@ jobs:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
           # taken to be the root directory of the workspace.
           root: .
-          # Must be relative path from root
-          paths:
-            - /
 workflows:
   version: 2
   build-master:
