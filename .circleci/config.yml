@@ -63,7 +63,7 @@ jobs:
           docker push grindrodbank/dokuti:$TAG
   fossa-build:
     docker:
-      - image: circleci/golang
+      - image: circleci/golang:1.8
     steps:
       - run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
