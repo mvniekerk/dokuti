@@ -123,7 +123,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "postman/testResources/test-file.txt"
+							"src": ""
 						},
 						{
 							"key": "description",
@@ -262,7 +262,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "postman/testResources/test-file-v2.txt"
+							"src": ""
 						},
 						{
 							"key": "description",
@@ -512,6 +512,8 @@
 							"});",
 							"",
 							"pm.test(\"Set group ID environment variable.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
 							"    pm.environment.set(\"groupId\", jsonData.id);",
 							"});"
 						],
@@ -768,6 +770,8 @@
 							"});",
 							"",
 							"pm.test(\"Set attribute ID environment variable.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('id');",
 							"    pm.environment.set(\"attributeId\", jsonData.id);",
 							"});"
 						],
