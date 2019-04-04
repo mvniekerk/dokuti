@@ -70,7 +70,6 @@ jobs:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: ~/dokuti-build
-      - run: cd ~/dokuti-build
       - run: ls -lah
       - run: fossa init
       - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
@@ -97,7 +96,9 @@ jobs:
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
           # taken to be the root directory of the workspace.
-          root: ~/dokuti-build
+          root: ~/
+          paths: 
+            - dokuti-build
 workflows:
   version: 2
   build-master:
