@@ -73,7 +73,7 @@ jobs:
           at: ~/dokuti-build
       - run: pwd
       - run: ls -lah
-      - run: cd dokuti-build
+      - run: cd dokuti-build && ls -lah
       - run: ls -lah
       - run: fossa init
       - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
