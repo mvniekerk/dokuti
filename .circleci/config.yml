@@ -71,6 +71,7 @@ jobs:
           # Must be absolute path or relative path from working_directory
           at: ~/dokuti-build
       - run: cd ~/dokuti-build
+      - run: ls -lah
       - run: fossa init
       - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
   compile:
