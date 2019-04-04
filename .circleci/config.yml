@@ -68,6 +68,9 @@ jobs:
       - run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
       - checkout
+      - restore_cache:
+          keys:
+            - dokuti-build-{{ checksum "pom.xml" }}
       - run:
         command: mvn compile
       - run:
