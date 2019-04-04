@@ -73,10 +73,15 @@ jobs:
           at: ~/dokuti-build
       - run: pwd
       - run: ls -lah
-      - run: cd dokuti-build && ls -lah
-      - run: ls -lah
-      - run: cd dokuti-build && fossa init
-      - run: cd dokuti-build && FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
+      - run: 
+          command: ls -lah
+          working_directory: dokuti-build
+      - run: 
+          command: fossa init
+          working_directory: dokuti-build
+      - run:
+          command: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
+          working_directory: dokuti-build
   compile:
     docker:
       - image: maven:3.5.3-jdk-8-alpine
@@ -105,7 +110,7 @@ jobs:
             - dokuti-build
 workflows:
   version: 2
-  build-master:
+  build-commit:
     jobs:
       - test
       - sonarqube
