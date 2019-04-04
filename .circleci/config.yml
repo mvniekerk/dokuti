@@ -72,7 +72,7 @@ jobs:
           # Must be absolute path or relative path from working_directory
           at: ~/dokuti-build
       - run: apt-get update
-      - run: apt-get install maven
+      - run: apt-get -y install maven
       - run: pwd
       - run: ls -lah
       - run: 
