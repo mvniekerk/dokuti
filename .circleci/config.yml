@@ -63,7 +63,7 @@ jobs:
           docker push grindrodbank/dokuti:$TAG
   fossa-scan:
     docker:
-      - image: circleci/golang:1.8
+      - image: golang:1.10.0-stretch
     working_directory: ~/dokuti-build
     steps:
       - run: |
@@ -71,6 +71,8 @@ jobs:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: ~/dokuti-build
+      - run: apt-get update
+      - run: apt-get install maven
       - run: pwd
       - run: ls -lah
       - run: 
