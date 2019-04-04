@@ -74,7 +74,7 @@ jobs:
       - run: apt-get -y install maven
       - checkout
       - run: fossa init
-      - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa test
+      - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze -o
 workflows:
   version: 2
   build-commit:
