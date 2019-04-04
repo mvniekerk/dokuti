@@ -67,19 +67,47 @@ jobs:
     steps:
       - run: |
           curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
-      - run: sudo apt-get update
-      - run: sudo apt-get install maven
-      - checkout
-      - run: mvn compile
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ./
       - run: fossa init
       - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
+  compile:
+    docker:
+      - image: maven:3.5.3-jdk-8-alpine
+    working_directory: ~/dokuti-build
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - dokuti-compile-{{ checksum "pom.xml" }}
+
+      - run: mvn compile
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: dokuti-compile-{{ checksum "pom.xml" }}
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
+          # taken to be the root directory of the workspace.
+          root: .
+          # Must be relative path from root
+          paths:
+            - /
 workflows:
   version: 2
   build-master:
     jobs:
       - test
       - sonarqube
-      - fossa-scan
+      - compile
+      - fossa-scan:
+          requires:
+            - compile
       - docker-build:
           requires:
             - test
