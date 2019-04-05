@@ -2,7 +2,7 @@ version: 2
 cli:
   server: https://app.fossa.com
   fetcher: custom
-  project: github.com/GrindrodBank/dokuti
+  project: dokuti
 analyze:
   modules:
   - name: za.co.grindrodbank:dokuti
