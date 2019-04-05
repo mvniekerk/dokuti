@@ -73,10 +73,11 @@ jobs:
       - run: apt-get update
       - run: apt-get -y install maven
       - checkout
-      - run: fossa init
+      # - run: fossa init
       # Note: The -o flag does not publish the results to Fossa App, just prints them out to the console.
       # Note: The 'fossa test' command is more appropriate to be used here, but it is not functioninig (has a bug) at the time of writing this code.
       - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
+      - run: fossa test
 workflows:
   version: 2
   build-commit:
