@@ -61,16 +61,34 @@ jobs:
           docker build -t grindrodbank/dokuti:$TAG .     
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push grindrodbank/dokuti:$TAG
+  fossa-scan:
+    docker:
+      - image: golang:1.10.0-stretch
+    working_directory: ~/dokuti-build
+    steps:
+      # Install Fossa
+      - run: |
+          curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | bash
+      # Install Maven
+      - run: apt-get update
+      - run: apt-get -y install maven
+      - checkout
+      - run: fossa init
+      - run: FOSSA_API_KEY=$FOSSA_API_KEY fossa analyze
+      # Note: The 'fossa test' command must be run after the analyze command has been run, as it is dependent on the previous scan.
+      - run: fossa test
 workflows:
   version: 2
-  build-master:
+  build-commit:
     jobs:
       - test
       - sonarqube
+      - fossa-scan
       - docker-build:
           requires:
             - test
             - sonarqube
+            - fossa-scan
           filters:
             branches:
               only: master
