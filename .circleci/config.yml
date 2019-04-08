@@ -57,7 +57,7 @@ jobs:
           docker_layer_caching: true
       # build and push Docker image to dockerhub.
       - run: |
-          TAG=0.2.$CIRCLE_BUILD_NUM
+          TAG=0.3.0
           docker build -t grindrodbank/dokuti:$TAG .     
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push grindrodbank/dokuti:$TAG
