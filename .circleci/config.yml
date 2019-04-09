@@ -57,10 +57,13 @@ jobs:
           docker_layer_caching: true
       # build and push Docker image to dockerhub.
       - run: |
-          TAG=0.2.$CIRCLE_BUILD_NUM
+          TAG=0.3.0
           docker build -t grindrodbank/dokuti:$TAG .     
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push grindrodbank/dokuti:$TAG
+          # Tag and push latest
+          docker tag grindrodbank/dokuti:$TAG grindrodbank/dokuti:latest
+          docker push grindrodbank/dokuti:latest
   fossa-scan:
     docker:
       - image: golang:1.10.0-stretch
