@@ -5,58 +5,40 @@
 package za.co.grindrodbank.dokuti.document;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.document.DocumentRepository;
-import za.co.grindrodbank.dokuti.document.DocumentService;
-import za.co.grindrodbank.dokuti.document.DocumentServiceImpl;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class DocumentServiceUnitTests {
 
-	@MockBean
+	@Mock
 	private DocumentRepository documentRepository;
 	
-	@MockBean
+	@Mock
 	private DocumentVersionService documentVersionService;
 
-	@MockBean
+	@Mock
 	private DocumentDataStoreService DocumentDataStoreService;
 	
-	@MockBean 
+	@Mock
 	private ResourcePermissionsService resourcePermission;
 
-	@TestConfiguration
-	static class DocumentServiceTestContextConfiguration {
-
-		@Bean
-		public DocumentService documentService() {
-			return new DocumentServiceImpl();
-		}
-	}
-
-	@Autowired
-	private DocumentService documentService;
+	@InjectMocks
+	private DocumentServiceImpl documentService;
 
 	@Test
-	public void givenDocument_whenGetDocument_thenReturnJsonArray() throws Exception {
+	public void givenDocument_whenGetDocument_thenReturnDocument() throws Exception {
 
 		UUID documentId = UUID.randomUUID();
 
