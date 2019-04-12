@@ -14,16 +14,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-//import org.powermock.api.mockito.PowerMockito;
-//import org.powermock.core.classloader.annotations.PrepareForTest;
-//import org.powermock.modules.junit4.PowerMockRunner;
+import static org.mockito.ArgumentMatchers.any;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.attribute.AttributeRepository;
 import za.co.grindrodbank.dokuti.attribute.AttributeServiceImpl;
 import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SecurityContextUtility.class)
 public class AttributeServiceUnitTests {
 
 	@Mock
@@ -49,15 +50,17 @@ public class AttributeServiceUnitTests {
 				attribute.getValidationRegex());
 	}
 	
+	@Test
 	public void givenInput_whenCreateAttribute_thenReturnAttribute() {
 		String attributeName = "Test Attribute Name";
 		String attributeValidationRegex = "[a-y]";
 		UUID userId = UUID.randomUUID();
 		AttributeEntity attribute = new AttributeEntity(attributeName, attributeName);
-		//PowerMockito.mockStatic(SecurityContextUtility.class);
+		attribute.setUpdatedBy(userId);
 		
+		PowerMockito.mockStatic(SecurityContextUtility.class);
 		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
-		Mockito.when(attributeRepository.save(attribute)).thenReturn(attribute);
+		Mockito.when(attributeRepository.save(any(AttributeEntity.class))).thenReturn(attribute);
 		
 		AttributeEntity createdAttribute = attributeService.createAttribute(attributeName, attributeValidationRegex);
 		assertEquals("Failure - Attribute names are not equal", createdAttribute.getName(), attribute.getName());
