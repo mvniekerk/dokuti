@@ -29,12 +29,12 @@ public class AttributeServiceUnitTests {
 
 	@Mock
 	private AttributeRepository attributeRepository;
-	
+
 	@InjectMocks
 	private AttributeServiceImpl attributeService;
 
 	@Test
-	public void givenAttribute_whenGetAttribute_thenReturnAttribute() throws Exception {
+	public void givenAttributeId_whenGetAttribute_thenReturnAttribute() throws Exception {
 
 		Short attributeId = 1;
 		AttributeEntity attribute = new AttributeEntity("Test attribute name.",
@@ -45,11 +45,11 @@ public class AttributeServiceUnitTests {
 		Mockito.when(attributeRepository.findById(attributeId)).thenReturn(optionalAttribute);
 
 		AttributeEntity searchedAttribute = attributeService.findById(attributeId);
-		assertEquals("Failure - Attribute names are not equal", searchedAttribute.getName(), attribute.getName());
-		assertEquals("Failure - Attribute validation regex are not equal", searchedAttribute.getValidationRegex(),
-				attribute.getValidationRegex());
+		assertEquals("Failure - Attribute names are not equal", attribute.getName(), searchedAttribute.getName());
+		assertEquals("Failure - Attribute validation regex are not equal", attribute.getValidationRegex(),
+				searchedAttribute.getValidationRegex());
 	}
-	
+
 	@Test
 	public void givenInput_whenCreateAttribute_thenReturnAttribute() {
 		String attributeName = "Test Attribute Name";
@@ -57,17 +57,50 @@ public class AttributeServiceUnitTests {
 		UUID userId = UUID.randomUUID();
 		AttributeEntity attribute = new AttributeEntity(attributeName, attributeName);
 		attribute.setUpdatedBy(userId);
-		
+
 		PowerMockito.mockStatic(SecurityContextUtility.class);
 		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
 		Mockito.when(attributeRepository.save(any(AttributeEntity.class))).thenReturn(attribute);
-		
+
 		AttributeEntity createdAttribute = attributeService.createAttribute(attributeName, attributeValidationRegex);
-		assertEquals("Failure - Attribute names are not equal", createdAttribute.getName(), attribute.getName());
-		assertEquals("Failure - Attribute validation regex are not equal", createdAttribute.getValidationRegex(),
-				attribute.getValidationRegex());
-		assertEquals("Failure - Attribute updated by not equal to expected UserId UUID", createdAttribute.getUpdatedBy(), userId);
-		
+		assertEquals("Failure - Attribute names are not equal", attribute.getName(), createdAttribute.getName());
+		assertEquals("Failure - Attribute validation regex are not equal", attribute.getValidationRegex(),
+				createdAttribute.getValidationRegex());
+		assertEquals("Failure - Attribute updated by not equal to expected UserId UUID", userId,
+				createdAttribute.getUpdatedBy());
+
+	}
+
+	@Test
+	public void givenInput_whenUpdateAttribute_thenReturnUpdatedAttribute() {
+		Short attributeId = 1;
+		UUID userId = UUID.randomUUID();
+
+		String attributeName = "Test Attribute Name";
+		String attributeValidationRegex = "[a-y]";
+		AttributeEntity attribute = new AttributeEntity(attributeName, attributeValidationRegex);
+		attribute.setUpdatedBy(userId);
+		attribute.setId(attributeId);
+		Mockito.when(attributeRepository.findById(attributeId)).thenReturn(Optional.of(attribute));
+
+		String updatedName = "Test Attribute Name Updated";
+		String updatedValidationRegex = "[a-z]";
+		AttributeEntity updatedAttributeMock = new AttributeEntity(updatedName, updatedValidationRegex);
+		updatedAttributeMock.setUpdatedBy(userId);
+		updatedAttributeMock.setId(attributeId);
+		Mockito.when(attributeRepository.save(any(AttributeEntity.class))).thenReturn(updatedAttributeMock);
+
+		PowerMockito.mockStatic(SecurityContextUtility.class);
+		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
+
+		AttributeEntity updatedAttribute = attributeService.updateAttribute(attributeId, updatedName,
+				updatedValidationRegex);
+		assertEquals("Failure - Attribute names are not equal", updatedName, updatedAttribute.getName());
+		assertEquals("Failure - Attribute validation regex are not equal", updatedValidationRegex,
+				updatedAttribute.getValidationRegex());
+		assertEquals("Failure - Attribute updated by not equal to expected UserId UUID", userId,
+				updatedAttribute.getUpdatedBy());
+
 	}
 
 }
