@@ -15,14 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import za.co.grindrodbank.dokuti.group.GroupEntity;
 import za.co.grindrodbank.dokuti.group.GroupRepository;
 import za.co.grindrodbank.dokuti.group.GroupServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
-@DataJpaTest
 public class GroupServiceUnitTests {
 
 	@Mock

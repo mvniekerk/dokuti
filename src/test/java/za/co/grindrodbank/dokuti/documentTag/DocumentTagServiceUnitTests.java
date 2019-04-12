@@ -5,48 +5,30 @@
 package za.co.grindrodbank.dokuti.documentTag;
 
 import static org.junit.Assert.assertEquals;
-
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagId;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagRepository;
-import za.co.grindrodbank.dokuti.documenttag.DocumentTagService;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagServiceImpl;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@RunWith(MockitoJUnitRunner.class)
 public class DocumentTagServiceUnitTests {
 
-	@MockBean
+	@Mock
 	private DocumentTagRepository documentTagRepository;
 
-	@TestConfiguration
-	static class DocumentTagServiceTestContextConfiguration {
-
-		@Bean
-		public DocumentTagService documentTagService() {
-			return new DocumentTagServiceImpl();
-		}
-	}
-
-	@Autowired
-	private DocumentTagService documentTagService;
+	@InjectMocks
+	private DocumentTagServiceImpl documentTagService;
 
 	@Test
 	public void givenDocumentTag_whenGetDocumentTag_thenReturnDocumentTag() throws Exception {
-
 		UUID documentId = UUID.randomUUID();
 		String tag = "Test Tag";
 
@@ -57,7 +39,6 @@ public class DocumentTagServiceUnitTests {
 		documentTag.setId(documentTagId);
 
 		Optional<DocumentTagEntity> optionalTag = Optional.of(documentTag);
-
 		Mockito.when(documentTagRepository.findById(documentTagId)).thenReturn(optionalTag);
 
 		Optional<DocumentTagEntity> searchedDocumentTag = documentTagService.findById(documentTagId);
