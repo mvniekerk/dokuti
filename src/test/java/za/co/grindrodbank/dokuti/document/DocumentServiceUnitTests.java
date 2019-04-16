@@ -34,9 +34,10 @@ import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.document.DocumentRepository;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
-import za.co.grindrodbank.dokuti.documentversion.DocumentVersionServiceImpl;
+import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
-import za.co.grindrodbank.dokuti.service.documentdatastoreservice.FileSystemDocumentStoreService;
+import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
+import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
 import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
 
@@ -48,10 +49,10 @@ public class DocumentServiceUnitTests {
 	private DocumentRepository documentRepository;
 
 	@Mock
-	private DocumentVersionServiceImpl documentVersionService;
+	private DocumentVersionService documentVersionService;
 
 	@Mock
-	private FileSystemDocumentStoreService documentDataStoreService;
+	private DocumentDataStoreService documentDataStoreService;
 
 	@Mock
 	private ResourcePermissionsService resourcePermission;
@@ -77,6 +78,25 @@ public class DocumentServiceUnitTests {
 
 		DocumentEntity searchedDocument = documentService.findById(documentId);
 		assertEquals("Failure - Document names are not equal", searchedDocument.getName(), document.getName());
+	}
+	
+	@Test(expected = NotAuthorisedException.class)
+	public void givenDocumentIdNoReadPermissions_thenNotAuthedExceptionThrown() throws Exception {
+
+		UUID documentId = UUID.randomUUID();
+
+		DocumentEntity document = new DocumentEntity();
+		document.setId(documentId);
+		document.setContentType("text/plain");
+		document.setDescription("Mocked document description");
+		document.setName("Mocked document name");
+
+		Optional<DocumentEntity> optionalDocument = Optional.of(document);
+
+		Mockito.when(documentRepository.findById(documentId)).thenReturn(optionalDocument);
+		Mockito.when(resourcePermission.accessingUserCanReadDocument(document)).thenReturn(false);
+
+		documentService.findById(documentId);
 	}
 
 	@Test
@@ -139,7 +159,7 @@ public class DocumentServiceUnitTests {
 
 		String documentAttributeValue = "test attribute value";
 
-		DocumentAttributeEntity documentAttribute = documentService.addDocumentAttribute(documentMock,
+		documentService.addDocumentAttribute(documentMock,
 				attributeEntityMock, documentAttributeValue);
 	}
 
@@ -350,6 +370,38 @@ public class DocumentServiceUnitTests {
 		DocumentEntity updatedDocument = documentService.updateDocument(emptyFile, documentMock);
 
 		assertEquals("Failure - Document names are not equal", documentMock.getName(), updatedDocument.getName());
+	}
+	
+	@Test(expected = NotAuthorisedException.class)
+	public void givenUpdatedDocumentNoWritePerms_thenThrowNotAuthException() {
+		UUID documentId = UUID.randomUUID();
+		UUID documentVersionId = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+
+		DocumentEntity documentMock = new DocumentEntity();
+		documentMock.setId(documentId);
+		documentMock.setContentType("text/plain");
+		documentMock.setDescription("Mocked document description");
+		documentMock.setName("Mocked document name");
+		documentMock.setUpdatedBy(userId);
+
+		Optional<MultipartFile> emptyFile = Optional.empty();
+
+		String fileContentChecksum = "test checksum";
+		DocumentVersionEntity mockDocumentVersion = new DocumentVersionEntity();
+		mockDocumentVersion.setChecksum(fileContentChecksum);
+		mockDocumentVersion.setId(documentVersionId);
+		mockDocumentVersion.setUploadedBy(userId);
+
+		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class)))
+				.thenReturn(mockDocumentVersion);
+		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
+		Mockito.when(resourcePermission.accessingUserCanWriteDocument((any(DocumentEntity.class)))).thenReturn(false);
+
+		PowerMockito.mockStatic(SecurityContextUtility.class);
+		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
+
+		documentService.updateDocument(emptyFile, documentMock);
 	}
 
 }
