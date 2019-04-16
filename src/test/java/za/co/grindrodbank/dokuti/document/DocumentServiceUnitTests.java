@@ -5,9 +5,15 @@
 package za.co.grindrodbank.dokuti.document;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +23,10 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.FileCopyUtils;
 
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
@@ -41,11 +50,11 @@ public class DocumentServiceUnitTests {
 	private DocumentVersionServiceImpl documentVersionService;
 
 	@Mock
-	private FileSystemDocumentStoreService DocumentDataStoreService;
+	private FileSystemDocumentStoreService documentDataStoreService;
 
 	@Mock
 	private ResourcePermissionsService resourcePermission;
-
+	
 	@InjectMocks
 	private DocumentServiceImpl documentService;
 
@@ -201,6 +210,75 @@ public class DocumentServiceUnitTests {
 		DocumentEntity createdDocument = documentService.createNewDocument(testFile, documentMock.getDescription());
 
 		assertEquals("Failure - Document names are not equal", documentMock.getName(), createdDocument.getName());
+	}
+	
+	@Test
+	public void givenDocument_thenReturnDocumentData() throws IOException {
+		Resource mockResource = new ByteArrayResource("testString".getBytes());
+		UUID documentId = UUID.randomUUID();
+		UUID documentVersionId = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+
+		DocumentEntity documentMock = new DocumentEntity();
+		documentMock.setId(documentId);
+		documentMock.setContentType("text/plain");
+		documentMock.setDescription("Mocked document description");
+		documentMock.setName("Mocked document name");
+		documentMock.setUpdatedBy(userId);
+		
+		String fileContentChecksum = "test checksum";
+		DocumentVersionEntity mockDocumentVersion = new DocumentVersionEntity();
+		mockDocumentVersion.setChecksum(fileContentChecksum);
+		mockDocumentVersion.setId(documentVersionId);
+		mockDocumentVersion.setUploadedBy(userId);
+		
+		Mockito.when(documentDataStoreService.loadAsResource(any(UUID.class), any(UUID.class))).thenReturn(mockResource);
+		Mockito.when(resourcePermission.accessingUserCanReadDocument(any(DocumentEntity.class))).thenReturn(true);
+		
+		DocumentServiceImpl documentServiceSpy = Mockito.spy(documentService);
+		Mockito.doNothing().when(documentServiceSpy).checkIfFileContentChecksumMatches(any(DocumentVersionEntity.class), any(Resource.class));
+		
+		Resource resource = documentServiceSpy.getDocumentDataForVersion(documentMock, mockDocumentVersion);
+		
+		assertTrue(resource.exists());
+		assertFalse(resource.isOpen());
+		String content = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));
+		assertEquals("testString", content);
+	}
+	
+	@Test
+	public void givenDocument_thenReturnLatestDocumentData() throws IOException {
+		Resource mockResource = new ByteArrayResource("testString".getBytes());
+		UUID documentId = UUID.randomUUID();
+		UUID documentVersionId = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+
+		DocumentEntity documentMock = new DocumentEntity();
+		documentMock.setId(documentId);
+		documentMock.setContentType("text/plain");
+		documentMock.setDescription("Mocked document description");
+		documentMock.setName("Mocked document name");
+		documentMock.setUpdatedBy(userId);
+		
+		String fileContentChecksum = "test checksum";
+		DocumentVersionEntity mockDocumentVersion = new DocumentVersionEntity();
+		mockDocumentVersion.setChecksum(fileContentChecksum);
+		mockDocumentVersion.setId(documentVersionId);
+		mockDocumentVersion.setUploadedBy(userId);
+		
+		Set<DocumentVersionEntity> documentVersions = new HashSet<DocumentVersionEntity>();
+		documentVersions.add(mockDocumentVersion);
+		documentMock.setDocumentVersions(documentVersions);
+		
+		DocumentServiceImpl documentServiceSpy = Mockito.spy(documentService);
+		Mockito.doReturn(mockResource).when(documentServiceSpy).getDocumentDataForVersion(any(DocumentEntity.class), any(DocumentVersionEntity.class));
+		
+		Resource resource = documentServiceSpy.getLatestDocumentData(documentMock);
+		
+		assertTrue(resource.exists());
+		assertFalse(resource.isOpen());
+		String content = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));
+		assertEquals("testString", content);
 	}
 
 }
