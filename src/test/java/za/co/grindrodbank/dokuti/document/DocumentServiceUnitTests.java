@@ -337,6 +337,26 @@ public class DocumentServiceUnitTests {
 
 		assertEquals("Failure - Document names are not equal", documentMock.getName(), updatedDocument.getName());
 	}
+	
+	@Test
+	public void givenUpdatedDocument_thenSavedUpdatedDocumentReturned() {
+		UUID documentId = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+
+		DocumentEntity documentMock = new DocumentEntity();
+		documentMock.setId(documentId);
+		documentMock.setContentType("text/plain");
+		documentMock.setDescription("Mocked document description");
+		documentMock.setName("Mocked document name");
+		documentMock.setUpdatedBy(userId);
+
+		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
+		Mockito.when(resourcePermission.accessingUserCanWriteDocument((any(DocumentEntity.class)))).thenReturn(true);
+
+		DocumentEntity savedDocument = documentService.save(documentMock);
+
+		assertEquals("Failure - Document names are not equal", documentMock.getName(), savedDocument.getName());
+	}
 
 	@Test
 	public void givenUpdatedDocumentNoFile_thenReturnUpdatedDocument() {
