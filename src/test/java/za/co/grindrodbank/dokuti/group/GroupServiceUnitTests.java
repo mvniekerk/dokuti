@@ -11,40 +11,26 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import za.co.grindrodbank.dokuti.group.GroupEntity;
 import za.co.grindrodbank.dokuti.group.GroupRepository;
-import za.co.grindrodbank.dokuti.group.GroupService;
 import za.co.grindrodbank.dokuti.group.GroupServiceImpl;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
+@RunWith(MockitoJUnitRunner.class)
 public class GroupServiceUnitTests {
 
-	@MockBean
+	@Mock
 	private GroupRepository groupRepository;
 
-	@TestConfiguration
-	static class GroupServiceTestContextConfiguration {
-
-		@Bean
-		public GroupService groupService() {
-			return new GroupServiceImpl();
-		}
-	}
-
-	@Autowired
-	private GroupService groupService;
+	@InjectMocks
+	private GroupServiceImpl groupService;
 
 	@Test
-	public void givenGroup_whenGetGroup_thenReturnJsonArray() throws Exception {
+	public void givenGroup_whenGetGroup_thenGroupEntityReturned() throws Exception {
 
 		UUID groupId = UUID.randomUUID();
 
