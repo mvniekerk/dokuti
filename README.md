@@ -81,6 +81,8 @@ docker-compose down
 
 # Postman Collection
 
+*NOTE:* You need to be using the full installation of postman and not the Chrome app  
+
 A `Dokuti.postman_collection.json` Postman collection has been included within the `postman` folder. This collection is intended for exploring the Dokuti API. There is also a `Dokuti-Quickstart.postman_environment.json` Postman environment that can be used to interact with the
 Dokuti instance deployed using the `docker-compose` method in the Quickstart above.
 
