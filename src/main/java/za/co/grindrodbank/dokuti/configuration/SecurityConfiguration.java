@@ -4,7 +4,6 @@
 ****************************************************/
 package za.co.grindrodbank.dokuti.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -62,10 +61,5 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
 			source.registerCorsConfiguration("/**", securityProperties.getCorsConfiguration());
 		}
 		return source;
-	}
-
-	@Bean
-	public JwtAccessTokenCustomizer jwtAccessTokenCustomizer(ObjectMapper mapper) {
-		return new JwtAccessTokenCustomizer(mapper);
 	}
 }

@@ -5,7 +5,9 @@
 package za.co.grindrodbank.dokuti.utilities;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -114,6 +116,26 @@ public class SecurityContextUtility {
 
 		if (claims != null) {
 			return (String) claims.get("sub");
+		}
+
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<String>  getPermissionsFromJwt() {
+		Map<String, Object> claims = getClaimsFromJwt();
+
+		// The permissions can be a list, or possibly a single string if there is only one permission. Check for this!!
+		if (claims != null) {
+			try {
+				return (List<String>) claims.get("permission");
+			} catch(ClassCastException e) {
+				LOGGER.warn("Could not cast the permission into a list, assuming a single string value. Attempting to create the list from this value.");
+				List<String> permissions = new ArrayList<String>();
+				permissions.add((String) claims.get("permission"));
+				return permissions;
+			}
+			
 		}
 
 		return null;
