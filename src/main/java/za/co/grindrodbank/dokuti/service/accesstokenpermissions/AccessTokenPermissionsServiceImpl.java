@@ -11,6 +11,10 @@ public class AccessTokenPermissionsServiceImpl implements AccessTokenPermissions
 	public Boolean hasPermission(String permission) {
 		List<String> permissions = SecurityContextUtility.getPermissionsFromJwt();
 		
+		if(permissions == null) {
+			return false;
+		}
+		
 		return permissions.contains(permission);
 	}
 
