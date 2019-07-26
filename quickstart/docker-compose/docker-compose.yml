@@ -32,7 +32,7 @@ services:
       - ./identity-server-appsettings.json:/app/appsettings.json
     depends_on:
       - as3-quickstart-postgresql
-    command: sh -c './wait-for.sh as3-quickstart-postgresql:5432 -- '
+    command: sh -c './wait-for.sh dokuti-postgresql-quickstart:5432 -- '
   dokuti-a3s-quickstart:
     networks:
       - dokuti-quickstart
@@ -45,8 +45,7 @@ services:
     depends_on:
       - as3-quickstart-postgresql
       - a3s-quickstart-identity_server
-    command: sh -c './wait-for.sh as3-quickstart-postgre:5432 -- '
+    command: sh -c './wait-for.sh dokuti-postgresql-quickstart:5432 -- '
     
 networks:
   dokuti-quickstart:
-  
