@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/dokuti
+    url: jdbc:postgresql://127.0.0.1:5488/dokuti
     initialization-mode: always
     username: "postgres"
     password: "postgres"

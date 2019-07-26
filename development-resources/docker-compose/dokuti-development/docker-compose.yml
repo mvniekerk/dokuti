@@ -7,7 +7,7 @@ services:
     restart: always
     ports:
       # Use a non standard port mapping to avoid potential collisions with other Postgres instances running on the host.
-      - '5432:5432'
+      - '5488:5432'
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
