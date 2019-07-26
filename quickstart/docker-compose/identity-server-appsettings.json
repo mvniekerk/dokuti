@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "host=dokuti-postgresql-quickstart;port=5432;userid=postgres;password=postgres;database=identity_server"
+  }
+}

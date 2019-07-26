@@ -1,13 +1,13 @@
 version: '3'
 services:
-  web:
+  dokuti-quickstart:
     build: ../../
     ports:
      - "8181:8080"
     volumes:
       - ./sample-application.yaml:/config/application.yaml
       - ./files:/tmp/dokuti-local-uploads
-  postgresql:
+  dokuti-postgresql-quickstart:
     image: "bitnami/postgresql:10.7.0"
     ports:
       - '5432:5432'
@@ -17,14 +17,34 @@ services:
     ## To persist database
     # volumes:
     #   - 'postgresql_data:/bitnami'
-  keycloak:
-    image: "jboss/keycloak:4.7.0.Final"
+  dokuti-identity-server-quickstart:
+    networks:
+      - dokuti-quickstart
+    image: "baobab/identityserver"
+    restart: always
     ports:
-     - "9191:8080"
+      - 8080:80
     environment:
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
-      KEYCLOAK_IMPORT: "/tmp/dokuti-realm.json"
+      - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - ./dokuti-realm.json:/tmp/dokuti-realm.json
-
+      - ./identity-server-appsettings.json:/app/appsettings.json
+    depends_on:
+      - as3-quickstart-postgresql
+    command: sh -c './wait-for.sh as3-quickstart-postgresql:5432 -- '
+  dokuti-a3s-quickstart:
+    networks:
+      - a3s-quickstart
+    image: "baobab/a3s"
+    restart: always
+    ports:
+      - 8081:80
+    volumes:
+      - ./a3s-appsettings.json:/app/appsettings.json
+    depends_on:
+      - as3-quickstart-postgresql
+      - a3s-quickstart-identity_server
+    command: sh -c './wait-for.sh as3-quickstart-postgre:5432 -- '
+    
+networks:
+  dokuti-quickstart:
+  
