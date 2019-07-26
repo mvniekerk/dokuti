@@ -1,6 +1,8 @@
 version: '3'
 services:
-  dokuti-postgresql:
+  dokuti-development-postgresql:
+    networks:
+      - dokuti-development
     image: "postgres:10.7-alpine"
     restart: always
     ports:
@@ -10,3 +12,6 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=dokuti
+      
+networks:
+  dokuti-development:
