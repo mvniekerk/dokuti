@@ -17,5 +17,4 @@ public class AccessTokenPermissionsServiceImpl implements AccessTokenPermissions
 		
 		return permissions.contains(permission);
 	}
-
 }
