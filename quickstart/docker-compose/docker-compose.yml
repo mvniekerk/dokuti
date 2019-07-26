@@ -22,7 +22,7 @@ services:
   dokuti-identity-server-quickstart:
     networks:
       - dokuti-quickstart
-    image: "baobab/identityserver"
+    image: "gbl-baobab-docker-virtual.jfrog.io/identityserver"
     restart: always
     ports:
       - 8080:80
@@ -36,7 +36,7 @@ services:
   dokuti-a3s-quickstart:
     networks:
       - dokuti-quickstart
-    image: "baobab/a3s"
+    image: "gbl-baobab-docker-virtual.jfrog.io/a3s"
     restart: always
     ports:
       - 8081:80
