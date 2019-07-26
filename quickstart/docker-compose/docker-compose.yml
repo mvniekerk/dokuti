@@ -8,6 +8,8 @@ services:
       - ./sample-application.yaml:/config/application.yaml
       - ./files:/tmp/dokuti-local-uploads
   dokuti-postgresql-quickstart:
+    networks:
+      - dokuti-quickstart
     image: "bitnami/postgresql:10.7.0"
     ports:
       - '5432:5432'
@@ -33,7 +35,7 @@ services:
     command: sh -c './wait-for.sh as3-quickstart-postgresql:5432 -- '
   dokuti-a3s-quickstart:
     networks:
-      - a3s-quickstart
+      - dokuti-quickstart
     image: "baobab/a3s"
     restart: always
     ports:
