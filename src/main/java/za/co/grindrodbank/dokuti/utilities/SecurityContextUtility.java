@@ -132,8 +132,21 @@ public class SecurityContextUtility {
 			} catch(ClassCastException e) {
 				LOGGER.warn("Could not cast the permission into a list, assuming a single string value. Attempting to create the list from this value.");
 				List<String> permissions = new ArrayList<String>();
-				permissions.add((String) claims.get("permission"));
-				return permissions;
+				
+				try {
+					String permission = (String) claims.get("permission");
+				
+					if(permission == null) {
+						return null;
+					}
+				
+					permissions.add(permission);
+				
+					return permissions;
+				} catch (Exception a) {
+					LOGGER.error("Exception extracting permission string from JWT token. Exception message: {}", e.getMessage());
+					return null;
+				}
 			}
 			
 		}
