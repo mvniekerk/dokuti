@@ -39,7 +39,7 @@ rest:
 security:
   oauth2:
     resource:
-      id: api1
+      id: dokuti
       tokenInfoUri: ${rest.security.issuerUri}/connect/introspect
       userInfoUri: ${rest.security.issuerUri}/connect/userinfo
       jwt:
@@ -57,4 +57,3 @@ logging:
   level:
     root: INFO
     za.co.grindrodbank.dokuti: DEBUG
-    org.springframework.security: DEBUG
