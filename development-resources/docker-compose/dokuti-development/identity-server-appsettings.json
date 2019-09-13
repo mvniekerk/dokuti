@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "host=dokuti-postgresql-quickstart;port=5432;userid=postgres;password=postgres;database=identity_server"
+    "DefaultConnection": "host=dokuti-development-postgresql;port=5432;userid=postgres;password=postgres;database=identity_server"
   },
   "Logging": {
       "LogLevel": {

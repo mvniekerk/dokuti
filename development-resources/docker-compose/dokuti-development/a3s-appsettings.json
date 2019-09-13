@@ -1,0 +1,12 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "IdentityServerConnection": "host=dokuti-development-postgresql;port=5432;userid=postgres;password=postgres;database=identity_server",
+    "A3SConnection": "host=dokuti-development-postgresql;port=5432;userid=postgres;password=postgres;database=a3s"
+  }
+}
