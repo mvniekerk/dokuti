@@ -1,0 +1,118 @@
+applications:
+    # This value will be used to create the client scope within the Identity Server. Therfore, it cannot contain any spaces, and should follow a fully smaller case convention.
+    # Perhaps we should add an explicit attribute to an application to model it's 'client-scope', making it independent from the name.
+  - fullname: dokuti   
+    applicationFunctions:
+      - name: dokuti.documentMaintenance
+        description: Functionality to maintain documents within Dokuti.
+        permissions:
+          - name: dokuti.documents.read
+            description: View a list of documents or a single document. Enables downloading documents.
+          - name: dokuti.documents.create
+            description: Create a new document. Enables assigning tags, attributes and groups to newly created documents.
+          - name: dokuti.documents.update
+            description: Updates a document. Also enables modifying tags, attributes and groups associated with the document.
+
+      - name: dokuti.attributeMaintenance
+        description: Functionality to maintain attributes within Dokuti.
+        permissions:
+          - name: dokuti.attributes.read
+            description: View list of document attributes. View a single document attribute.
+          - name: dokuti.attributes.create
+            description: Create a new document attribute.
+          - name: dokuti.attributes.delete
+            description: Enables deletion of document attributes.
+          - name: dokuti.attributes.update
+            description: Update a document attribute.
+
+clients:
+  - clientId: dokuti-test-client
+    name: "Dokuti Test client"
+    allowedGrantTypes:
+      - authorization_code
+      - password
+    redirectUris:
+      - "https://www.getpostman.com/oauth2/callback"
+    postLogoutRedirectUris:
+      - "https://www.getpostman.com"
+    allowedCorsOrigins:
+      - "https://www.getpostman.com"
+    allowedScopes:
+      - "openid"
+      - "profile"
+      - "dokuti"
+    clientSecrets:
+      - "secret"
+    allowedOfflineAccess: true
+
+
+defaultConfigurations:
+    # The name here is purely for human readability and separating the default configurations into logical components.
+  - name: Dokuti Default configuration
+    # Section to configure the default state of applications with respect to any business functions that need to be configured.
+    applications:
+        # The name of the application. This must already exist or be defined in the 'applications' section of this document. If not found, it will be ignored.
+      - name: dokuti
+        # Default 'Business' functions that are to be created. Note: These are different from 'applicationFunctions' created in the 'applications' section of this document.
+        functions:
+            # Create a 'super admin' business function that contains all the possible application permissions.
+          - name: "dokuti.SuperAdmin"
+            description: "A function that contains all possible permissions within the dokuti micro-service."
+            permissions:
+              - dokuti.documents.read
+              - dokuti.documents.create
+              - dokuti.documents.update
+              - dokuti.documents.delete
+              - dokuti.attributes.read
+              - dokuti.attributes.create
+              - dokuti.attributes.update
+              - dokuti.attributes.delete
+          - name: "dokuti.documentUser"
+            description: "A function that contains all document related permissions within the dokuti micro-service."
+            permissions:
+              - dokuti.documents.read
+              - dokuti.documents.create
+              - dokuti.documents.update
+              - dokuti.documents.delete
+    # Default Roles to be created. Contains the functions that will be assigned to the Roles.
+    roles:
+      - name: "Dokuti Super Admin"
+        description: An dokuti Role that has all the dokuti functions associated with it.
+        # The server will attempt to assign these 'business' functions to the role. If the function does not exists, it will NOT be created, and will be simply NOT assigned to the Role. 
+        functions:
+          - "dokuti.SuperAdmin"
+      - name: "Dokuti User"
+        description: An dokuti Role for user level access.
+        functions:
+          - "dokuti.documentUser"
+    # Defines a section for declaring new users and mapping roles to them.
+    users:
+      - username: dokuti-admin
+        name: dokuti-admin
+        surname: system user
+        email: dokuti-admin@localhost
+        # Note: Passwords require at least one capital, one number and one non-alpha-numeric character.
+        password: "Password1#"
+        # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.
+        roles:
+          - "Dokuti Super Admin"
+      - username: dokuti-user
+        name: dokuti-user
+        surname: system user
+        email: dokuti-user@localhost
+        # Note: Passwords require at least one capital, one number and one non-alpha-numeric character.
+        password: "Password1#"
+        # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.
+        roles:
+          - "Dokuti User"
+
+    teams:
+      - name: default-dokuti-team
+        description: A simple test default team.
+        users:
+          - dokuti-admin
+          - dokuti-user
+      - name: dokuti-admin-team
+        description: A simple test admin team.
+        users:
+          - dokuti-admin
