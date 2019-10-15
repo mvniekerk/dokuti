@@ -1,16 +1,7 @@
-/**
- * *************************************************
- * Copyright Grindrod Bank Limited 2019, All Rights Reserved.
- * **************************************************
- * NOTICE:  All information contained herein is, and remains
- * the property of Grindrod Bank Limited.
- * The intellectual and technical concepts contained
- * herein are proprietary to Grindrod Bank Limited
- * and are protected by trade secret or copyright law.
- * Use, dissemination or reproduction of this information/material
- * is strictly forbidden unless prior written permission is obtained
- * from Grindrod Bank Limited.
- */
+/****************************************************
+* Copyright (c) 2019, Grindrod Bank Limited
+* License MIT: https://opensource.org/licenses/MIT
+****************************************************/
 package za.co.grindrodbank.dokuti.document;
 
 import java.util.ArrayList;
@@ -238,8 +229,7 @@ public class DocumentControllerImpl implements DocumentsApi {
 
 	@Override
     public ResponseEntity<Document> updateDocumentInfo(UUID documentId, DocumentInfoRequest documentInfoRequest) {
-		DocumentEntity documentEntity = null;
-	    documentEntity = documentService.findById(documentId);
+		DocumentEntity documentEntity = documentService.findById(documentId);
 		if (documentInfoRequest.getName() != null) {
 		   documentEntity.setName(documentInfoRequest.getName());
 		}
