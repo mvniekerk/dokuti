@@ -1084,15 +1084,15 @@
 			"response": []
 		},
 		{
-			"name": "Update Document Name",
+			"name": "Update Document Name and Desc",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"id": "e6c0b18f-384d-46b4-a2aa-208d79f80513",
 						"exec": [
-							"pm.environment.set(\"newDocName\", \"newDocName\"+ _.random(1, 100000) + \".txt\");",
-							""
+							"pm.environment.set(\"newDocName\", \"DocName_\"+ _.random(1, 100000) + \".txt\");",
+							"pm.environment.set(\"newDocDesc\", \"DocDesc_\"+ _.random(1, 100000) );"
 						],
 						"type": "text/javascript"
 					}
@@ -1114,6 +1114,11 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.name).to.eql(pm.environment.get('newDocName'));",
 							"});",
+							"",
+							"pm.test(\"Check the correct document desc is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.description).to.eql(pm.environment.get('newDocDesc'));",
+							"});",
 							""
 						],
 						"type": "text/javascript"
@@ -1131,7 +1136,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\n\t\"name\" : \"{{newDocName}}\"\n}"
+					"raw": "{\n\t\n\t\"name\" : \"{{newDocName}}\",\n\t\"description\" : \"{{newDocDesc}}\"\n}"
 				},
 				"url": {
 					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/info",

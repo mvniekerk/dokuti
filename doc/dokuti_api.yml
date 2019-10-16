@@ -1701,6 +1701,9 @@ components:
         name:
           type: string
           example: new name of the document
+        description:
+          type: string
+          example: new description of the document
     DocumentList:
       type: array
       items:

@@ -233,10 +233,11 @@ public class DocumentControllerImpl implements DocumentsApi {
 		if (documentInfoRequest.getName() != null) {
 		   documentEntity.setName(documentInfoRequest.getName());
 		}
+		if (documentInfoRequest.getDescription() != null) {
+			   documentEntity.setDescription(documentInfoRequest.getDescription());
+			}		
 		documentEntity = documentService.save(documentEntity);
 		Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
 		return new ResponseEntity<>(res, HttpStatus.OK);			
     }	
-	
-
 }
