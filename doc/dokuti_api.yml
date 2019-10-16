@@ -378,6 +378,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/info':
+    put:
+      tags:
+        - Documents
+      summary: Updates general info of the document.
+      description: Replaces the meta info for the given documnetId.
+      operationId: UpdateDocumentInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentInfoRequest'
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+      responses:
+        '200':
+          description: Successful. Document's name updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/documents/{documentId}/download':
     get:
       tags:
@@ -1640,6 +1695,15 @@ components:
           $ref: '#/components/schemas/GroupList'
         attributes:
           $ref: '#/components/schemas/DocumentAttributeList'
+    DocumentInfoRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: new name of the document
+        description:
+          type: string
+          example: new description of the document
     DocumentList:
       type: array
       items:

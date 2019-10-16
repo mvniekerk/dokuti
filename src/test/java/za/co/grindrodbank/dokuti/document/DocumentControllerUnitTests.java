@@ -5,18 +5,23 @@
 package za.co.grindrodbank.dokuti.document;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.openapitools.model.DocumentInfoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import za.co.grindrodbank.dokuti.attribute.AttributeService;
 import za.co.grindrodbank.dokuti.document.DocumentControllerImpl;
@@ -30,7 +35,7 @@ import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataSt
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = DocumentControllerImpl.class)
+@WebMvcTest(controllers = DocumentControllerImpl.class, excludeAutoConfiguration = MockMvcSecurityAutoConfiguration.class)
 public class DocumentControllerUnitTests {
 
 	@Autowired
@@ -59,6 +64,9 @@ public class DocumentControllerUnitTests {
 
 	@MockBean
 	private DatabaseEntityToApiDataTransferObjectMapperServiceImpl databaseEntityToApiDataTranfserObjectMapperServiceImpl;
+	
+    @Autowired
+    protected ObjectMapper objectMapper;
 
 	@Test
 	public void givenDocument_whenGetDocument_thenReturnJsonArray() throws Exception {
@@ -74,7 +82,7 @@ public class DocumentControllerUnitTests {
 		Mockito.when(documentService.findById(documentId)).thenReturn(document);
 
 		mvc.perform(get("/documents/" + documentId).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(401));
+				.andExpect(status().is(200));
 	}
 
 	@Test
@@ -91,7 +99,30 @@ public class DocumentControllerUnitTests {
 		Mockito.when(documentService.findById(documentId)).thenReturn(document);
 
 		mvc.perform(get("/documents/" + documentId).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(401));
+				.andExpect(status().is(200));
 	}
 
+	@Test
+	public void givenDocument_whenPutDocumentInfo_thenReturnUpdatedInfo() throws Exception {
+
+		UUID documentId = UUID.randomUUID();
+
+		DocumentEntity document = new DocumentEntity();
+		document.setId(documentId);
+		document.setContentType("text/plain");
+		document.setDescription("Mocked document description");
+		document.setName("Mocked old document name");
+
+		Mockito.when(documentService.save(document)).thenReturn(document);
+		Mockito.when(documentService.findById(documentId)).thenReturn(document);
+		
+		DocumentInfoRequest documentInfoRequest = new DocumentInfoRequest();
+		documentInfoRequest.setName("Mocked new document name");
+	
+		mvc.perform(put("/documents/" + documentId.toString() + "/info")
+				  .contentType(MediaType.APPLICATION_JSON)
+				  .content(objectMapper.writeValueAsString(documentInfoRequest))
+				  .characterEncoding("utf-8"))
+		          .andExpect(status().is(200));	 
+	}
 }

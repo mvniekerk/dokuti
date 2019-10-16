@@ -14,6 +14,7 @@ import org.openapitools.model.CreateDocumentResponse;
 import org.openapitools.model.Document;
 import org.openapitools.model.DocumentAttribute;
 import org.openapitools.model.DocumentAttributeRequest;
+import org.openapitools.model.DocumentInfoRequest;
 import org.openapitools.model.DocumentTagList;
 import org.openapitools.model.DocumentVersion;
 import org.openapitools.model.Group;
@@ -41,6 +42,7 @@ import za.co.grindrodbank.dokuti.documenttag.DocumentTagService;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
+
 import za.co.grindrodbank.dokuti.group.GroupEntity;
 import za.co.grindrodbank.dokuti.group.GroupService;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
@@ -225,4 +227,17 @@ public class DocumentControllerImpl implements DocumentsApi {
 		return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 	}
 
+	@Override
+    public ResponseEntity<Document> updateDocumentInfo(UUID documentId, DocumentInfoRequest documentInfoRequest) {
+		DocumentEntity documentEntity = documentService.findById(documentId);
+		if (documentInfoRequest.getName() != null) {
+		   documentEntity.setName(documentInfoRequest.getName());
+		}
+		if (documentInfoRequest.getDescription() != null) {
+			   documentEntity.setDescription(documentInfoRequest.getDescription());
+			}		
+		documentEntity = documentService.save(documentEntity);
+		Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
+		return new ResponseEntity<>(res, HttpStatus.OK);			
+    }	
 }

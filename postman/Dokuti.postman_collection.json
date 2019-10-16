@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4f0408f5-4476-4f5e-b40e-e30869263199",
+		"_postman_id": "28562c04-6e6d-4e83-8433-6ce279f95619",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1080,6 +1080,130 @@
 					]
 				},
 				"description": "Deletes a document attribute."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Document Name and Desc",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "e6c0b18f-384d-46b4-a2aa-208d79f80513",
+						"exec": [
+							"pm.environment.set(\"newDocName\", \"DocName_\"+ _.random(1, 100000) + \".txt\");",
+							"pm.environment.set(\"newDocDesc\", \"DocDesc_\"+ _.random(1, 100000) );"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "16e13b98-a6a3-4281-8e0b-0b23bb5dc4e2",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Check the correct document ID is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get('documentId'));",
+							"});",
+							"",
+							"pm.test(\"Check the correct document name is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get('newDocName'));",
+							"});",
+							"",
+							"pm.test(\"Check the correct document desc is returned.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.description).to.eql(pm.environment.get('newDocDesc'));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n\t\"name\" : \"{{newDocName}}\",\n\t\"description\" : \"{{newDocDesc}}\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/info",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{documentId}}",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Document Name for Non-Exist documentId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8805a1b2-a513-4466-92c8-2a15643f4888",
+						"exec": [
+							"pm.environment.set(\"newDocName\", \"newDocName.txt\");",
+							"pm.environment.set(\"wrongdocumentId\", \"ffffffff-ffff-ffff-ffff-ffffffffffff\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2f1f12c-b3bd-4415-aa69-e2d625963ecc",
+						"exec": [
+							"pm.test(\"Response is OK\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n\t\"name\" : \"{{newDocName}}\"\n}"
+				},
+				"url": {
+					"raw": "{{DOKUTI_BASE_URL}}/documents/{{wrongdocumentId}}/info",
+					"host": [
+						"{{DOKUTI_BASE_URL}}"
+					],
+					"path": [
+						"documents",
+						"{{wrongdocumentId}}",
+						"info"
+					]
+				}
 			},
 			"response": []
 		}
