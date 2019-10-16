@@ -89,7 +89,7 @@ public class DocumentControllerImpl implements DocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<List<Document>> getDocuments(Integer page, Integer size, String filterName,
+	public ResponseEntity<List<Document>> getDocuments(Boolean archive, Integer page, Integer size, String filterName,
 			List<String> filterGroupNames, List<String> filterTags, List<String> filterAttributes,
 			List<String> orderBy) {
 		Sort sort = ParseOrderByQueryParam.resolveArgument(orderBy, DEFAULT_SORT_FIELD);
