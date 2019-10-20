@@ -14,7 +14,7 @@ paths:
       description: Returns list of all documents associated with the logged in user
       operationId: getDocuments
       parameters:
-        - name: archive
+        - name: filterArchive
           in: query 
           required: false
           description: Archive document's filter
@@ -413,7 +413,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '401':
-          description: Not authorized to update Documents.
+          description: Not authorized to archive Documents.
           content:
             application/json:
               schema:
