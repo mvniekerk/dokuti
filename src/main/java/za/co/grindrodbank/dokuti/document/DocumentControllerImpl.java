@@ -240,4 +240,24 @@ public class DocumentControllerImpl implements DocumentsApi {
 		Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
 		return new ResponseEntity<>(res, HttpStatus.OK);			
     }	
+	
+    private ResponseEntity<Document> changeAricheveStatus(UUID documentId, Boolean status) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        documentEntity.setIsArchive(status);
+        documentEntity = documentService.save(documentEntity);
+        Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
+        return new ResponseEntity<>(res, HttpStatus.OK);    
+
+    }
+	
+    @Override
+    public ResponseEntity<Document> aricheveDocument(UUID documentId) {
+       return changeAricheveStatus(documentId, true);
+
+    }
+    
+    @Override
+    public ResponseEntity<Document> unaricheveDocument(UUID documentId) {
+        return changeAricheveStatus(documentId, false);
+    }
 }

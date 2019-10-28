@@ -3,25 +3,25 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2-alpha" last-position="0,0" last-zoom="1"
+<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="12"
 	 default-schema="public" default-owner="postgres">
 <database name="dokuti" encoding="UTF8" is-template="false" allow-conns="true">
 	<role name="postgres"/>
 	<tablespace name="pg_default"/>
 </database>
 
-<schema name="public" rect-visible="true" fill-color="#e1e1e1" sql-disabled="true">
+<schema name="public" layer="0" rect-visible="true" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<schema name="_documents" rect-visible="true" fill-color="#3bddec">
+<schema name="_documents" layer="0" rect-visible="true" fill-color="#3bddec">
 	<role name="postgres"/>
 </schema>
 
-<table name="document">
+<table name="document" layer="0" collapse-mode="2" max-obj-count="8">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[All documents]]></comment>
-	<position x="40" y="42"/>
+	<position x="42" y="43"/>
 	<column name="id" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
@@ -43,16 +43,19 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="__updated_by" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
+	<column name="is_archive" not-null="true" default-value="false">
+		<type name="boolean" length="0"/>
+	</column>
 	<constraint name="pk_document" type="pk-constr" table="_documents.document">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
-<table name="document_attribute">
+<table name="document_attribute" layer="0" collapse-mode="2" max-obj-count="7">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[for custom attributes added at run time by users]]></comment>
-	<position x="36" y="246"/>
+	<position x="38" y="247"/>
 	<column name="id" not-null="true">
 		<type name="bigint" length="0"/>
 	</column>
@@ -77,12 +80,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="attribute_label">
+<table name="attribute_label" layer="0" collapse-mode="2" max-obj-count="6">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[eg. Contract Renewal Date, and the validation regex will be dd-mm-yyyy would be:
 ^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$.]]></comment>
-	<position x="45" y="488"/>
+	<position x="47" y="489"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="32767" cache="1">
 		<type name="smallint" length="0"/>
@@ -111,11 +114,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="document_tag">
+<table name="document_tag" layer="0" collapse-mode="2" max-obj-count="2">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[DENORMALISED for performance]]></comment>
-	<position x="481" y="266"/>
+	<position x="483" y="267"/>
 	<column name="document_id">
 		<type name="uuid" length="0"/>
 	</column>
@@ -132,10 +135,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		</idxelement>
 </index>
 
-<table name="document_status">
+<table name="document_status" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="422" y="453"/>
+	<position x="424" y="454"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -161,11 +164,11 @@ Suggest using a databasetype for this]]></comment>
 	<role name="postgres"/>
 </sequence>
 
-<table name="document_version">
+<table name="document_version" layer="0" collapse-mode="2" max-obj-count="7">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[this table holds the various instance meta-data of a particular document]]></comment>
-	<position x="841" y="395"/>
+	<position x="843" y="396"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -200,10 +203,10 @@ Suggest using a databasetype for this]]></comment>
 	<role name="postgres"/>
 </sequence>
 
-<table name="document_acl">
+<table name="document_acl" layer="0" collapse-mode="2" max-obj-count="8">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="384" y="22"/>
+	<position x="386" y="23"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -246,10 +249,10 @@ the group_uuid as stored in the _documents schema]]></comment>
 	<role name="postgres"/>
 </sequence>
 
-<table name="document_version_parts">
+<table name="document_version_parts" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="1228" y="399"/>
+	<position x="1230" y="400"/>
 	<column name="document_version_id" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
@@ -269,11 +272,11 @@ the group_uuid as stored in the _documents schema]]></comment>
 	</constraint>
 </table>
 
-<table name="document_group">
+<table name="document_group" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[group of users to which acl rights may be asigned]]></comment>
-	<position x="761" y="34"/>
+	<position x="763" y="35"/>
 	<column name="id" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
@@ -291,10 +294,10 @@ the group_uuid as stored in the _documents schema]]></comment>
 	</constraint>
 </table>
 
-<table name="document_group_user">
+<table name="document_group_user" layer="0" collapse-mode="2" max-obj-count="6">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="887" y="188"/>
+	<position x="889" y="189"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -366,48 +369,48 @@ the group_uuid as stored in the _documents schema]]></comment>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<relationship name="rel_document_attribute_document" type="relfk"
+<relationship name="rel_document_attribute_document" type="relfk" layer="0"
 	 custom-color="#dc8529"
 	 src-table="_documents.document_attribute"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_tag_document" type="relfk"
+<relationship name="rel_document_tag_document" type="relfk" layer="0"
 	 custom-color="#c04536"
 	 src-table="_documents.document_tag"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_status_document" type="relfk"
+<relationship name="rel_document_status_document" type="relfk" layer="0"
 	 custom-color="#65a6d7"
 	 src-table="_documents.document_status"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_version_document" type="relfk"
+<relationship name="rel_document_version_document" type="relfk" layer="0"
 	 custom-color="#d63c2c"
 	 src-table="_documents.document_version"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_share_acl_document" type="relfk"
+<relationship name="rel_document_share_acl_document" type="relfk" layer="0"
 	 custom-color="#39ee8c"
 	 src-table="_documents.document_acl"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_version_parts_document_version" type="relfk"
+<relationship name="rel_document_version_parts_document_version" type="relfk" layer="0"
 	 custom-color="#892d82"
 	 src-table="_documents.document_version_parts"
 	 dst-table="_documents.document_version" reference-fk="fk_document_version_version.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_usergroup_user_document_usergroup" type="relfk"
+<relationship name="rel_document_usergroup_user_document_usergroup" type="relfk" layer="0"
 	 src-table="_documents.document_group_user"
 	 dst-table="_documents.document_group" reference-fk="fk_usergroup.id"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_document_attribute_attribute" type="relfk"
+<relationship name="rel_document_attribute_attribute" type="relfk" layer="0"
 	 src-table="_documents.document_attribute"
 	 dst-table="_documents.attribute_label" reference-fk="fk_attribute.id"
 	 src-required="false" dst-required="false"/>

@@ -54,6 +54,10 @@ public class DocumentEntity {
 	@Type(type = "org.hibernate.type.TextType")
 	@NotNull
 	private String description;
+	
+	@NotNull
+	@Column(name = "is_archive", nullable = false)
+	private Boolean isArchive = false;
 
 	@Type(type = "org.hibernate.type.TextType")
 	@Column(name = "content_type", nullable = false)
@@ -174,7 +178,15 @@ public class DocumentEntity {
 		this.documentPermissions = documentPermissions;
 	}
 
-	public DocumentVersionEntity getLatestDocumentVersion() {
+	public Boolean getIsArchive() {
+        return isArchive;
+    }
+
+    public void setIsArchive(Boolean isArchive) {
+        this.isArchive = isArchive;
+    }
+
+    public DocumentVersionEntity getLatestDocumentVersion() {
 		Optional<DocumentVersionEntity> optionalLatestDocumentVersion = this.getDocumentVersions().stream().findFirst();
 
 		if (optionalLatestDocumentVersion.isPresent()) {
@@ -277,6 +289,7 @@ public class DocumentEntity {
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((isArchive == null) ? 0 : isArchive.hashCode());
 		return result;
 	}
 
@@ -309,7 +322,19 @@ public class DocumentEntity {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+        if (isArchive == null) {
+            if (other.isArchive != null)
+                return false;
+        } else if (!isArchive.equals(other.isArchive))
+            return false;			
 		return true;
 	}
 
+    @Override
+    public String toString() {
+        return "DocumentEntity [id=" + id + ", name=" + name + ", description=" + description + ", isArchive=" + isArchive + ", contentType=" + contentType + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy + "]";
+    }
+
+	
+	
 }

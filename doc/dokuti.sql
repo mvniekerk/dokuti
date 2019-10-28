@@ -1,15 +1,15 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler  version: 0.9.2-alpha
--- PostgreSQL version: 10.0
+-- pgModeler  version: 0.9.2-beta
+-- PostgreSQL version: 11.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 
 
 -- Database creation must be done outside a multicommand file.
 -- These commands were put in this file only as a convenience.
--- -- object: "dokuti" | type: DATABASE --
--- -- DROP DATABASE IF EXISTS "dokuti";
--- CREATE DATABASE "dokuti"
+-- -- object: dokuti | type: DATABASE --
+-- -- DROP DATABASE IF EXISTS dokuti;
+-- CREATE DATABASE dokuti
 -- 	ENCODING = 'UTF8'
 -- 	TABLESPACE = pg_default
 -- 	OWNER = postgres;
@@ -28,13 +28,14 @@ SET search_path TO pg_catalog,public,_documents;
 
 -- object: _documents.document | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document CASCADE;
-CREATE TABLE _documents.document(
+CREATE TABLE _documents.document (
 	id uuid NOT NULL,
 	name text NOT NULL,
 	description text,
 	content_type text,
 	__updated_on timestamp NOT NULL,
 	__updated_by uuid NOT NULL,
+	is_archive boolean NOT NULL DEFAULT false,
 	CONSTRAINT pk_document PRIMARY KEY (id)
 
 );
@@ -52,7 +53,7 @@ ALTER TABLE _documents.document OWNER TO postgres;
 
 -- object: _documents.document_attribute | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_attribute CASCADE;
-CREATE TABLE _documents.document_attribute(
+CREATE TABLE _documents.document_attribute (
 	id bigint NOT NULL,
 	document_id uuid,
 	attribute_value text,
@@ -72,7 +73,7 @@ ALTER TABLE _documents.document_attribute OWNER TO postgres;
 
 -- object: _documents.attribute_label | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.attribute_label CASCADE;
-CREATE TABLE _documents.attribute_label(
+CREATE TABLE _documents.attribute_label (
 	id smallint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 32767 START WITH 1 CACHE 1 ),
 	name text NOT NULL,
 	attribute_validaton text,
@@ -108,7 +109,7 @@ ALTER TABLE _documents.attribute_label OWNER TO postgres;
 -- 
 -- object: _documents.document_tag | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_tag CASCADE;
-CREATE TABLE _documents.document_tag(
+CREATE TABLE _documents.document_tag (
 	document_id uuid,
 	tag text
 );
@@ -129,7 +130,7 @@ CREATE INDEX idx_tag ON _documents.document_tag
 
 -- object: _documents.document_status | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_status CASCADE;
-CREATE TABLE _documents.document_status(
+CREATE TABLE _documents.document_status (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1 ),
 	document_id uuid,
 	updated_on date NOT NULL,
@@ -160,7 +161,7 @@ ALTER TABLE _documents.document_status OWNER TO postgres;
 -- 
 -- object: _documents.document_version | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_version CASCADE;
-CREATE TABLE _documents.document_version(
+CREATE TABLE _documents.document_version (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1 ),
 	document_id uuid,
 	version_id uuid NOT NULL,
@@ -197,7 +198,7 @@ ALTER TABLE _documents.document_version OWNER TO postgres;
 -- 
 -- object: _documents.document_acl | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_acl CASCADE;
-CREATE TABLE _documents.document_acl(
+CREATE TABLE _documents.document_acl (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1 ),
 	document_id uuid NOT NULL,
 	user_uuid uuid NOT NULL,
@@ -251,7 +252,7 @@ ALTER TABLE _documents.document_acl OWNER TO postgres;
 -- 
 -- object: _documents.document_version_parts | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_version_parts CASCADE;
-CREATE TABLE _documents.document_version_parts(
+CREATE TABLE _documents.document_version_parts (
 	document_version_id uuid NOT NULL,
 	sequence smallint NOT NULL,
 	part_uuid uuid NOT NULL,
@@ -269,7 +270,7 @@ ALTER TABLE _documents.document_version_parts OWNER TO postgres;
 
 -- object: _documents.document_group | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_group CASCADE;
-CREATE TABLE _documents.document_group(
+CREATE TABLE _documents.document_group (
 	id uuid NOT NULL,
 	name text NOT NULL,
 	__updated_on timestamp NOT NULL,
@@ -285,7 +286,7 @@ ALTER TABLE _documents.document_group OWNER TO postgres;
 
 -- object: _documents.document_group_user | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_group_user CASCADE;
-CREATE TABLE _documents.document_group_user(
+CREATE TABLE _documents.document_group_user (
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1 ),
 	group_uuid uuid NOT NULL,
 	user_uuid uuid,
