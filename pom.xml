@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.3.RELEASE</version>
+		<version>2.1.8.RELEASE</version> <!-- NOTE: if this is upgraded make sure to correct/check on the overidden versions within <dependencyManagement> section of pom -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -167,4 +167,30 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	
+	<!-- 
+		Account for security issues picked up by github 
+		Spring by default pulls in `jackson-databind` version 2.9.9.3
+		
+		CVE-2019-14540 More needs 2.9.10 or later  https://nvd.nist.gov/vuln/detail/CVE-2019-14540
+		CVE-2019-16335 More needs 2.9.10 or later  https://nvd.nist.gov/vuln/detail/CVE-2019-16335
+		
+		Latest maven releases at: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+		Jackson release info. at: https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.9
+	 -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.9.10</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>2.9.10</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
