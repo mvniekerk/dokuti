@@ -54,7 +54,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       # build and push Docker image to dockerhub.
       - run: |
           TAG=0.3.0
