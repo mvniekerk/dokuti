@@ -241,7 +241,7 @@ public class DocumentControllerImpl implements DocumentsApi {
 		return new ResponseEntity<>(res, HttpStatus.OK);			
     }	
 	
-    private ResponseEntity<Document> changeArichiveStatus(UUID documentId, Boolean status) {
+    private ResponseEntity<Document> changeArchiveStatus(UUID documentId, Boolean status) {
         DocumentEntity documentEntity = documentService.findById(documentId);
         documentEntity.setIsArchived(status);
         documentEntity = documentService.save(documentEntity);
@@ -251,13 +251,13 @@ public class DocumentControllerImpl implements DocumentsApi {
     }
 	
     @Override
-    public ResponseEntity<Document> aricheveDocument(UUID documentId) {
-       return changeArichiveStatus(documentId, true);
+    public ResponseEntity<Document> archiveDocument(UUID documentId) {
+       return changeArchiveStatus(documentId, true);
 
     }
     
     @Override
-    public ResponseEntity<Document> unaricheveDocument(UUID documentId) {
-        return changeArichiveStatus(documentId, false);
+    public ResponseEntity<Document> unarchiveDocument(UUID documentId) {
+        return changeArchiveStatus(documentId, false);
     }
 }

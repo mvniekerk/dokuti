@@ -392,7 +392,7 @@ paths:
         - Documents
       summary: Archive a document by ID
       description: Archive a document by ID.
-      operationId: AricheveDocument
+      operationId: ArchiveDocument
       parameters:
         - in: path
           name: documentId
@@ -442,7 +442,7 @@ paths:
         - Documents
       summary: Unarchive a document by ID
       description: Unarchive a document by ID.
-      operationId: UnaricheveDocument
+      operationId: UnarchiveDocument
       parameters:
         - in: path
           name: documentId
