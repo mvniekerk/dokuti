@@ -20,7 +20,6 @@ import za.co.grindrodbank.dokuti.exceptions.ChecksumFailedException;
 import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
-import za.co.grindrodbank.dokuti.group.GroupEntity;
 
 public interface DocumentService {
 
@@ -130,14 +129,12 @@ public interface DocumentService {
 	 * @param attributeNames   A list of assigned attribute names the documents will
 	 *                         be filtered by. All the attributes need to be
 	 *                         assigned to the document (And operator).
-	 * @param filterGroupNames A list of groups names the documents will be filtered
-	 *                         by. The document needs to be in all the groups to
-	 *                         match the criteria (And operator).
+
 	 * @return A Pageable list of documents that match all the supplied filters.
 	 * @throws DatabaseLayerException
 	 */
 	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, List<String> tags,
-			List<String> attributeNames, List<String> filterGroupNames);
+			List<String> attributeNames);
 
 	/**
 	 * Adds an attribute association to a document with a value.
@@ -160,31 +157,6 @@ public interface DocumentService {
 	 */
 	public void removeDocumentAttribute(DocumentEntity document, AttributeEntity attribute)
 			throws DatabaseLayerException;
-
-	/**
-	 * Associates a document with a given group.
-	 * 
-	 * @param document The document to associate with the group.
-	 * @param group    The group to associate with the document.
-	 * @return An instance of updated document.
-	 * @throws DatabaseLayerException
-	 * @throws NotAuthorisedException
-	 */
-	public DocumentEntity addDocumentToGroup(DocumentEntity document, GroupEntity group)
-			throws DatabaseLayerException, NotAuthorisedException;
-
-	/**
-	 * Removes a document group association.
-	 * 
-	 * @param document The document to remove from the association.
-	 * @param group    The group to remove from the association.
-	 * @return An instance of the updated document.
-	 * @throws ResourceNotFoundException
-	 * @throws DatabaseLayerException
-	 * @throws NotAuthorisedException
-	 */
-	public DocumentEntity removeDocumentFromGroup(DocumentEntity document, GroupEntity group)
-			throws ResourceNotFoundException, DatabaseLayerException, NotAuthorisedException;
 
 	public void removeAllDocumentTags(DocumentEntity document);
 }

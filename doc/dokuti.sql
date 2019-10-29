@@ -268,41 +268,6 @@ COMMENT ON COLUMN _documents.document_version_parts.checksum IS 'an MD5 digest t
 ALTER TABLE _documents.document_version_parts OWNER TO postgres;
 -- ddl-end --
 
--- object: _documents.document_group | type: TABLE --
--- DROP TABLE IF EXISTS _documents.document_group CASCADE;
-CREATE TABLE _documents.document_group (
-	id uuid NOT NULL,
-	name text NOT NULL,
-	__updated_on timestamp NOT NULL,
-	__updated_by uuid NOT NULL,
-	CONSTRAINT document_usergroup_pk PRIMARY KEY (id)
-
-);
--- ddl-end --
-COMMENT ON TABLE _documents.document_group IS 'group of users to which acl rights may be asigned';
--- ddl-end --
-ALTER TABLE _documents.document_group OWNER TO postgres;
--- ddl-end --
-
--- object: _documents.document_group_user | type: TABLE --
--- DROP TABLE IF EXISTS _documents.document_group_user CASCADE;
-CREATE TABLE _documents.document_group_user (
-	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1 ),
-	group_uuid uuid NOT NULL,
-	user_uuid uuid,
-	__updated_by uuid NOT NULL,
-	__updated_on timestamp NOT NULL,
-	CONSTRAINT document_group_user_pk PRIMARY KEY (id)
-
-);
--- ddl-end --
-COMMENT ON COLUMN _documents.document_group_user.user_uuid IS 'the user uuid as stored in Keycloak (or other identity storage)';
--- ddl-end --
-COMMENT ON COLUMN _documents.document_group_user.__updated_by IS 'uuid of the user who granted these acl rights';
--- ddl-end --
-ALTER TABLE _documents.document_group_user OWNER TO postgres;
--- ddl-end --
-
 -- object: "fk_document.id" | type: CONSTRAINT --
 -- ALTER TABLE _documents.document_attribute DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
 ALTER TABLE _documents.document_attribute ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
@@ -349,13 +314,6 @@ ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ALTER TABLE _documents.document_version_parts DROP CONSTRAINT IF EXISTS "fk_document_version_version.id" CASCADE;
 ALTER TABLE _documents.document_version_parts ADD CONSTRAINT "fk_document_version_version.id" FOREIGN KEY (document_version_id)
 REFERENCES _documents.document_version (version_id) MATCH FULL
-ON DELETE NO ACTION ON UPDATE NO ACTION;
--- ddl-end --
-
--- object: "fk_usergroup.id" | type: CONSTRAINT --
--- ALTER TABLE _documents.document_group_user DROP CONSTRAINT IF EXISTS "fk_usergroup.id" CASCADE;
-ALTER TABLE _documents.document_group_user ADD CONSTRAINT "fk_usergroup.id" FOREIGN KEY (group_uuid)
-REFERENCES _documents.document_group (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 

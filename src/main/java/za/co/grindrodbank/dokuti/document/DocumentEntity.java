@@ -18,9 +18,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -35,7 +32,6 @@ import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
-import za.co.grindrodbank.dokuti.group.GroupEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 
 @Entity
@@ -73,11 +69,6 @@ public class DocumentEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
 	@OrderBy("__uploaded_on desc")
 	private Set<DocumentVersionEntity> documentVersions;
-
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "document_document_group", joinColumns = {
-			@JoinColumn(name = "document_id") }, inverseJoinColumns = { @JoinColumn(name = "document_group_id") })
-	private Set<GroupEntity> groups;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document", cascade = CascadeType.ALL)
 	@OrderBy("tag")
@@ -152,14 +143,6 @@ public class DocumentEntity {
 
 	public void setDocumentVersions(Set<DocumentVersionEntity> documentVersions) {
 		this.documentVersions = documentVersions;
-	}
-
-	public Set<GroupEntity> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(Set<GroupEntity> groups) {
-		this.groups = groups;
 	}
 
 	public List<DocumentAttributeEntity> getDocumentAttributes() {

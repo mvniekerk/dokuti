@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -36,7 +35,6 @@ import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
 import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
-import za.co.grindrodbank.dokuti.group.GroupEntity;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.StorageFileNotFoundException;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
@@ -213,7 +211,7 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, List<String> tags,
-			List<String> attributeNames, List<String> filterGroupNames) {
+			List<String> attributeNames) {
 		// The documents list must only contain documents where the accessing user has a
 		// read permission. Make consideration for potential filter name here too.
 		Specification<DocumentEntity> specification = Specification
@@ -232,13 +230,6 @@ public class DocumentServiceImpl implements DocumentService {
 		for (int i = 0; i < attributeNames.size(); i++) {
 			specification = Specification.where(DocumentEntitySpecifications
 					.documentEntitiesWithAttributeName(attributeNames.get(i)).and(specification));
-		}
-
-		// Only find documents that are within groups with names contained within the
-		// filterGroupsNames array.
-		for (int i = 0; i < filterGroupNames.size(); i++) {
-			specification = Specification.where(DocumentEntitySpecifications
-					.documentEntitiesInGroupWithName(filterGroupNames.get(i)).and(specification));
 		}
 
 		try {
@@ -327,47 +318,4 @@ public class DocumentServiceImpl implements DocumentService {
 			throw new DatabaseLayerException("Error saving document after assinging document ACL permissions.", e);
 		}
 	}
-
-	public DocumentEntity addDocumentToGroup(DocumentEntity document, GroupEntity group)
-			throws DatabaseLayerException, NotAuthorisedException {
-		// check if the accessing user has write permissions on the document, as this is
-		// required to assign it to a group.
-		if (!resourcePermissions.accessingUserCanWriteDocument(document)) {
-			logger.warn("Accessing user {} does not have permissions to assign document {} to group {}",
-					SecurityContextUtility.getUserIdFromJwt(), document.getId(), group.getId());
-			throw new NotAuthorisedException("Accessing user does not have permissions to assign document to group",
-					null);
-		}
-
-		Set<GroupEntity> documentGroups = document.getGroups();
-		documentGroups.add(group);
-		document.setGroups(documentGroups);
-
-		return this.save(document);
-	}
-
-	public DocumentEntity removeDocumentFromGroup(DocumentEntity document, GroupEntity group)
-			throws ResourceNotFoundException, DatabaseLayerException, NotAuthorisedException {
-		// check if the accessing user has write permissions on the document, as this is
-		// required to assign it to a group.
-		if (!resourcePermissions.accessingUserCanWriteDocument(document)) {
-			logger.warn("Accessing user {} does not have permissions to remove document {} from group {}",
-					SecurityContextUtility.getUserIdFromJwt(), document.getId(), group.getId());
-			throw new NotAuthorisedException("Accessing user does not have permissions to remove document from group",
-					null);
-		}
-
-		Set<GroupEntity> documentGroups = document.getGroups();
-
-		if (!documentGroups.contains(group)) {
-			throw new ResourceNotFoundException("Document Group Assignment not found. Document ID: " + document.getId()
-					+ " GroupId: " + group.getId(), null);
-		}
-
-		documentGroups.remove(group);
-		document.setGroups(documentGroups);
-
-		return this.save(document);
-	}
-
 }

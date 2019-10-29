@@ -38,7 +38,6 @@ import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.document.DocumentService;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagService;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
-import za.co.grindrodbank.dokuti.group.GroupService;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperServiceImpl;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
@@ -65,9 +64,6 @@ public class DocumentControllerUnitTests {
 
 	@MockBean
 	private ResourcePermissionsService resourcePermission;
-
-	@MockBean
-	private GroupService groupService;
 
 	@MockBean
 	private AttributeService attributeService;
@@ -157,7 +153,6 @@ public class DocumentControllerUnitTests {
         document.setIsArchived(false);
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
-        document.setGroups(new HashSet<>());
         document.setDocumentPermissions(new ArrayList<>());
         document.setDocumentAttributes(new ArrayList<>());
 
@@ -185,7 +180,6 @@ public class DocumentControllerUnitTests {
         document.setIsArchived(true);
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
-        document.setGroups(new HashSet<>());
         document.setDocumentPermissions(new ArrayList<>());
         document.setDocumentAttributes(new ArrayList<>());
 
