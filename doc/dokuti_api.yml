@@ -1793,9 +1793,9 @@ components:
         description:
           type: string
           example: A test description for the file.
-        isArchive:
+        isArchived:
           type: boolean
-          example: true         
+          example: false         
         contentType:
           type: string
           example: text/plain

@@ -35,7 +35,7 @@ CREATE TABLE _documents.document (
 	content_type text,
 	__updated_on timestamp NOT NULL,
 	__updated_by uuid NOT NULL,
-	is_archive boolean NOT NULL DEFAULT false,
+	is_archived boolean NOT NULL DEFAULT false,
 	CONSTRAINT pk_document PRIMARY KEY (id)
 
 );

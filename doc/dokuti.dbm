@@ -43,7 +43,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="__updated_by" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
-	<column name="is_archive" not-null="true" default-value="false">
+	<column name="is_archived" not-null="true" default-value="false">
 		<type name="boolean" length="0"/>
 	</column>
 	<constraint name="pk_document" type="pk-constr" table="_documents.document">

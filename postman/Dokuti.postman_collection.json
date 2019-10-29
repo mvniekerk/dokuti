@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d5775f50-bd56-450b-8381-918a76dd1b55",
+		"_postman_id": "89d67714-768b-40fc-9b1f-1249f3c5a459",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1193,9 +1193,9 @@
 							"",
 							"pm.test(\"Set document ID environment variable.\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData).to.have.property('isArchive');",
+							"    pm.expect(jsonData).to.have.property('isArchived');",
 							"    pm.environment.set(\"documentId\", jsonData.id);",
-							"    pm.expect(jsonData.isArchive).to.eql(true);",
+							"    pm.expect(jsonData.isArchived).to.eql(true);",
 							"});",
 							""
 						],
@@ -1234,9 +1234,9 @@
 							"",
 							"pm.test(\"Set document ID environment variable.\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData).to.have.property('isArchive');",
+							"    pm.expect(jsonData).to.have.property('isArchived');",
 							"    pm.environment.set(\"documentId\", jsonData.id);",
-							"    pm.expect(jsonData.isArchive).to.eql(false);",
+							"    pm.expect(jsonData.isArchived).to.eql(false);",
 							"});"
 						],
 						"type": "text/javascript"

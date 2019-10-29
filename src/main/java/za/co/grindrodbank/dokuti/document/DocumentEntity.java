@@ -56,8 +56,8 @@ public class DocumentEntity {
 	private String description;
 	
 	@NotNull
-	@Column(name = "is_archive", nullable = false)
-	private Boolean isArchive = false;
+	@Column(name = "is_archived", nullable = false)
+	private Boolean isArchived = false;
 
 	@Type(type = "org.hibernate.type.TextType")
 	@Column(name = "content_type", nullable = false)
@@ -178,12 +178,13 @@ public class DocumentEntity {
 		this.documentPermissions = documentPermissions;
 	}
 
-	public Boolean getIsArchive() {
-        return isArchive;
+
+    public Boolean getIsArchived() {
+        return isArchived;
     }
 
-    public void setIsArchive(Boolean isArchive) {
-        this.isArchive = isArchive;
+    public void setIsArchived(Boolean isArchived) {
+        this.isArchived = isArchived;
     }
 
     public DocumentVersionEntity getLatestDocumentVersion() {
@@ -289,7 +290,7 @@ public class DocumentEntity {
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((isArchive == null) ? 0 : isArchive.hashCode());
+		result = prime * result + ((isArchived == null) ? 0 : isArchived.hashCode());
 		return result;
 	}
 
@@ -322,17 +323,17 @@ public class DocumentEntity {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-        if (isArchive == null) {
-            if (other.isArchive != null)
+        if (isArchived == null) {
+            if (other.isArchived != null)
                 return false;
-        } else if (!isArchive.equals(other.isArchive))
+        } else if (!isArchived.equals(other.isArchived))
             return false;			
 		return true;
 	}
 
     @Override
     public String toString() {
-        return "DocumentEntity [id=" + id + ", name=" + name + ", description=" + description + ", isArchive=" + isArchive + ", contentType=" + contentType + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy + "]";
+        return "DocumentEntity [id=" + id + ", name=" + name + ", description=" + description + ", isArchived=" + isArchived + ", contentType=" + contentType + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy + "]";
     }
 
 	

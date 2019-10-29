@@ -147,62 +147,56 @@ public class DocumentControllerUnitTests {
     @Test
 	public void givenDocument_whenDoDocumentArchive_thenReturnArchevedDocumnet() throws Exception {
 
-	        UUID documentId = UUID.randomUUID();
+        UUID documentId = UUID.randomUUID();
 
-	           DocumentEntity document = new DocumentEntity();
-	           document.setId(documentId);
-	           document.setContentType("text/plain");
-	           document.setDescription("Document Desc");
-	           document.setName("Document Name");
-	           document.setIsArchive(false);
-	           document.setDocumentVersions(new HashSet<>());
-	           document.setDocumentTags(new ArrayList<>());
-	           document.setGroups(new HashSet<>());
-	           document.setDocumentPermissions(new ArrayList<>());
-	           document.setDocumentAttributes(new ArrayList<>());
-	        
-	        
-	        Mockito.when(documentService.save(document)).thenReturn(document);
-	        Mockito.when(documentService.findById(documentId)).thenReturn(document);
-	        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(document)).thenCallRealMethod();
-	        
-	        mvc.perform(patch("/documents/" + documentId.toString() + "/archive")
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(false);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setGroups(new HashSet<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+
+        Mockito.when(documentService.save(document)).thenReturn(document);
+        Mockito.when(documentService.findById(documentId)).thenReturn(document);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(document)).thenCallRealMethod();
+
+	    mvc.perform(patch("/documents/" + documentId.toString() + "/archive")
 	                  .contentType(MediaType.APPLICATION_JSON)
 	                  .characterEncoding("utf-8"))
 	                  .andExpect(status().is(200))
-	                  .andExpect(jsonPath("$.isArchive", is(true)));  
+	                  .andExpect(jsonPath("$.isArchived", is(true)));  
 	}
 
     @Test
     public void givenDocument_whenDoDocumentUnArchive_thenReturnUnArchevedDocumnet() throws Exception {
 
-           UUID documentId = UUID.randomUUID();
+        UUID documentId = UUID.randomUUID();
 
-           DocumentEntity document = new DocumentEntity();
-           document.setId(documentId);
-           document.setContentType("text/plain");
-           document.setDescription("Document Desc");
-           document.setName("Document Name");
-           document.setIsArchive(true);
-           document.setDocumentVersions(new HashSet<>());
-           document.setDocumentTags(new ArrayList<>());
-           document.setGroups(new HashSet<>());
-           document.setDocumentPermissions(new ArrayList<>());
-           document.setDocumentAttributes(new ArrayList<>());
-         
-           Mockito.when(documentService.save(document)).thenReturn(document);
-           Mockito.when(documentService.findById(documentId)).thenReturn(document);
-           Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(document)).thenCallRealMethod();
-          
-           
-           mvc.perform(patch("/documents/" + documentId.toString() + "/unarchive")
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(true);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setGroups(new HashSet<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+
+        Mockito.when(documentService.save(document)).thenReturn(document);
+        Mockito.when(documentService.findById(documentId)).thenReturn(document);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(document)).thenCallRealMethod();
+
+        mvc.perform(patch("/documents/" + documentId.toString() + "/unarchive")
                      .contentType(MediaType.APPLICATION_JSON)
                      .characterEncoding("utf-8"))
                      .andExpect(status().is(200))
-                     .andExpect(jsonPath("$.isArchive", is(false)));  
+                     .andExpect(jsonPath("$.isArchived", is(false)));
     }	   
-	   
-   
-	   
-	
 }
