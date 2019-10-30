@@ -7,14 +7,12 @@ package za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectm
 import org.openapitools.model.Attribute;
 import org.openapitools.model.Document;
 import org.openapitools.model.DocumentAttribute;
-import org.openapitools.model.Group;
 import org.openapitools.model.LookupTag;
 import org.springframework.data.domain.Page;
 
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
-import za.co.grindrodbank.dokuti.group.GroupEntity;
 
 public interface DatabaseEntityToApiDataTransferObjectMapperService {
 
@@ -50,10 +48,6 @@ public interface DatabaseEntityToApiDataTransferObjectMapperService {
 	public LookupTag mapDocumentTagEntityToLookupTag(String tag);
 
 	public Page<LookupTag> mapDocumentTagsPageToLookupTagPage(Page<String> tags);
-
-	public Group mapGroupEntityToGroup(GroupEntity entity);
-
-	public Page<Group> mapGroupEntitiesPageToGroupPage(Page<GroupEntity> entities);
 
 	public Attribute mapAttributeEntityToAttribute(AttributeEntity entity);
 

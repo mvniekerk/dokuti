@@ -17,7 +17,6 @@ import org.openapitools.model.DocumentAttributeRequest;
 import org.openapitools.model.DocumentInfoRequest;
 import org.openapitools.model.DocumentTagList;
 import org.openapitools.model.DocumentVersion;
-import org.openapitools.model.Group;
 import org.openapitools.model.LookupTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +42,6 @@ import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
 
-import za.co.grindrodbank.dokuti.group.GroupEntity;
-import za.co.grindrodbank.dokuti.group.GroupService;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
 
@@ -55,8 +52,6 @@ public class DocumentControllerImpl implements DocumentsApi {
 	private DocumentService documentService;
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
-	@Autowired
-	private GroupService groupService;
 	@Autowired
 	private AttributeService attributeService;
 	@Autowired
@@ -90,12 +85,12 @@ public class DocumentControllerImpl implements DocumentsApi {
 
 	@Override
 	public ResponseEntity<List<Document>> getDocuments(Boolean archive, Integer page, Integer size, String filterName,
-			List<String> filterGroupNames, List<String> filterTags, List<String> filterAttributes,
+			 List<String> filterTags, List<String> filterAttributes,
 			List<String> orderBy) {
 		Sort sort = ParseOrderByQueryParam.resolveArgument(orderBy, DEFAULT_SORT_FIELD);
 		final PageRequest pageRequest = PageRequest.of(page, size, sort);
 		Page<DocumentEntity> documentEntities = documentService.findAll(pageRequest, filterName, filterTags,
-				filterAttributes, filterGroupNames);
+				filterAttributes);
 
 		if (documentEntities.hasContent()) {
 			Page<Document> documents = databaseEntityToApiDataTranfserObjectMapperService
@@ -107,26 +102,6 @@ public class DocumentControllerImpl implements DocumentsApi {
 		}
 
 		return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
-	}
-
-	@Override
-	public ResponseEntity<Group> createDocumentGroup(UUID documentId, UUID groupId) {
-		DocumentEntity document = documentService.findById(documentId);
-		GroupEntity groupEntity = groupService.findById(groupId);
-		documentService.addDocumentToGroup(document, groupEntity);
-
-		return new ResponseEntity<>(
-				databaseEntityToApiDataTranfserObjectMapperService.mapGroupEntityToGroup(groupEntity), HttpStatus.OK);
-	}
-
-	@Override
-	public ResponseEntity<Void> deleteDocumentGroup(UUID documentId, UUID groupId) {
-		DocumentEntity documentEntity = documentService.findById(documentId);
-		GroupEntity groupEntity = groupService.findById(groupId);
-		documentService.removeDocumentFromGroup(documentEntity, groupEntity);
-		// Many REST guidelines indicate that it is good practice to return 204 with no
-		// response entity if the record is successfully deleted.
-		return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 	}
 
 	@Override

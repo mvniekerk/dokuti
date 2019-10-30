@@ -1,1 +1,0 @@
-CREATE ALIAS IF NOT EXISTS gen_random_uuid FOR "za.co.grindrodbank.dokuti.utilities.H2CustomFunctions.gen_random_uuid"

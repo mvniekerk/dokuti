@@ -10,7 +10,6 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
-import za.co.grindrodbank.dokuti.group.GroupEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 
 public class DocumentEntitySpecifications {
@@ -92,26 +91,4 @@ public class DocumentEntitySpecifications {
 		};
 	}
 
-	public static Specification<DocumentEntity> documentEntitiesInGroupWithName(String groupName) {
-		return new Specification<DocumentEntity>() {
-			private static final long serialVersionUID = -5735700518728341828L;
-
-			@Override
-			public Predicate toPredicate(Root<DocumentEntity> root, CriteriaQuery<?> query,
-					CriteriaBuilder criteriaBuilder) {
-				// Oddly, when no filterTags data is set, Spring creates a single element array
-				// with "new ArrayList<>()" as its value.
-				// Check for this, as it indicates that the predicate should not be created.
-				if (groupName == null || groupName.isEmpty() || groupName.equals("new ArrayList<>()")) {
-
-					return null;
-				}
-
-				Join<DocumentEntity, GroupEntity> documentGroupsJoin = root.join("groups");
-
-				return criteriaBuilder.equal(documentGroupsJoin.get("name"), groupName);
-
-			}
-		};
-	}
 }

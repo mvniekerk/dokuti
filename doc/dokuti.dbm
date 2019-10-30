@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="12"
+<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="9"
 	 default-schema="public" default-owner="postgres">
 <database name="dokuti" encoding="UTF8" is-template="false" allow-conns="true">
 	<role name="postgres"/>
@@ -216,8 +216,7 @@ Suggest using a databasetype for this]]></comment>
 	</column>
 	<column name="user_uuid" not-null="true">
 		<type name="uuid" length="0"/>
-		<comment><![CDATA[the user_uuid as stored in Keycloak (or other identity storage) or
-the group_uuid as stored in the _documents schema]]></comment>
+		<comment><![CDATA[the user_uuid as stored in Keycloak (or other identity storage) ]]></comment>
 	</column>
 	<column name="permission" not-null="true" default-value="'read'">
 		<type name="text" length="0"/>
@@ -272,55 +271,6 @@ the group_uuid as stored in the _documents schema]]></comment>
 	</constraint>
 </table>
 
-<table name="document_group" layer="0" collapse-mode="2" max-obj-count="4">
-	<schema name="_documents"/>
-	<role name="postgres"/>
-	<comment><![CDATA[group of users to which acl rights may be asigned]]></comment>
-	<position x="763" y="35"/>
-	<column name="id" not-null="true">
-		<type name="uuid" length="0"/>
-	</column>
-	<column name="name" not-null="true">
-		<type name="text" length="0"/>
-	</column>
-	<column name="__updated_on" not-null="true">
-		<type name="timestamp" length="0"/>
-	</column>
-	<column name="__updated_by" not-null="true">
-		<type name="uuid" length="0"/>
-	</column>
-	<constraint name="document_usergroup_pk" type="pk-constr" table="_documents.document_group">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-</table>
-
-<table name="document_group_user" layer="0" collapse-mode="2" max-obj-count="6">
-	<schema name="_documents"/>
-	<role name="postgres"/>
-	<position x="889" y="189"/>
-	<column name="id" not-null="true"
-	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
-		<type name="bigint" length="0"/>
-	</column>
-	<column name="group_uuid" not-null="true">
-		<type name="uuid" length="0"/>
-	</column>
-	<column name="user_uuid">
-		<type name="uuid" length="0"/>
-		<comment><![CDATA[the user uuid as stored in Keycloak (or other identity storage)]]></comment>
-	</column>
-	<column name="__updated_by" not-null="true">
-		<type name="uuid" length="0"/>
-		<comment><![CDATA[uuid of the user who granted these acl rights]]></comment>
-	</column>
-	<column name="__updated_on" not-null="true">
-		<type name="timestamp" length="0"/>
-	</column>
-	<constraint name="document_group_user_pk" type="pk-constr" table="_documents.document_group_user">
-		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-</table>
-
 <constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_attribute">
 	<columns names="document_id" ref-type="src-columns"/>
@@ -363,12 +313,6 @@ the group_uuid as stored in the _documents schema]]></comment>
 	<columns names="version_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_usergroup.id" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document_group" table="_documents.document_group_user">
-	<columns names="group_uuid" ref-type="src-columns"/>
-	<columns names="id" ref-type="dst-columns"/>
-</constraint>
-
 <relationship name="rel_document_attribute_document" type="relfk" layer="0"
 	 custom-color="#dc8529"
 	 src-table="_documents.document_attribute"
@@ -403,11 +347,6 @@ the group_uuid as stored in the _documents schema]]></comment>
 	 custom-color="#892d82"
 	 src-table="_documents.document_version_parts"
 	 dst-table="_documents.document_version" reference-fk="fk_document_version_version.id"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_document_usergroup_user_document_usergroup" type="relfk" layer="0"
-	 src-table="_documents.document_group_user"
-	 dst-table="_documents.document_group" reference-fk="fk_usergroup.id"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_document_attribute_attribute" type="relfk" layer="0"
