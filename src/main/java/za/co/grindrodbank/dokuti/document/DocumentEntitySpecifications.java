@@ -13,6 +13,10 @@ import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 
 public class DocumentEntitySpecifications {
+    
+    private DocumentEntitySpecifications() {
+    }
+    
 	public static Specification<DocumentEntity> documentEntitiesWithName(String name) {
 		return new Specification<DocumentEntity>() {
 			private static final long serialVersionUID = -6512089736136918289L;
@@ -90,5 +94,21 @@ public class DocumentEntitySpecifications {
 			}
 		};
 	}
+	
+    public static Specification<DocumentEntity> documentEntitiesWithArchiveFilter(Boolean filterArchive) {
+        return new Specification<DocumentEntity>() {
+            private static final long serialVersionUID = 621457537006016573L;
 
+            @Override
+            public Predicate toPredicate(Root<DocumentEntity> root, CriteriaQuery<?> query,
+                    CriteriaBuilder criteriaBuilder) {
+                if (Boolean.TRUE.equals(filterArchive) ) {
+                    return criteriaBuilder.equal(root.get("isArchived"), Boolean.TRUE);
+                } 
+
+                return criteriaBuilder.equal(root.get("isArchived"), Boolean.FALSE);
+            }
+        };
+    }	
+	
 }

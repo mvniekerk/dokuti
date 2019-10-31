@@ -129,12 +129,14 @@ public interface DocumentService {
 	 * @param attributeNames   A list of assigned attribute names the documents will
 	 *                         be filtered by. All the attributes need to be
 	 *                         assigned to the document (And operator).
+	 * @param filterArchive    A archive filter that documents will be filtered by.                         
+	 *                         
 
 	 * @return A Pageable list of documents that match all the supplied filters.
 	 * @throws DatabaseLayerException
 	 */
 	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, List<String> tags,
-			List<String> attributeNames);
+			List<String> attributeNames, Boolean filterArchive);
 
 	/**
 	 * Adds an attribute association to a document with a value.
