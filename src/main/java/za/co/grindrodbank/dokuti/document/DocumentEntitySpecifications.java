@@ -13,6 +13,10 @@ import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 
 public class DocumentEntitySpecifications {
+    
+    private DocumentEntitySpecifications() {
+    }
+    
 	public static Specification<DocumentEntity> documentEntitiesWithName(String name) {
 		return new Specification<DocumentEntity>() {
 			private static final long serialVersionUID = -6512089736136918289L;

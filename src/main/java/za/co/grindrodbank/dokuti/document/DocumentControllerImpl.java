@@ -183,9 +183,7 @@ public class DocumentControllerImpl implements DocumentsApi {
 		DocumentEntity documentEntity = documentService.findById(documentId);
 
 		List<String> tags = new ArrayList<>();
-		lookupTag.forEach(lookupTagElement -> {
-			tags.add(lookupTagElement.getTag());
-		});
+		lookupTag.forEach(lookupTagElement -> tags.add(lookupTagElement.getTag()));
 
 		documentTagService.createDocumentTags(tags, documentEntity);
 		DocumentTagList documentTagList = new DocumentTagList();
