@@ -5,6 +5,7 @@
 package za.co.grindrodbank.dokuti.document;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -20,12 +22,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.MockitoAnnotations;
 import org.openapitools.model.DocumentInfoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,7 +56,6 @@ public class DocumentControllerUnitTests {
 
 	@MockBean
 	private DocumentService documentService;
-
 	
     @Mock
     private DocumentRepository documentRepository;
@@ -192,5 +196,39 @@ public class DocumentControllerUnitTests {
                      .characterEncoding("utf-8"))
                      .andExpect(status().is(200))
                      .andExpect(jsonPath("$.isArchived", is(false)));
-    }	   
+    }	  
+    
+    @Test
+    public void givenDocument_whenDoGetDocuments_thenReturnDocumnets() throws Exception {
+
+        UUID documentId = UUID.randomUUID();
+
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(true);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+
+        List<DocumentEntity> list = new ArrayList<>();
+        list.add(document);
+        Page<DocumentEntity> pagedResponse  = new PageImpl<>(list); 
+       
+        Mockito.when(documentService.findAll(any(), any(), any(), any(), any())).thenReturn(pagedResponse);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        
+        
+        mvc.perform(get("/documents/")
+                     .contentType(MediaType.APPLICATION_JSON)
+                     .characterEncoding("utf-8"))
+                     .andExpect(status().is(200))
+                     .andExpect(jsonPath("$", hasSize(1)))
+                     .andExpect(jsonPath("$[0].description", is("Document Desc")));
+    }    
+    
 }

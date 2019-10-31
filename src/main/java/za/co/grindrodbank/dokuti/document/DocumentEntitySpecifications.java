@@ -90,5 +90,21 @@ public class DocumentEntitySpecifications {
 			}
 		};
 	}
+	
+    public static Specification<DocumentEntity> documentEntitiesWithArchiveFilter(Boolean filterArchive) {
+        return new Specification<DocumentEntity>() {
+            private static final long serialVersionUID = 621457537006016573L;
 
+            @Override
+            public Predicate toPredicate(Root<DocumentEntity> root, CriteriaQuery<?> query,
+                    CriteriaBuilder criteriaBuilder) {
+                if (Boolean.TRUE.equals(filterArchive) ) {
+                    return criteriaBuilder.equal(root.get("isArchived"), Boolean.TRUE);
+                } 
+
+                return criteriaBuilder.equal(root.get("isArchived"), Boolean.FALSE);
+            }
+        };
+    }	
+	
 }
