@@ -676,6 +676,753 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "Tag feature",
+			"item": [
+				{
+					"name": "Get Key Session Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "test-user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test-user",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{DOKUTI_CLIENT_SECRET}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
+							"host": [
+								"{{KEYCLOAK_BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"realms",
+								"{{KEYCLOAK-REALM}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete all tags from the document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c31eb20-3c1a-4854-9b06-e21f132f9737",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete all tags from the document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c31eb20-3c1a-4854-9b06-e21f132f9737",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04e2c9af-e042-480c-9dec-876c9100ced2",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Documnet exists without any tags\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('tags');",
+									"    pm.expect(0).to.equal(jsonData.tags.length);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add tags to the document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2aa81c35-597e-485f-be77-5734420db3a1",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"tag\": \"testtag1\"\n  },\n  {\n    \"tag\": \"testtag2\"\n  },\n  {\n    \"tag\": \"testtag3\"\n  },\n  {\n    \"tag\": \"testtag4\"\n  }\n  \n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "684b211c-f14c-496b-a2ba-e8e787b0be12",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Documnet exists without any tags\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('tags');",
+									"    pm.expect(4).to.equal(jsonData.tags.length);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search document by tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "918499e9-2b05-4dcb-9986-7349166a9d7b",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response data is empty\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(1).to.eql(jsonData.length);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterTags=testtag4",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterTags",
+									"value": "testtag4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search document by non-existing tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "84d34059-6180-4495-86f8-964317cf2b93",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response data is empty\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(0).to.eql(jsonData.length);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterTags=dummmmmy_tag",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterTags",
+									"value": "dummmmmy_tag"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search document by two tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "550a8c81-aad9-4156-b527-2a09c423fc6e",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response data is empty\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(1).to.eql(jsonData.length);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterTags=testtag4,testtag2",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterTags",
+									"value": "testtag4,testtag2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search documnet by real and non-real tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4ab46851-501a-4148-897d-6f785f6b9db5",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response data is empty\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(0).to.eql(jsonData.length);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterTags=testtag4,dummmmy",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterTags",
+									"value": "testtag4,dummmmy"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add tags to the document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2aa81c35-597e-485f-be77-5734420db3a1",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"tag\": \"testtag2\"\n  },\n  {\n    \"tag\": \"testtag3\"\n  }\n\n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search documents by common tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86e23dee-8158-4e22-8791-c0e290b159f0",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response data is empty\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(2).to.eql(jsonData.length);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterTags=testtag2,testtag3",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterTags",
+									"value": "testtag2,testtag3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search documents by non-common tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "86e23dee-8158-4e22-8791-c0e290b159f0",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response data is empty\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(1).to.eql(jsonData.length);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterTags=testtag1,testtag3",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterTags",
+									"value": "testtag1,testtag3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add empty tags to the document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2aa81c35-597e-485f-be77-5734420db3a1",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n \n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get document 2 again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6c71e649-0712-4a9c-85f9-34e4974a7397",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Documnet exists without any tags\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('tags');",
+									"    pm.expect(2).to.equal(jsonData.tags.length);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add the same tags to the document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2aa81c35-597e-485f-be77-5734420db3a1",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"tag\": \"testtag2\"\n  },\n  {\n    \"tag\": \"testtag3\"\n  }\n\n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get document 2 again",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6c71e649-0712-4a9c-85f9-34e4974a7397",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Documnet exists without any tags\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('tags');",
+									"    pm.expect(2).to.equal(jsonData.tags.length);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "Basic",
 			"item": [
 				{
