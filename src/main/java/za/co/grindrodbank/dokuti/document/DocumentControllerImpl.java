@@ -190,7 +190,7 @@ public class DocumentControllerImpl implements DocumentsApi {
 		documentTagList.setDocumentId(documentId);
 		documentTagList.setTags(lookupTag);
 
-		return new ResponseEntity<>(documentTagList, HttpStatus.OK);
+		return new ResponseEntity<>(documentTagList, HttpStatus.CREATED);
 	}
 
 	@Override

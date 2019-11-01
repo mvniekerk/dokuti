@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
+import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,7 +67,11 @@ public class DocumentTagServiceImpl implements DocumentTagService {
 	 * @param document The document to create the tags for.
 	 */
 	public void createDocumentTags(List<String> tags, DocumentEntity document) {
-		tags.forEach(tag -> {
+	    if (tags.isEmpty()) {
+	        throw new InvalidRequestException("Empty tags array provided for document.", null);
+	    }
+
+	    tags.forEach(tag -> {
 			DocumentTagEntity documentTag = new DocumentTagEntity();
 			DocumentTagId documentTagId = new DocumentTagId();
 			documentTagId.setDocumentId(document.getId());
