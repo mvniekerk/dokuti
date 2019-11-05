@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.openapitools.api.ApiUtil;
 import org.openapitools.api.DocumentsApi;
 import org.openapitools.model.CreateDocumentResponse;
 import org.openapitools.model.Document;
@@ -41,7 +42,7 @@ import za.co.grindrodbank.dokuti.documenttag.DocumentTagService;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
-
+import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
 
@@ -84,12 +85,12 @@ public class DocumentControllerImpl implements DocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<List<Document>> getDocuments(Boolean filterArchive, Integer page, Integer size, String filterName,
+	public ResponseEntity<List<Document>> getDocuments(Boolean filterArchive, Integer page, Integer size, String filterName, String filterFavouriteUser,
 			 List<String> filterTags, List<String> filterAttributes,
 			List<String> orderBy) {
 		Sort sort = ParseOrderByQueryParam.resolveArgument(orderBy, DEFAULT_SORT_FIELD);
 		final PageRequest pageRequest = PageRequest.of(page, size, sort);
-		Page<DocumentEntity> documentEntities = documentService.findAll(pageRequest, filterName, filterTags,
+		Page<DocumentEntity> documentEntities = documentService.findAll(pageRequest, filterName, filterFavouriteUser, filterTags,
 				filterAttributes, filterArchive);
 
 		if (documentEntities.hasContent()) {
@@ -233,4 +234,45 @@ public class DocumentControllerImpl implements DocumentsApi {
     public ResponseEntity<Document> unarchiveDocument(UUID documentId) {
         return changeArchiveStatus(documentId, false);
     }
+    
+    
+    @Override
+    public ResponseEntity<Document> favouriteDocument(UUID documentId,UUID userId) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
+        documentFavouriteEntity.setDocument(documentEntity);
+        documentFavouriteEntity.setUserId(userId);
+        
+        List<DocumentFavouriteEntity> favouriteList = documentEntity.getDocumentFavourites();
+        if (favouriteList == null) {
+            favouriteList = new ArrayList<>();
+            documentEntity.setDocumentFavourites(favouriteList);
+        }
+        if (!favouriteList.contains(documentFavouriteEntity)) {
+            favouriteList.add(documentFavouriteEntity);
+            documentEntity = documentService.save(documentEntity);
+        }
+        Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
+        return new ResponseEntity<>(res, HttpStatus.OK);            
+    }    
+    
+    @Override
+    public ResponseEntity<Document> unFavouriteDocument(UUID documentId,UUID userId) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
+        documentFavouriteEntity.setDocument(documentEntity);
+        documentFavouriteEntity.setUserId(userId);
+        
+        List<DocumentFavouriteEntity> favouriteList = documentEntity.getDocumentFavourites();
+        if (favouriteList == null) {
+            favouriteList = new ArrayList<>();
+            documentEntity.setDocumentFavourites(favouriteList);
+        }
+        favouriteList.remove(documentFavouriteEntity);
+     
+        documentEntity = documentService.save(documentEntity);
+        Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
+        return new ResponseEntity<>(res, HttpStatus.OK);            
+    }       
+    
 }

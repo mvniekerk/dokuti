@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="9"
+<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="10"
 	 default-schema="public" default-owner="postgres">
 <database name="dokuti" encoding="UTF8" is-template="false" allow-conns="true">
 	<role name="postgres"/>
@@ -271,6 +271,25 @@ Suggest using a databasetype for this]]></comment>
 	</constraint>
 </table>
 
+<table name="document_favourite" layer="0" collapse-mode="2" max-obj-count="3">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<position x="888" y="111"/>
+	<column name="user_uuid" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="document_id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="id" not-null="true"
+	 identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<constraint name="document_favourite_pk" type="pk-constr" table="_documents.document_favourite">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
 <constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_attribute">
 	<columns names="document_id" ref-type="src-columns"/>
@@ -313,6 +332,12 @@ Suggest using a databasetype for this]]></comment>
 	<columns names="version_id" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_favourite">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
 <relationship name="rel_document_attribute_document" type="relfk" layer="0"
 	 custom-color="#dc8529"
 	 src-table="_documents.document_attribute"
@@ -352,6 +377,11 @@ Suggest using a databasetype for this]]></comment>
 <relationship name="rel_document_attribute_attribute" type="relfk" layer="0"
 	 src-table="_documents.document_attribute"
 	 dst-table="_documents.attribute_label" reference-fk="fk_attribute.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_favourite_document" type="relfk" layer="0"
+	 src-table="_documents.document_favourite"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>

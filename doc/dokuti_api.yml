@@ -50,6 +50,15 @@ paths:
             minLength: 0
             maxLength: 255
           example: Regulatory%20Document%20Name
+        - name: filterFavouriteUser
+          in: query
+          required: false
+          description: Favourite user filter
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 255
+          example: aede8743-1bb8-407d-a975-77f3085a0d76          
         - name: filterTags
           in: query
           required: false
@@ -594,6 +603,118 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/favourite/{userId}':
+    patch:
+      tags:
+        - Documents
+      summary: Add a document to favourites
+      description: Add a document to favourites by document Id and user Id.
+      operationId: FavouriteDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true    
+        - in: path
+          name: userId
+          schema:
+            $ref: '#/components/schemas/userId'
+          required: true     		  
+      responses:
+        '200':
+          description: Successful. Document favourited.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to favourite Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/unfavourite/{userId}':
+    patch:
+      tags:
+        - Documents
+      summary: Remove a document from favourites
+      description: Remove a document from favourites by document Id and user Id.
+      operationId: UnFavouriteDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true    
+        - in: path
+          name: userId
+          schema:
+            $ref: '#/components/schemas/userId'
+          required: true     		  
+      responses:
+        '200':
+          description: Successful. Document unfavourited.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to unfavourite Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+                
   '/documents/{documentId}/versions/{documentVersionId}/download':
     get:
       tags:
@@ -1424,6 +1545,11 @@ components:
       format: uuid
       description: The UUID of the document. This is the primary identifier for a document.
       example: aede8743-1bb8-407d-a975-77f3085a0d76
+    userId:
+      type: string
+      format: uuid
+      description: The UUID of the user. This is the primary identifier for a user.
+      example: fede8743-1bb8-407d-a975-77f3085a0d76
     attributeId:
       type: integer
       format: int32

@@ -123,6 +123,7 @@ public interface DocumentService {
 	 * 
 	 * @param pageable         An instance of the page.
 	 * @param documentName     The name of the document to filter by.
+	 * @param filterFavouriteUser  The UUID of user. When param given only favorite documents will be shown.
 	 * @param tags             A list of tags that documents will be filtered by.
 	 *                         All the tags need to assigned to the document (And
 	 *                         operator).
@@ -135,7 +136,7 @@ public interface DocumentService {
 	 * @return A Pageable list of documents that match all the supplied filters.
 	 * @throws DatabaseLayerException
 	 */
-	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, List<String> tags,
+	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, String filterFavouriteUser, List<String> tags,
 			List<String> attributeNames, Boolean filterArchive);
 
 	/**

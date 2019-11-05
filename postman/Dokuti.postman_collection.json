@@ -7,6 +7,467 @@
 	},
 	"item": [
 		{
+			"name": "Favourite feature",
+			"item": [
+				{
+					"name": "Get Key Session Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "test-user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test-user",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{DOKUTI_CLIENT_SECRET}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
+							"host": [
+								"{{KEYCLOAK_BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"realms",
+								"{{KEYCLOAK-REALM}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Favourite Document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f9310d03-5fa6-40a0-8007-c3a502f4f7af",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/favourite/{{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
+								"favourite",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Favourite Document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "076871c1-48c9-46de-a38e-a0a67358e137",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/favourite/{{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"favourite",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all documents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0b9495f9-0b82-4c00-9ce3-8fca57c287a1",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response array length is OK\", function () {",
+									"     jsonArray = pm.response.json();",
+									"     pm.expect(2).to.equal(jsonArray.length);     ",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get favourite documents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a34fcb1-f7a9-472a-bd91-49a3abcb1042",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response array length is OK\", function () {",
+									"     jsonArray = pm.response.json();",
+									"     pm.expect(2).to.equal(jsonArray.length);     ",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterFavouriteUser={{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterFavouriteUser",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfavourite document 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8d3038b5-3bfc-4a1d-aa7e-754eae8d630d",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/unfavourite/{{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
+								"unfavourite",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get favourite documents ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f677abeb-6c2c-4b08-82f2-4f410d135a06",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response array length is OK\", function () {",
+									"     jsonArray = pm.response.json();",
+									"     pm.expect(1).to.equal(jsonArray.length);     ",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterFavouriteUser={{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterFavouriteUser",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all documents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "44a49b0a-7da4-4a8d-bbf6-c0518b3fc49a",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response array length is OK\", function () {",
+									"     jsonArray = pm.response.json();",
+									"     pm.expect(2).to.equal(jsonArray.length);     ",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unfavourite Document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "076871c1-48c9-46de-a38e-a0a67358e137",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/unfavourite/{{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"unfavourite",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all documents",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "44a49b0a-7da4-4a8d-bbf6-c0518b3fc49a",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response array length is OK\", function () {",
+									"     jsonArray = pm.response.json();",
+									"     pm.expect(2).to.equal(jsonArray.length);     ",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get favourite documents ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f677abeb-6c2c-4b08-82f2-4f410d135a06",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response array length is OK\", function () {",
+									"     jsonArray = pm.response.json();",
+									"     pm.expect(0).to.equal(jsonArray.length);     ",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterFavouriteUser={{userId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							],
+							"query": [
+								{
+									"key": "filterFavouriteUser",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "Archive feature",
 			"item": [
 				{

@@ -210,7 +210,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
-	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, List<String> tags,
+	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, String filterFavouriteUser, List<String> tags,
 			List<String> attributeNames, Boolean filterArchive) {
 		// The documents list must only contain documents where the accessing user has a
 		// read permission. Make consideration for potential filter name here too.
@@ -235,6 +235,11 @@ public class DocumentServiceImpl implements DocumentService {
 		// Only find archive or unarchived documents
 		specification = Specification.where(DocumentEntitySpecifications
                 .documentEntitiesWithArchiveFilter(filterArchive).and(specification));
+		
+		// Only list favorited documents if filterFavouriteUser provided
+        specification = Specification.where(DocumentEntitySpecifications
+                .documentEntitiesWithFavouriteUserFilter(filterFavouriteUser).and(specification));
+		
 		try {
 			return documentRepository.findAll(specification, pageable);
 		} catch (Exception e) {
