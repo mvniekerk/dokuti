@@ -80,6 +80,21 @@ curl -s -v  \
 docker-compose down
 ```
 
+### Sentry
+
+Setting up Sentry server:
+
+```bash
+cd quickstart/sentry
+docker volume create --name=sentry-postgres
+docker-compose run --rm web config generate-secret-key | tail -n 1 | tr -d '\r\n' | awk '{print "SENTRY_SECRET_KEY="$1}' > .env
+docker-compose run --rm web upgrade --noinput
+docker-compose run --rm web createuser
+docker-compose up -d
+```
+
+Sentry is now listening on `localhost:9000`
+
 # Postman Collection
 
 *NOTE:* You need to be using the full installation of postman and not the Chrome Application  
