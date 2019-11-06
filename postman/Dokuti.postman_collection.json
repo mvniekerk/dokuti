@@ -105,18 +105,17 @@
 						}
 					],
 					"request": {
-						"method": "PATCH",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/favourite/{{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/favourite",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{documentId}}",
-								"favourite",
-								"{{userId}}"
+								"favourite"
 							]
 						}
 					},
@@ -140,18 +139,17 @@
 						}
 					],
 					"request": {
-						"method": "PATCH",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/favourite/{{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/favourite",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{document2Id}}",
-								"favourite",
-								"{{userId}}"
+								"favourite"
 							]
 						}
 					},
@@ -219,7 +217,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents?filterFavouriteUser={{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterByFavourites=true",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
@@ -228,8 +226,8 @@
 							],
 							"query": [
 								{
-									"key": "filterFavouriteUser",
-									"value": "{{userId}}"
+									"key": "filterByFavourites",
+									"value": "true"
 								}
 							]
 						}
@@ -254,18 +252,17 @@
 						}
 					],
 					"request": {
-						"method": "PATCH",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/unfavourite/{{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/unfavourite",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{documentId}}",
-								"unfavourite",
-								"{{userId}}"
+								"unfavourite"
 							]
 						}
 					},
@@ -296,7 +293,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents?filterFavouriteUser={{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterByFavourites=true",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
@@ -305,8 +302,8 @@
 							],
 							"query": [
 								{
-									"key": "filterFavouriteUser",
-									"value": "{{userId}}"
+									"key": "filterByFavourites",
+									"value": "true"
 								}
 							]
 						}
@@ -368,18 +365,17 @@
 						}
 					],
 					"request": {
-						"method": "PATCH",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/unfavourite/{{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/unfavourite",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{document2Id}}",
-								"unfavourite",
-								"{{userId}}"
+								"unfavourite"
 							]
 						}
 					},
@@ -447,7 +443,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents?filterFavouriteUser={{userId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents?filterByFavourites=true",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
@@ -456,9 +452,43 @@
 							],
 							"query": [
 								{
-									"key": "filterFavouriteUser",
-									"value": "{{userId}}"
+									"key": "filterByFavourites",
+									"value": "true"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Favourite Document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "076871c1-48c9-46de-a38e-a0a67358e137",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/favourite",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{document2Id}}",
+								"favourite"
 							]
 						}
 					},

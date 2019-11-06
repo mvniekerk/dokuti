@@ -271,7 +271,7 @@ Suggest using a databasetype for this]]></comment>
 	</constraint>
 </table>
 
-<table name="document_favourite" layer="0" collapse-mode="2" max-obj-count="3">
+<table name="user_favourite" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<position x="888" y="111"/>
@@ -285,8 +285,11 @@ Suggest using a databasetype for this]]></comment>
 	 identity-type="ALWAYS">
 		<type name="bigint" length="0"/>
 	</column>
-	<constraint name="document_favourite_pk" type="pk-constr" table="_documents.document_favourite">
+	<constraint name="document_favourite_pk" type="pk-constr" table="_documents.user_favourite">
 		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_user_doc" type="uq-constr" table="_documents.user_favourite">
+		<columns names="user_uuid,document_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -333,7 +336,7 @@ Suggest using a databasetype for this]]></comment>
 </constraint>
 
 <constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_favourite">
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.user_favourite">
 	<columns names="document_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
@@ -380,7 +383,7 @@ Suggest using a databasetype for this]]></comment>
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_document_favourite_document" type="relfk" layer="0"
-	 src-table="_documents.document_favourite"
+	 src-table="_documents.user_favourite"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 

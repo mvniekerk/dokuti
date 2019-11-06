@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
 
 @Entity
-@Table(name = "document_favourite")
+@Table(name = "user_favourite")
 public class DocumentFavouriteEntity {
 
     

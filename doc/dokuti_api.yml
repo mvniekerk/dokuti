@@ -50,15 +50,13 @@ paths:
             minLength: 0
             maxLength: 255
           example: Regulatory%20Document%20Name
-        - name: filterFavouriteUser
-          in: query
+        - name: filterByFavourites
+          in: query 
           required: false
-          description: Favourite user filter
+          description: Favorite filter
           schema:
-            type: string
-            minLength: 0
-            maxLength: 255
-          example: aede8743-1bb8-407d-a975-77f3085a0d76          
+            type: boolean
+            default: false        
         - name: filterTags
           in: query
           required: false
@@ -603,8 +601,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  '/documents/{documentId}/favourite/{userId}':
-    patch:
+  '/documents/{documentId}/favourite':
+    post:
       tags:
         - Documents
       summary: Add a document to favourites
@@ -616,11 +614,6 @@ paths:
           schema:
             $ref: '#/components/schemas/documentId'
           required: true    
-        - in: path
-          name: userId
-          schema:
-            $ref: '#/components/schemas/userId'
-          required: true     		  
       responses:
         '200':
           description: Successful. Document favourited.
@@ -658,8 +651,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  '/documents/{documentId}/unfavourite/{userId}':
-    patch:
+  '/documents/{documentId}/unfavourite':
+    post:
       tags:
         - Documents
       summary: Remove a document from favourites
@@ -671,11 +664,6 @@ paths:
           schema:
             $ref: '#/components/schemas/documentId'
           required: true    
-        - in: path
-          name: userId
-          schema:
-            $ref: '#/components/schemas/userId'
-          required: true     		  
       responses:
         '200':
           description: Successful. Document unfavourited.
@@ -1545,11 +1533,6 @@ components:
       format: uuid
       description: The UUID of the document. This is the primary identifier for a document.
       example: aede8743-1bb8-407d-a975-77f3085a0d76
-    userId:
-      type: string
-      format: uuid
-      description: The UUID of the user. This is the primary identifier for a user.
-      example: fede8743-1bb8-407d-a975-77f3085a0d76
     attributeId:
       type: integer
       format: int32

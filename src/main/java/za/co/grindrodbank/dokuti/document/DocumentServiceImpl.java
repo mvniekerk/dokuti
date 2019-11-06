@@ -210,7 +210,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
-	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, String filterFavouriteUser, List<String> tags,
+	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, Boolean filterByFavourites, List<String> tags,
 			List<String> attributeNames, Boolean filterArchive) {
 		// The documents list must only contain documents where the accessing user has a
 		// read permission. Make consideration for potential filter name here too.
@@ -238,7 +238,7 @@ public class DocumentServiceImpl implements DocumentService {
 		
 		// Only list favorited documents if filterFavouriteUser provided
         specification = Specification.where(DocumentEntitySpecifications
-                .documentEntitiesWithFavouriteUserFilter(filterFavouriteUser).and(specification));
+                .documentEntitiesWithFavouriteUserFilter(filterByFavourites).and(specification));
 		
 		try {
 			return documentRepository.findAll(specification, pageable);

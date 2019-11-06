@@ -45,6 +45,7 @@ import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
+import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
 
 @RestController
 @PreAuthorize("hasRole('DOKUTI_USER') or hasRole('DOKUTI_ADMIN')")
@@ -83,14 +84,14 @@ public class DocumentControllerImpl implements DocumentsApi {
 				databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity),
 				HttpStatus.OK);
 	}
-
+	
 	@Override
-	public ResponseEntity<List<Document>> getDocuments(Boolean filterArchive, Integer page, Integer size, String filterName, String filterFavouriteUser,
+	public ResponseEntity<List<Document>> getDocuments(Boolean filterArchive, Integer page, Integer size, String filterName, Boolean filterByFavourites,
 			 List<String> filterTags, List<String> filterAttributes,
 			List<String> orderBy) {
 		Sort sort = ParseOrderByQueryParam.resolveArgument(orderBy, DEFAULT_SORT_FIELD);
 		final PageRequest pageRequest = PageRequest.of(page, size, sort);
-		Page<DocumentEntity> documentEntities = documentService.findAll(pageRequest, filterName, filterFavouriteUser, filterTags,
+		Page<DocumentEntity> documentEntities = documentService.findAll(pageRequest, filterName, filterByFavourites, filterTags,
 				filterAttributes, filterArchive);
 
 		if (documentEntities.hasContent()) {
@@ -237,7 +238,9 @@ public class DocumentControllerImpl implements DocumentsApi {
     
     
     @Override
-    public ResponseEntity<Document> favouriteDocument(UUID documentId,UUID userId) {
+    public ResponseEntity<Document> favouriteDocument(UUID documentId) {
+        UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+        
         DocumentEntity documentEntity = documentService.findById(documentId);
         DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
         documentFavouriteEntity.setDocument(documentEntity);
@@ -257,7 +260,9 @@ public class DocumentControllerImpl implements DocumentsApi {
     }    
     
     @Override
-    public ResponseEntity<Document> unFavouriteDocument(UUID documentId,UUID userId) {
+    public ResponseEntity<Document> unFavouriteDocument(UUID documentId) {
+        
+        UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
         DocumentEntity documentEntity = documentService.findById(documentId);
         DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
         documentFavouriteEntity.setDocument(documentEntity);

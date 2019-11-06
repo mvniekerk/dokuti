@@ -267,17 +267,18 @@ COMMENT ON COLUMN _documents.document_version_parts.checksum IS 'an MD5 digest t
 ALTER TABLE _documents.document_version_parts OWNER TO postgres;
 -- ddl-end --
 
--- object: _documents.document_favourite | type: TABLE --
--- DROP TABLE IF EXISTS _documents.document_favourite CASCADE;
-CREATE TABLE _documents.document_favourite (
+-- object: _documents.user_favourite | type: TABLE --
+-- DROP TABLE IF EXISTS _documents.user_favourite CASCADE;
+CREATE TABLE _documents.user_favourite (
 	user_uuid uuid NOT NULL,
 	document_id uuid NOT NULL,
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ,
-	CONSTRAINT document_favourite_pk PRIMARY KEY (id)
+	CONSTRAINT document_favourite_pk PRIMARY KEY (id),
+	CONSTRAINT uniq_user_doc UNIQUE (user_uuid,document_id)
 
 );
 -- ddl-end --
-ALTER TABLE _documents.document_favourite OWNER TO postgres;
+ALTER TABLE _documents.user_favourite OWNER TO postgres;
 -- ddl-end --
 
 -- object: "fk_document.id" | type: CONSTRAINT --
@@ -330,8 +331,8 @@ ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
 -- object: "fk_document.id" | type: CONSTRAINT --
--- ALTER TABLE _documents.document_favourite DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
-ALTER TABLE _documents.document_favourite ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
+-- ALTER TABLE _documents.user_favourite DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
+ALTER TABLE _documents.user_favourite ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
 REFERENCES _documents.document (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --

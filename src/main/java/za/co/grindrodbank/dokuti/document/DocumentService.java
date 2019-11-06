@@ -136,7 +136,7 @@ public interface DocumentService {
 	 * @return A Pageable list of documents that match all the supplied filters.
 	 * @throws DatabaseLayerException
 	 */
-	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, String filterFavouriteUser, List<String> tags,
+	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, Boolean filterByFavourites, List<String> tags,
 			List<String> attributeNames, Boolean filterArchive);
 
 	/**
