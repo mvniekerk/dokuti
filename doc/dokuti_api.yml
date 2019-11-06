@@ -607,7 +607,7 @@ paths:
         - Documents
       summary: Add a document to favourites
       description: Add a document to favourites by document Id and user Id.
-      operationId: FavouriteDocument
+      operationId: favouriteDocument
       parameters:
         - in: path
           name: documentId
@@ -657,7 +657,7 @@ paths:
         - Documents
       summary: Remove a document from favourites
       description: Remove a document from favourites by document Id and user Id.
-      operationId: UnFavouriteDocument
+      operationId: unFavouriteDocument
       parameters:
         - in: path
           name: documentId
