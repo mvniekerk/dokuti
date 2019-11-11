@@ -14,5 +14,8 @@ RUN mvn package \
 FROM openjdk:8-jre-alpine
 EXPOSE 8080
 COPY --from=BUILD /build/target/dokuti.jar app.jar
-#To reduce Tomcat startup time we added a system property pointing to "/dev/urandom" as a source of entropy.
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+COPY quickstart/docker-compose/wait-for.sh wait-for.sh
+COPY entrypoint.sh entrypoint.sh
+RUN chmod 777 entrypoint.sh
+RUN chmod 777 wait-for.sh
+ENTRYPOINT ["/entrypoint.sh"]
