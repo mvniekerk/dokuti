@@ -14,8 +14,8 @@ RUN mvn package \
 FROM openjdk:8-jre-alpine
 EXPOSE 8080
 COPY --from=BUILD /build/target/dokuti.jar app.jar
-COPY quickstart/docker-compose/wait-for.sh wait-for.sh
-COPY entrypoint.sh entrypoint.sh
+COPY docker-container-scripts/wait-for.sh wait-for.sh
+COPY docker-container-scripts/entrypoint.sh entrypoint.sh
 RUN chmod 777 entrypoint.sh
 RUN chmod 777 wait-for.sh
 ENTRYPOINT ["/entrypoint.sh"]
