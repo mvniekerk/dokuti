@@ -1,12 +1,5 @@
 version: '3'
 services:
-  web:
-    build: ../../
-    ports:
-     - "8181:8080"
-    volumes:
-      - ./sample-application.yaml:/config/application.yaml
-      - ./files:/tmp/dokuti-local-uploads
   postgresql:
     image: "bitnami/postgresql:10.7.0"
     ports:
@@ -17,6 +10,17 @@ services:
     ## To persist database
     # volumes:
     #   - 'postgresql_data:/bitnami'
+  web:
+    build: ../../
+    ports:
+     - "8181:8080"
+    volumes:
+      - ./sample-application.yaml:/config/application.yaml
+      - ./files:/tmp/dokuti-local-uploads
+    depends_on:
+      - postgresql
+    entrypoint: sh -c './wait-for.sh postgresql:5432 -- ./entrypoint.sh' 
+
   keycloak:
     image: "jboss/keycloak:4.7.0.Final"
     ports:
@@ -27,4 +31,5 @@ services:
       KEYCLOAK_IMPORT: "/tmp/dokuti-realm.json"
     volumes:
       - ./dokuti-realm.json:/tmp/dokuti-realm.json
+         
 
