@@ -10,7 +10,9 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
+import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
+import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
 
 public class DocumentEntitySpecifications {
     
@@ -110,5 +112,25 @@ public class DocumentEntitySpecifications {
             }
         };
     }	
+    
+    
+    public static Specification<DocumentEntity> documentEntitiesWithFavouriteUserFilter(Boolean filterByFavourites) {
+        return new Specification<DocumentEntity>() {
+
+            private static final long serialVersionUID = 6291576138226024998L;
+
+            @Override
+            public Predicate toPredicate(Root<DocumentEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                if (Boolean.TRUE.equals(filterByFavourites)) {
+                    UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+                    Join<DocumentEntity, DocumentFavouriteEntity> documentFavouritesJoin = root.join("documentFavourites");
+                    return criteriaBuilder.equal(documentFavouritesJoin.get("userId"), userId);
+                }
+                return null;
+       
+            }
+            
+        };
+    }
 	
 }

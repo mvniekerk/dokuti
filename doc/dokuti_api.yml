@@ -50,6 +50,13 @@ paths:
             minLength: 0
             maxLength: 255
           example: Regulatory%20Document%20Name
+        - name: filterByFavourites
+          in: query 
+          required: false
+          description: Favorite filter
+          schema:
+            type: boolean
+            default: false        
         - name: filterTags
           in: query
           required: false
@@ -594,6 +601,108 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/favourite':
+    post:
+      tags:
+        - Documents
+      summary: Add a document to favourites
+      description: Add a document to favourites by document Id and user Id.
+      operationId: favouriteDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true    
+      responses:
+        '200':
+          description: Successful. Document favourited.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to favourite Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/unfavourite':
+    post:
+      tags:
+        - Documents
+      summary: Remove a document from favourites
+      description: Remove a document from favourites by document Id and user Id.
+      operationId: unFavouriteDocument
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true    
+      responses:
+        '200':
+          description: Successful. Document unfavourited.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to unfavourite Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
+                
   '/documents/{documentId}/versions/{documentVersionId}/download':
     get:
       tags:
