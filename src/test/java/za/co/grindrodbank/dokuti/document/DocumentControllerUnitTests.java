@@ -43,6 +43,7 @@ import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.document.DocumentService;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagService;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
+import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperServiceImpl;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
@@ -218,7 +219,7 @@ public class DocumentControllerUnitTests {
         list.add(document);
         Page<DocumentEntity> pagedResponse  = new PageImpl<>(list); 
        
-        Mockito.when(documentService.findAll(any(), any(), any(), any(), any())).thenReturn(pagedResponse);
+        Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
         
@@ -230,5 +231,45 @@ public class DocumentControllerUnitTests {
                      .andExpect(jsonPath("$", hasSize(1)))
                      .andExpect(jsonPath("$[0].description", is("Document Desc")));
     }    
+    
+    
+    @Test
+    public void givenDocument_whenfavoriteDocument_thenReturnFavouriteDocumnet() throws Exception {
+
+        UUID documentId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(false);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+        
+        List<DocumentFavouriteEntity> favorites = new ArrayList<>();
+        DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
+        favorites.add(documentFavouriteEntity);
+        documentFavouriteEntity.setDocument(document);
+        documentFavouriteEntity.setUserId(userId);
+        document.setDocumentFavourites(favorites);
+
+        List<DocumentEntity> list = new ArrayList<>();
+        list.add(document);
+        Page<DocumentEntity> pagedResponse  = new PageImpl<>(list);         
+        
+        Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        
+        mvc.perform(get("/documents?filterFavouriteUser" + userId)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .characterEncoding("utf-8"))
+                      .andExpect(status().is(200))
+                      .andExpect(jsonPath("$", hasSize(1)));  
+    }
     
 }

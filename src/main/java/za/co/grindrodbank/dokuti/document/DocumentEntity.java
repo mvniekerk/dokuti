@@ -32,6 +32,7 @@ import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
+import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 
 @Entity
@@ -80,6 +81,10 @@ public class DocumentEntity {
 	@JsonBackReference
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DocumentAcl> documentPermissions = new ArrayList<>();
+	
+    @JsonBackReference
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DocumentFavouriteEntity> documentFavourites = new ArrayList<>();	
 
 	public String getContentType() {
 		return contentType;
@@ -161,6 +166,14 @@ public class DocumentEntity {
 		this.documentPermissions = documentPermissions;
 	}
 
+
+    public List<DocumentFavouriteEntity> getDocumentFavourites() {
+        return documentFavourites;
+    }
+
+    public void setDocumentFavourites(List<DocumentFavouriteEntity> documentFavourites) {
+        this.documentFavourites = documentFavourites;
+    }
 
     public Boolean getIsArchived() {
         return isArchived;
