@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "83f30fe0-d629-42d6-bab7-cc2015a3985e",
+		"_postman_id": "260f2b5d-2088-473e-8a44-a72ac2a418fb",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Favourite feature",
+			"name": "favourite-feature",
 			"item": [
 				{
 					"name": "Get Key Session Token",
@@ -84,6 +84,128 @@
 								"token"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId\", jsonData.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"document2Id\", jsonData.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
 					},
 					"response": []
 				},
@@ -166,12 +288,7 @@
 									"pm.test(\"Response is OK\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"",
-									"pm.test(\"Response array length is OK\", function () {",
-									"     jsonArray = pm.response.json();",
-									"     pm.expect(2).to.equal(jsonArray.length);     ",
-									"",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -203,11 +320,7 @@
 									"pm.test(\"Response is OK\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"Response array length is OK\", function () {",
-									"     jsonArray = pm.response.json();",
-									"     pm.expect(2).to.equal(jsonArray.length);     ",
-									"",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -269,85 +382,6 @@
 					"response": []
 				},
 				{
-					"name": "Get favourite documents ",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "f677abeb-6c2c-4b08-82f2-4f410d135a06",
-								"exec": [
-									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"pm.test(\"Response array length is OK\", function () {",
-									"     jsonArray = pm.response.json();",
-									"     pm.expect(1).to.equal(jsonArray.length);     ",
-									"",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents?filterByFavourites=true",
-							"host": [
-								"{{DOKUTI_BASE_URL}}"
-							],
-							"path": [
-								"documents"
-							],
-							"query": [
-								{
-									"key": "filterByFavourites",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get all documents",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "44a49b0a-7da4-4a8d-bbf6-c0518b3fc49a",
-								"exec": [
-									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response array length is OK\", function () {",
-									"     jsonArray = pm.response.json();",
-									"     pm.expect(2).to.equal(jsonArray.length);     ",
-									"",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents",
-							"host": [
-								"{{DOKUTI_BASE_URL}}"
-							],
-							"path": [
-								"documents"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Unfavourite Document 2",
 					"event": [
 						{
@@ -380,125 +414,34 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "407a126c-f575-4971-a9c6-75cf01b04dba",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				},
 				{
-					"name": "Get all documents",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "44a49b0a-7da4-4a8d-bbf6-c0518b3fc49a",
-								"exec": [
-									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response array length is OK\", function () {",
-									"     jsonArray = pm.response.json();",
-									"     pm.expect(2).to.equal(jsonArray.length);     ",
-									"",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents",
-							"host": [
-								"{{DOKUTI_BASE_URL}}"
-							],
-							"path": [
-								"documents"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get favourite documents ",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "f677abeb-6c2c-4b08-82f2-4f410d135a06",
-								"exec": [
-									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"pm.test(\"Response array length is OK\", function () {",
-									"     jsonArray = pm.response.json();",
-									"     pm.expect(0).to.equal(jsonArray.length);     ",
-									"",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents?filterByFavourites=true",
-							"host": [
-								"{{DOKUTI_BASE_URL}}"
-							],
-							"path": [
-								"documents"
-							],
-							"query": [
-								{
-									"key": "filterByFavourites",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Favourite Document 2",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "076871c1-48c9-46de-a38e-a0a67358e137",
-								"exec": [
-									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{document2Id}}/favourite",
-							"host": [
-								"{{DOKUTI_BASE_URL}}"
-							],
-							"path": [
-								"documents",
-								"{{document2Id}}",
-								"favourite"
-							]
-						}
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"id": "a46a96cf-a189-47a5-8fb9-fffdac7435f9",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			],
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Archive feature",
+			"name": "archive-feature",
 			"item": [
 				{
 					"name": "Get Key Session Token",
@@ -579,21 +522,21 @@
 					"response": []
 				},
 				{
-					"name": "Unarchive document 1",
+					"name": "Create Document 2",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "07880b7a-0bd2-44df-9f33-7a91104e5f78",
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
 								"exec": [
 									"pm.test(\"Response is OK\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"isArchived is correct\", function () {",
+									"pm.test(\"Set document ID environment variable.\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('isArchived');",
-									"    pm.expect(jsonData.isArchived).to.eql(false);",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"document2Id\", jsonData.id);",
 									"});",
 									""
 								],
@@ -602,19 +545,101 @@
 						}
 					],
 					"request": {
-						"method": "PATCH",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/unarchive",
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
-								"documents",
-								"{{documentId}}",
-								"unarchive"
+								"documents"
 							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId\", jsonData.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
 					},
 					"response": []
 				},
@@ -652,6 +677,46 @@
 							"path": [
 								"documents",
 								"{{document2Id}}",
+								"unarchive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unarchive document 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "07880b7a-0bd2-44df-9f33-7a91104e5f78",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"isArchived is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('isArchived');",
+									"    pm.expect(jsonData.isArchived).to.eql(false);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/unarchive",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
 								"unarchive"
 							]
 						}
@@ -1164,10 +1229,32 @@
 					"response": []
 				}
 			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8bb4ff14-647f-4905-b41a-9cfe556b31f8",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0987d1ad-ec00-4d05-bf95-66c258dca28c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Tag feature",
+			"name": "tag-feature",
 			"item": [
 				{
 					"name": "Get Key Session Token",
@@ -1248,15 +1335,21 @@
 					"response": []
 				},
 				{
-					"name": "Delete all tags from the document",
+					"name": "Create Document 2 ",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "7c31eb20-3c1a-4854-9b06-e21f132f9737",
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
 								"exec": [
 									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(204);",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"document2Id\", jsonData.id);",
 									"});",
 									""
 								],
@@ -1265,19 +1358,101 @@
 						}
 					],
 					"request": {
-						"method": "DELETE",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/tags",
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
-								"documents",
-								"{{documentId}}",
-								"tags"
+								"documents"
 							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 1 ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId\", jsonData.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
 					},
 					"response": []
 				},
@@ -1309,6 +1484,40 @@
 							"path": [
 								"documents",
 								"{{document2Id}}",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete all tags from the document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c31eb20-3c1a-4854-9b06-e21f132f9737",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/tags",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
 								"tags"
 							]
 						}
@@ -1452,10 +1661,7 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Response data is empty\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(1).to.eql(jsonData.length);",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1495,10 +1701,7 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Response data is empty\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(0).to.eql(jsonData.length);",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1538,10 +1741,7 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Response data is empty\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(1).to.eql(jsonData.length);",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1581,10 +1781,7 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Response data is empty\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(0).to.eql(jsonData.length);",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1669,10 +1866,7 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Response data is empty\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(2).to.eql(jsonData.length);",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1712,10 +1906,7 @@
 									"});",
 									"",
 									"",
-									"pm.test(\"Response data is empty\", function() {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(1).to.eql(jsonData.length);",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1911,10 +2102,32 @@
 					"response": []
 				}
 			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "461beef1-5396-4dff-ae2d-71737bdff6ff",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d5882289-5605-422f-aca8-b63bd0916344",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Basic",
+			"name": "basic",
 			"item": [
 				{
 					"name": "Get Key Session Token",
@@ -2032,8 +2245,8 @@
 							"formdata": [
 								{
 									"key": "file",
-									"value": "",
-									"type": "file"
+									"type": "file",
+									"src": "test-file.txt"
 								},
 								{
 									"key": "description",
@@ -2163,8 +2376,8 @@
 							"formdata": [
 								{
 									"key": "file",
-									"value": "",
-									"type": "file"
+									"type": "file",
+									"src": "test-file2.txt"
 								},
 								{
 									"key": "description",
@@ -2273,7 +2486,7 @@
 								"id": "ade50be5-6a79-431e-9aca-57e138d18d09",
 								"exec": [
 									"pm.test(\"Response is OK\", function () {",
-									"    pm.response.to.have.status(200);",
+									"    pm.response.to.have.status(201);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2915,6 +3128,409 @@
 								"documents",
 								"{{documentId}}",
 								"unarchive"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3a306103-019b-4182-a0d8-323ee0d4940f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "c7c01eaf-ff7e-4064-af9a-6b02492458a2",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "rollback-feature",
+			"item": [
+				{
+					"name": "Get Key Session Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "test-user",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test-user",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{DOKUTI_CLIENT_SECRET}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
+							"host": [
+								"{{KEYCLOAK_BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"realms",
+								"{{KEYCLOAK-REALM}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 1 ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId\", jsonData.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "test initial description.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b3769c37-5256-4fab-8ffa-6730fa42770f",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file2.txt"
+								},
+								{
+									"key": "description",
+									"value": "new description v2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Updates a document identified by it's UUID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Document 2th time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b3769c37-5256-4fab-8ffa-6730fa42770f",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file3.txt"
+								},
+								{
+									"key": "description",
+									"value": "new description v2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Updates a document identified by it's UUID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document metadata",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "57593f8c-cb27-4266-b17b-1fa8a7b0ece9",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check the correct document ID is returned.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(pm.environment.get('documentId'));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Check that a document version is returned.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('documentVersions');",
+									"    pm.expect(3).to.equal(jsonData.documentVersions.length);",
+									"    pm.expect(jsonData.documentVersions[1]).to.have.property('id');",
+									"    pm.environment.set(\"documentVersionId\", jsonData.documentVersions[1].id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RollBack Document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "70d456c4-a201-4648-ab03-5bf0b751b170",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Checking if properties returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('checksum');",
+									"    pm.expect(jsonData).to.have.property('createdDateTime');",
+									"    pm.environment.set(\"rolledbackversionId\", jsonData.id);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/versions/{{documentVersionId}}/rollback",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}",
+								"versions",
+								"{{documentVersionId}}",
+								"rollback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document metadata",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "57593f8c-cb27-4266-b17b-1fa8a7b0ece9",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check the correct document ID is returned.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(pm.environment.get('documentId'));",
+									"});",
+									"",
+									"",
+									"pm.test(\"Check that a document version is returned.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('documentVersions');",
+									"    pm.expect(4).to.equal(jsonData.documentVersions.length);",
+									"    pm.expect(jsonData.documentVersions[0].id).to.eql(pm.environment.get('rolledbackversionId'));",
+									"    pm.expect(jsonData.documentVersions[2].checksum).to.equal(jsonData.documentVersions[0].checksum);",
+									"    pm.expect(jsonData.documentVersions[1].checksum).to.not.equal(jsonData.documentVersions[0].checksum);",
+									"    pm.expect(jsonData.documentVersions[3].checksum).to.not.equal(jsonData.documentVersions[0].checksum);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
 							]
 						}
 					},

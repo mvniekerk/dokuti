@@ -54,6 +54,18 @@ public class FileSystemDocumentStoreService implements DocumentDataStoreService 
 		}
 	}
 
+    @Override
+    public void store(InputStream inputStream, UUID documentUUID, UUID versionUUID) {
+        Path pathToStoredFile = this.rootLocation.resolve(documentUUID.toString() + "/" + versionUUID.toString());
+        try {
+            Files.createDirectories(pathToStoredFile.getParent());
+            Files.copy(inputStream, pathToStoredFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new StorageException("Failed to store inputStream ");
+        }
+    }
+	
+	
 	@Override
 	public Stream<Path> loadAll() {
 		try {
@@ -100,4 +112,6 @@ public class FileSystemDocumentStoreService implements DocumentDataStoreService 
 			throw new StorageException("Could not initialize storage", e);
 		}
 	}
+
+
 }

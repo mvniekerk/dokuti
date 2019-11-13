@@ -6,6 +6,7 @@ package za.co.grindrodbank.dokuti.document;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -156,6 +157,28 @@ public class DocumentServiceImpl implements DocumentService {
 		return save(document);
 	}
 
+	@Override
+    public DocumentEntity rollbackDocumentVersion(UUID documentId, UUID documentVersionId)
+         throws ResourceNotFoundException, NotAuthorisedException, ChecksumFailedException,  DatabaseLayerException  {
+
+        DocumentEntity documentEntity = findById(documentId);
+        if (!resourcePermissions.accessingUserCanWriteDocument(documentEntity)) {
+            throw new NotAuthorisedException("Accessing user does not have permissions to write the document", null);
+        }        
+        DocumentVersionEntity documentVersionEntity = documentVersionService.findById(documentVersionId);
+        
+        String checksum = documentVersionEntity.getChecksum();
+        InputStream is;
+        try {
+            is = getDocumentDataForVersion(documentVersionEntity.getDocument(), documentVersionEntity).getInputStream();
+            createDocumentVersionWithInputStream(is, checksum, documentEntity);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            throw new ResourceNotFoundException("Error reading document data.", e);
+        }
+        return save(documentEntity);
+    }	
+	
 	public DocumentEntity save(DocumentEntity document) throws DatabaseLayerException {
 		try {
 			return documentRepository.save(document);
@@ -191,6 +214,15 @@ public class DocumentServiceImpl implements DocumentService {
 		return newDocumentVersion;
 	}
 
+    private DocumentVersionEntity createDocumentVersionWithInputStream(InputStream is, String fileContentChecksum, DocumentEntity document) {
+
+        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum);
+        documentStoreService.store(is, document.getId(), newDocumentVersion.getId());
+
+        return newDocumentVersion;
+    }
+	
+	
 	public String getFileContentChecksum(byte[] fileByteArray) {
 
 		try {

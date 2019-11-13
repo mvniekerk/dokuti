@@ -765,6 +765,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                
+  '/documents/{documentId}/versions/{documentVersionId}/rollback':
+    post:
+      tags:
+        - Document Versions
+      summary: Rollback document version.
+      description: Rollback document version for a specific document version.
+      operationId: rollbackDocumentVersion
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path
+          name: documentVersionId
+          schema:
+            $ref: '#/components/schemas/documentVersionId'
+          required: true
+      responses:
+        '200':
+          description: Successful. Document Rollbacked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentVersion'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to update Documents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   '/documents/{documentId}/tags':
     post:
       tags:

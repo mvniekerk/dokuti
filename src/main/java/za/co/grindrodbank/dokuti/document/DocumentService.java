@@ -162,4 +162,16 @@ public interface DocumentService {
 			throws DatabaseLayerException;
 
 	public void removeAllDocumentTags(DocumentEntity document);
+	
+	
+    /**
+     * Rollback documentVersion
+     * 
+     * @param documentId  The document UUID.
+     * @param documentVersionId  The document version UUID.
+     * @return An instance of the created DocumentEntity.
+     * @throws ResourceNotFoundException, NotAuthorisedException, ChecksumFailedException,  DatabaseLayerException
+     */	
+	public DocumentEntity rollbackDocumentVersion(UUID documentId, UUID documentVersionId)
+	         throws ResourceNotFoundException, NotAuthorisedException, ChecksumFailedException,  DatabaseLayerException;
 }

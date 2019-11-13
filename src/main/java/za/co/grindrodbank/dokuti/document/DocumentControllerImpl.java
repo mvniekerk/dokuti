@@ -280,4 +280,18 @@ public class DocumentControllerImpl implements DocumentsApi {
         return new ResponseEntity<>(res, HttpStatus.OK);            
     }       
     
+    @Override
+    public ResponseEntity<DocumentVersion> rollbackDocumentVersion(UUID documentId, UUID documentVersionId) {
+        DocumentEntity documentEntity =  documentService.rollbackDocumentVersion(documentId, documentVersionId);
+        
+        DocumentVersion documentVersion = new DocumentVersion();
+        documentVersion.setChecksum(documentEntity.getLatestDocumentVersion().getChecksum());
+        documentVersion
+                .setCreatedDateTime(documentEntity.getLatestDocumentVersion().getCreatedDateTime().toOffsetDateTime());
+        documentVersion.setId(documentEntity.getLatestDocumentVersion().getId());
+
+        return new ResponseEntity<>(documentVersion, HttpStatus.OK);       
+
+    }   
+
 }
