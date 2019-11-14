@@ -11,15 +11,25 @@ services:
     # volumes:
     #   - 'postgresql_data:/bitnami'
   web:
-    build: ../../
+    build: 
+       context: ../..
+       #args:
+          # provide sentry dns (when build option is used)
+          # example SENTRY_DSN: "http://*******@sentrylocalhost:9000/2"
     ports:
      - "8181:8080"
+    #extra_hosts:
+       #  in case using Sentry locally resolve host 
+       #- "sentrylocalhost:172.17.0.1"
     volumes:
       - ./sample-application.yaml:/config/application.yaml
       - ./files:/tmp/dokuti-local-uploads
     depends_on:
       - postgresql
     entrypoint: sh -c './wait-for.sh postgresql:5432 -- ./entrypoint.sh' 
+    #environment:
+       # provide sentry dns (when image is used)
+       #example SENTRY_DSN: "http://*******@sentrylocalhost:9000/2"
 
   keycloak:
     image: "jboss/keycloak:4.7.0.Final"

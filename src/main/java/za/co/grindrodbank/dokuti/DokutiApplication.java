@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+import io.sentry.Sentry;
 import za.co.grindrodbank.dokuti.configuration.SecurityProperties;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.StorageProperties;
 
@@ -19,6 +20,11 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
 public class DokutiApplication {
 
 	public static void main(String[] args) {
+	    
 		SpringApplication.run(DokutiApplication.class, args);
+		
+		// inform Sentry server that app is started
+		// just to check Sentry receiving messages from Dokuti
+		Sentry.capture("DokutiApplication has started ");
 	}
 }

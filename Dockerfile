@@ -18,4 +18,5 @@ COPY docker-container-scripts/wait-for.sh wait-for.sh
 COPY docker-container-scripts/entrypoint.sh entrypoint.sh
 RUN chmod 777 entrypoint.sh
 RUN chmod 777 wait-for.sh
+ARG SENTRY_DSN
 ENTRYPOINT ["/entrypoint.sh"]
