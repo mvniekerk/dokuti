@@ -18,6 +18,11 @@ spring:
   flyway:
     enabled: true
     #enabled: false
+  
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB 
      
 storage:
   location: "/tmp/dokuti-local-uploads"

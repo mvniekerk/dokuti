@@ -164,7 +164,7 @@ Suggest using a databasetype for this]]></comment>
 	<role name="postgres"/>
 </sequence>
 
-<table name="document_version" layer="0" collapse-mode="2" max-obj-count="7">
+<table name="document_version" layer="0" collapse-mode="2" max-obj-count="8">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[this table holds the various instance meta-data of a particular document]]></comment>
@@ -189,6 +189,9 @@ Suggest using a databasetype for this]]></comment>
 	</column>
 	<column name="__uploaded_by" not-null="true">
 		<type name="uuid" length="0"/>
+	</column>
+	<column name="document_type">
+		<type name="text" length="0"/>
 	</column>
 	<constraint name="pk_document_version" type="pk-constr" table="_documents.document_version">
 		<columns names="id" ref-type="src-columns"/>

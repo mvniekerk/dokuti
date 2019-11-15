@@ -147,7 +147,7 @@ public class DocumentControllerImpl implements DocumentsApi {
 
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documentEntity.getName() + "\"")
-				.contentType(MediaType.parseMediaType(documentEntity.getContentType()))
+				.contentType(MediaType.parseMediaType(documentEntity.getLatestDocumentVersion().getDocumentType()))
 				.body(documentService.getLatestDocumentData(documentEntity));
 	}
 

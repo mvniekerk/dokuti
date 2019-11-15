@@ -222,7 +222,7 @@ public class DocumentServiceUnitTests {
 		mockDocumentVersion.setUploadedBy(userId);
 
 		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
-		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class)))
+		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class), any(String.class)))
 				.thenReturn(mockDocumentVersion);
 
 		PowerMockito.mockStatic(SecurityContextUtility.class);
@@ -325,7 +325,7 @@ public class DocumentServiceUnitTests {
 		mockDocumentVersion.setId(documentVersionId);
 		mockDocumentVersion.setUploadedBy(userId);
 
-		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class)))
+		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class), any(String.class)))
 				.thenReturn(mockDocumentVersion);
 		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
 		Mockito.when(resourcePermission.accessingUserCanWriteDocument((any(DocumentEntity.class)))).thenReturn(true);
@@ -379,7 +379,7 @@ public class DocumentServiceUnitTests {
 		mockDocumentVersion.setId(documentVersionId);
 		mockDocumentVersion.setUploadedBy(userId);
 
-		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class)))
+		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class), any(String.class)))
 				.thenReturn(mockDocumentVersion);
 		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
 		Mockito.when(resourcePermission.accessingUserCanWriteDocument((any(DocumentEntity.class)))).thenReturn(true);
@@ -413,7 +413,7 @@ public class DocumentServiceUnitTests {
 		mockDocumentVersion.setId(documentVersionId);
 		mockDocumentVersion.setUploadedBy(userId);
 
-		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class)))
+		Mockito.when(documentVersionService.createDocumentVersion(any(DocumentEntity.class), any(String.class), any(String.class)))
 				.thenReturn(mockDocumentVersion);
 		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
 		Mockito.when(resourcePermission.accessingUserCanWriteDocument((any(DocumentEntity.class)))).thenReturn(false);
