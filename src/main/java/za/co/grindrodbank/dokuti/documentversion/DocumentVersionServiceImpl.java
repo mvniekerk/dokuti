@@ -56,10 +56,11 @@ public class DocumentVersionServiceImpl implements DocumentVersionService {
 		}
 	}
 
-	public DocumentVersionEntity createDocumentVersion(DocumentEntity document, String checksum) {
+	public DocumentVersionEntity createDocumentVersion(DocumentEntity document, String checksum, String documentType) {
 		DocumentVersionEntity documentVersion = new DocumentVersionEntity();
 		documentVersion.setDocument(document);
 		documentVersion.setChecksum(checksum);
+		documentVersion.setDocumentType(documentType);
 
 		try {
 			documentVersion = save(documentVersion);

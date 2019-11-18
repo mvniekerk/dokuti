@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
@@ -38,6 +40,10 @@ public class DocumentVersionEntity {
 
 	@Column(length = 32)
 	private String checksum;
+	
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "document_type", nullable = false)
+    private String documentType;	
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "document_id")
@@ -83,5 +89,13 @@ public class DocumentVersionEntity {
 	public void setChecksum(String checksum) {
 		this.checksum = checksum;
 	}
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
 
 }

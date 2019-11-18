@@ -168,6 +168,7 @@ CREATE TABLE _documents.document_version (
 	checksum text NOT NULL,
 	__uploaded_on timestamp NOT NULL,
 	__uploaded_by uuid NOT NULL,
+	document_type text,
 	CONSTRAINT pk_document_version PRIMARY KEY (id),
 	CONSTRAINT un_version_id UNIQUE (version_id)
 

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,6 +201,7 @@ public class DocumentServiceImpl implements DocumentService {
 	 */
 	private DocumentVersionEntity createDocumentVersionWithFile(MultipartFile file, DocumentEntity document) {
 		String fileContentChecksum = "";
+		String documentType ="";
 
 		try {
 			fileContentChecksum = getFileContentChecksum(file.getBytes());
@@ -207,16 +209,33 @@ public class DocumentServiceImpl implements DocumentService {
 			logger.error(e.getMessage());
 		}
 
+		Tika tika = new Tika();
+		try {
+		    documentType = tika.detect(file.getInputStream());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            throw new ResourceNotFoundException("Error reading document data.", e);
+        }
+		
 		DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document,
-				fileContentChecksum);
+				fileContentChecksum, documentType);
 		documentStoreService.store(file, document.getId(), newDocumentVersion.getId());
 
 		return newDocumentVersion;
 	}
 
     private DocumentVersionEntity createDocumentVersionWithInputStream(InputStream is, String fileContentChecksum, DocumentEntity document) {
-
-        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum);
+        
+        String documentType ="";
+        Tika tika = new Tika();
+        try {
+            documentType = tika.detect(is);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            throw new ResourceNotFoundException("Error reading document data.", e);
+        }
+        
+        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum, documentType);
         documentStoreService.store(is, document.getId(), newDocumentVersion.getId());
 
         return newDocumentVersion;
