@@ -1,5 +1,17 @@
 version: 2
 jobs:
+  generate-axios-client:
+    working_directory: ~/repo
+    docker:
+       - image: openapitools/openapi-generator-cli:latest
+    steps:
+      - checkout
+      - run: mkdir ~/repo/a3s-typescript-axios
+      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/doc/dokuti_api.yml -g typescript-axios -o ~/repo/a3s-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/dokuti-api
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - a3s-typescript-axios
   test:
     docker:
       - image: maven:3.5.3-jdk-8-alpine
