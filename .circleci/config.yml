@@ -6,12 +6,37 @@ jobs:
        - image: openapitools/openapi-generator-cli:latest
     steps:
       - checkout
-      - run: mkdir ~/repo/a3s-typescript-axios
-      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/doc/dokuti_api.yml -g typescript-axios -o ~/repo/a3s-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/dokuti-api
+      - run: mkdir ~/repo/${CIRCLE_PROJECT_REPONAME}-typescript-axios
+      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/doc/dokuti_api.yml -g typescript-axios -o ~/repo/${CIRCLE_PROJECT_REPONAME}-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/${CIRCLE_PROJECT_REPONAME}-api
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - a3s-typescript-axios
+            - ${CIRCLE_PROJECT_REPONAME}
+  publish-axios-client:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:lts-jessie-browsers-legacy
+    steps:
+      - attach_workspace:
+          at: ~/repo/workspace
+      - run:
+          name: update-npm
+          command: 'npm install -g npm@latest'
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios/.npmrc
+      - run:
+          name: Add node modules to the NPM ignore file.
+          command: echo 'node_modules/' >> ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios/.npmignore
+      - run:
+          name: Run Yarn
+          command: cd ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios && yarn
+      - run:
+          name: Build with Yarn
+          command: cd ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios && yarn build
+      - run:
+          name: Publish to NPM with Yarn.
+          command: cd ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios && yarn publish --access public
   test:
     docker:
       - image: maven:3.5.3-jdk-8-alpine
@@ -97,6 +122,10 @@ workflows:
   build-commit:
     jobs:
       - generate-axios-client
+      - publish-axios-client:
+          requires:
+            - generate-axios-client
+      #TODO: filter on relevant branch or tag
       - test
       - sonarqube
       - fossa-scan
