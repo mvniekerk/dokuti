@@ -11,7 +11,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - ${CIRCLE_PROJECT_REPONAME}
+            - ${CIRCLE_PROJECT_REPONAME}-typescript-axios
   publish-axios-client:
     working_directory: ~/repo
     docker:
