@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd"
+    xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+     <servers>
+        <server>
+            <id>grindrodbank-libs-release</id>
+            
+            <username>${env.MAVEN_REPO_USER}</username>
+  			<password>${env.MAVEN_REPO_PASSWORD}</password>
+        </server>
+        
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>grindrodbank-libs-release</id>
+            <repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>grindrodbank-libs-release</id>
+                    <name>grindrodbank-libs-release</name>
+                    <url>https://gbl.jfrog.io/gbl/baobab-maven-release-virtual</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>grindrodbank-libs-release</activeProfile>
+    </activeProfiles>
+</settings>

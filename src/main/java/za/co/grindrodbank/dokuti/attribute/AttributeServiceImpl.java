@@ -15,7 +15,8 @@ import org.springframework.stereotype.Service;
 import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
 import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
+
 
 @Service
 public class AttributeServiceImpl implements AttributeService {
