@@ -21,7 +21,7 @@ jobs:
           at: ~/repo/workspace
       - run:
           name: update-npm
-          command: 'npm install -g npm@latest'
+          command: 'sudo npm install -g npm@latest'
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/workspace/dokuti-typescript-axios/.npmrc
