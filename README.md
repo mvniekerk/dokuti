@@ -44,10 +44,10 @@ docker-compose up
 ```bash
 TOKEN=`curl \
 -s -v \
--X POST http://localhost:80/connect/token \                        
+-X POST http://localhost:80/connect/token \
 -H 'Content-Type: application/x-www-form-urlencoded' \
 -H 'cache-control: no-cache' \
--d 'grant_type=password&username=dokuti-admin&password=Password1#&client_id=dokuti-test-client&client_secret=secret$scope=dokuti' \
+-d 'grant_type=password&username=dokuti-admin&password=Password1#&client_id=dokuti-test-client&client_secret=secret&scope=dokuti' \
 | jq '.access_token' -r` \
 && echo "TOKEN is :$TOKEN"
 ```
