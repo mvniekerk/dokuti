@@ -25,18 +25,9 @@ spring:
       max-request-size: 15MB 
 
 logging:
-  level:    
-    root: TRACE
-    org.springframework.security: TRACE
-    org.springframework.jdbc.core.JdbcTemplate: TRACE
-    org.springframework.jdbc.core.StatementCreatorUtils: TRACE
-    org.springframework.orm.jpa: TRACE      
-    org.springframework.transaction: TRACE
-    org.hibernate.engine: TRACE
-    org.hibernate.SQL: TRACE    
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    za.co.grindrodbank.dokuti: TRACE
-    za.co.grindrodbank.dokuti.exceptionhandlers: TRACE
+  level:
+    root: INFO
+    za.co.grindrodbank.dokuti: DEBUG
      
 storage:
   location: "/tmp/dokuti-local-uploads"
