@@ -219,7 +219,7 @@ Suggest using a databasetype for this]]></comment>
 	</column>
 	<column name="user_uuid" not-null="true">
 		<type name="uuid" length="0"/>
-		<comment><![CDATA[the user_uuid as stored in Keycloak (or other identity storage) ]]></comment>
+		<comment><![CDATA[the user_uuid as stored in A3S (or other identity storage) ]]></comment>
 	</column>
 	<column name="permission" not-null="true" default-value="'read'">
 		<type name="text" length="0"/>
