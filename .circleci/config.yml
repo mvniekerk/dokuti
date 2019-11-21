@@ -6,12 +6,12 @@ jobs:
        - image: openapitools/openapi-generator-cli:latest
     steps:
       - checkout
-      - run: mkdir ~/repo/${CIRCLE_PROJECT_REPONAME}-typescript-axios
-      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/doc/dokuti_api.yml -g typescript-axios -o ~/repo/${CIRCLE_PROJECT_REPONAME}-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/${CIRCLE_PROJECT_REPONAME}-api
+      - run: mkdir ~/repo/dokuti-typescript-axios
+      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/doc/dokuti_api.yml -g typescript-axios -o ~/repo/dokuti-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/${CIRCLE_PROJECT_REPONAME}-api
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - $CIRCLE_PROJECT_REPONAME-typescript-axios/
+            - dokuti-typescript-axios #TODO: hardcoded
   publish-axios-client:
     working_directory: ~/repo
     docker:
@@ -24,19 +24,19 @@ jobs:
           command: 'npm install -g npm@latest'
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/workspace/dokuti-typescript-axios/.npmrc
       - run:
           name: Add node modules to the NPM ignore file.
-          command: echo 'node_modules/' >> ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios/.npmignore
+          command: echo 'node_modules/' >> ~/repo/workspace/dokuti-typescript-axios/.npmignore
       - run:
           name: Run Yarn
-          command: cd ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios && yarn
+          command: cd ~/repo/workspace/dokuti-typescript-axios && yarn
       - run:
           name: Build with Yarn
-          command: cd ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios && yarn build
+          command: cd ~/repo/workspace/dokuti-typescript-axios && yarn build
       - run:
           name: Publish to NPM with Yarn.
-          command: cd ~/repo/workspace/${CIRCLE_PROJECT_REPONAME}-typescript-axios && yarn publish --access public
+          command: cd ~/repo/workspace/dokuti-typescript-axios && yarn publish --access public
   test:
     docker:
       - image: maven:3.5.3-jdk-8-alpine
