@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "260f2b5d-2088-473e-8a44-a72ac2a418fb",
+		"_postman_id": "9615ed8f-70c5-4b04-8f4b-678363c61a20",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -21,7 +21,9 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData).to.have.property('access_token');",
 									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
-									"});"
+									"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+									"});",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -50,37 +52,39 @@
 								},
 								{
 									"key": "username",
-									"value": "test-user",
+									"value": "dokuti-admin",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "test-user",
+									"value": "Password1#",
 									"type": "text"
 								},
 								{
 									"key": "client_id",
-									"value": "dokuti",
+									"value": "dokuti-test-client",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "{{DOKUTI_CLIENT_SECRET}}",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "dokuti",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
+							"raw": "http://a3s-identity-server/connect/token",
+							"protocol": "http",
 							"host": [
-								"{{KEYCLOAK_BASE_URL}}"
+								"a3s-identity-server"
 							],
 							"path": [
-								"auth",
-								"realms",
-								"{{KEYCLOAK-REALM}}",
-								"protocol",
-								"openid-connect",
+								"connect",
 								"token"
 							]
 						}
@@ -443,84 +447,6 @@
 		{
 			"name": "archive-feature",
 			"item": [
-				{
-					"name": "Get Key Session Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
-								"exec": [
-									"pm.test(\"Set session_access_token environment variable.\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('access_token');",
-									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "client_id",
-									"value": "dokuti",
-									"type": "text"
-								},
-								{
-									"key": "client_secret",
-									"value": "{{DOKUTI_CLIENT_SECRET}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
-							"host": [
-								"{{KEYCLOAK_BASE_URL}}"
-							],
-							"path": [
-								"auth",
-								"realms",
-								"{{KEYCLOAK-REALM}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Create Document 2",
 					"event": [
@@ -1256,84 +1182,6 @@
 		{
 			"name": "tag-feature",
 			"item": [
-				{
-					"name": "Get Key Session Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
-								"exec": [
-									"pm.test(\"Set session_access_token environment variable.\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('access_token');",
-									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "client_id",
-									"value": "dokuti",
-									"type": "text"
-								},
-								{
-									"key": "client_secret",
-									"value": "{{DOKUTI_CLIENT_SECRET}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
-							"host": [
-								"{{KEYCLOAK_BASE_URL}}"
-							],
-							"path": [
-								"auth",
-								"realms",
-								"{{KEYCLOAK-REALM}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Create Document 2 ",
 					"event": [
@@ -2129,84 +1977,6 @@
 		{
 			"name": "basic",
 			"item": [
-				{
-					"name": "Get Key Session Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
-								"exec": [
-									"pm.test(\"Set session_access_token environment variable.\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('access_token');",
-									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "client_id",
-									"value": "dokuti",
-									"type": "text"
-								},
-								{
-									"key": "client_secret",
-									"value": "{{DOKUTI_CLIENT_SECRET}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
-							"host": [
-								"{{KEYCLOAK_BASE_URL}}"
-							],
-							"path": [
-								"auth",
-								"realms",
-								"{{KEYCLOAK-REALM}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Create Document",
 					"event": [
@@ -3162,84 +2932,6 @@
 			"name": "rollback-feature",
 			"item": [
 				{
-					"name": "Get Key Session Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
-								"exec": [
-									"pm.test(\"Set session_access_token environment variable.\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('access_token');",
-									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "test-user",
-									"type": "text"
-								},
-								{
-									"key": "client_id",
-									"value": "dokuti",
-									"type": "text"
-								},
-								{
-									"key": "client_secret",
-									"value": "{{DOKUTI_CLIENT_SECRET}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{KEYCLOAK_BASE_URL}}/auth/realms/{{KEYCLOAK-REALM}}/protocol/openid-connect/token",
-							"host": [
-								"{{KEYCLOAK_BASE_URL}}"
-							],
-							"path": [
-								"auth",
-								"realms",
-								"{{KEYCLOAK-REALM}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Create Document 1 ",
 					"event": [
 						{
@@ -3541,21 +3233,11 @@
 		}
 	],
 	"auth": {
-		"type": "oauth2",
-		"oauth2": [
+		"type": "bearer",
+		"bearer": [
 			{
-				"key": "accessToken",
+				"key": "token",
 				"value": "{{session_access_token}}",
-				"type": "string"
-			},
-			{
-				"key": "tokenType",
-				"value": "bearer",
-				"type": "string"
-			},
-			{
-				"key": "addTokenTo",
-				"value": "header",
 				"type": "string"
 			}
 		]
@@ -3584,7 +3266,7 @@
 	],
 	"variable": [
 		{
-			"id": "819b838f-aade-4fb8-a12b-15d792191407",
+			"id": "ebc30d2d-697c-4cdb-9539-730689cdbac4",
 			"key": "session_access_token",
 			"value": "",
 			"type": "string"
