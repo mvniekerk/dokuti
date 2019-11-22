@@ -15,9 +15,6 @@ services:
   web:
     build: 
       context: ../../
-      args:
-        REPO_USER: ${MAVEN_REPO_USER}
-        REPO_PWD: ${MAVEN_REPO_PASSWORD}
     ports:
      - "8181:8080"
     networks:
