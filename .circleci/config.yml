@@ -1,3 +1,18 @@
+#
+# *************************************************
+# Copyright (c) 2019, Grindrod Bank Limited
+# License MIT: https://opensource.org/licenses/MIT
+# **************************************************
+#
+
+#definition for reuse later
+only-tags: &only-tags
+  filters:
+    tags:
+      only: /^.*/
+    branches:
+      ignore: /.*/
+
 version: 2
 jobs:
   generate-axios-client:
