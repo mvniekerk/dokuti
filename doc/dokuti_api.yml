@@ -3,7 +3,7 @@ info:
   description: >-
     API Definition for the Document Utility Service. This service allows
     uploading and sharing of documents.
-  version: 0.2.0-test
+  version: 0.2.0
   title: Document Utility Service
 paths:
   /documents:
