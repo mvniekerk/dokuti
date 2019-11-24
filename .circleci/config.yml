@@ -179,6 +179,7 @@ workflows:
               only: master
 
   tagged_build_push:
+    jobs:
       - unit-test: *only-tags
       - sonarqube:
           requires:
