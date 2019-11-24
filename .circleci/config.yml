@@ -132,7 +132,7 @@ jobs:
           docker_layer_caching: false
       # build and push Docker image to dockerhub.
       - run: |
-          export TAG=${$CIRCLE_TAG:-untagged}
+          export TAG=${CIRCLE_TAG:-untagged}
           docker build -t grindrodbank/dokuti:$TAG .     
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push grindrodbank/dokuti:$TAG
