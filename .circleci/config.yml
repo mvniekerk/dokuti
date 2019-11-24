@@ -10,7 +10,8 @@ jobs:
       - run: |
               echo "Adding Build $CIRCLE_BUILD_NUM to version"
               export BUILD=${CIRCLE_BUILD_NUM:-`date  +%Y%M%d%H%M%S`}
-              sed "s/^.*version:.*/&-$BUILD/" ~/repo/doc/dokuti_api.yml >> ~/repo/dokuti_api.yml && grep version: ~/repo/dokuti_api.yml
+              sed "s/^.*version:.*/&-$BUILD/" ~/repo/doc/dokuti_api.yml >> ~/repo/dokuti_api.yml 
+              grep version: ~/repo/dokuti_api.yml
               diff ~/repo/doc/dokuti_api.yml ~/repo/dokuti_api.yml || true
       - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/dokuti_api.yml -g typescript-axios -o ~/repo/dokuti-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/${CIRCLE_PROJECT_REPONAME}-api
       - persist_to_workspace:
@@ -130,7 +131,9 @@ workflows:
       - publish-axios-client:
           requires:
             - generate-axios-client
-      #TODO: filter on relevant branch or tag
+          filters:
+            branches:
+              only: master
       - test
       - sonarqube
       - fossa-scan
