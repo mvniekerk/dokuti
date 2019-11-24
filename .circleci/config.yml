@@ -10,12 +10,12 @@ jobs:
       - run: |
               echo "Adding Build $CIRCLE_BUILD_NUM to version"
               export BUILD=${CIRCLE_BUILD_NUM:-`date  +%Y%M%d%H%M%S`}
-              sed "s/^.*version.*/&-$BUILD/" ~/repo/doc/dokuti_api.yml >> ~/repo/dokuti_api.yml && grep version ~/repo/dokuti_api.yml
-      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/doc/dokuti_api.yml -g typescript-axios -o ~/repo/dokuti-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/${CIRCLE_PROJECT_REPONAME}-api
+              sed "s/^.*version.*/&-$BUILD/" ~/repo/doc/dokuti_api.yml >> ~/repo/dokuti_api.yml && grep version: ~/repo/dokuti_api.yml
+      - run: /usr/local/bin/docker-entrypoint.sh generate -i ~/repo/dokuti_api.yml -g typescript-axios -o ~/repo/dokuti-typescript-axios --model-package=model --api-package=api --additional-properties=withSeparateModelsAndApi=true,modelPropertyNaming=camelCase,npmName=@grindrodbank/${CIRCLE_PROJECT_REPONAME}-api
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - dokuti-typescript-axios #TODO: hardcoded
+            - dokuti-typescript-axios 
   publish-axios-client:
     working_directory: ~/repo
     docker:
