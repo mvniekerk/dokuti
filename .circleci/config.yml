@@ -58,7 +58,7 @@ jobs:
       - run:
           name: Publish to NPM with Yarn.
           command: cd ~/repo/workspace/dokuti-typescript-axios && yarn publish --access public
-  test:
+  unit-test:
     docker:
       - image: maven:3.5.3-jdk-8-alpine
     working_directory: ~/dokuti-build
@@ -122,6 +122,20 @@ jobs:
           # Tag and push latest
           docker tag grindrodbank/dokuti:$TAG grindrodbank/dokuti:latest
           docker push grindrodbank/dokuti:latest
+  tagged-docker-build:
+    docker:
+      - image: docker
+    working_directory: ~/dokuti-docker
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      # build and push Docker image to dockerhub.
+      - run: |
+          export TAG=${$CIRCLE_TAG:-untagged}
+          docker build -t grindrodbank/dokuti:$TAG .     
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push grindrodbank/dokuti:$TAG
   fossa-scan:
     docker:
       - image: golang:1.10.0-stretch
@@ -140,7 +154,7 @@ jobs:
       - run: fossa test
 workflows:
   version: 2
-  build-commit:
+  untagged_build_test:
     jobs:
       - generate-axios-client
       - publish-axios-client:
@@ -149,9 +163,12 @@ workflows:
           filters:
             branches:
               only: master
-      - test
+      - unit-test
       - sonarqube
-      - fossa-scan
+      - fossa-scan:
+          filters:    
+            branches:    
+              only: master
       - docker-build:
           requires:
             - test
@@ -160,3 +177,27 @@ workflows:
           filters:
             branches:
               only: master
+
+  tagged_build_push:
+      - unit-test: *only-tags
+      - sonarqube:
+          requires:
+          - unit-test
+          <<: *only-tags
+      - fossa-scan: *only-tags
+      - generate-axios-client: *only-tags
+      - tagged-docker-build:
+          requires:
+          - unit-test
+          - sonarqube
+          - fossa-scan
+          - generate-axios-client
+          <<: *only-tags
+      - publish-axios-client:
+          requires:
+          - unit-test
+          - sonarqube
+          - fossa-scan
+          - generate-axios-client
+          - tagged-docker-build
+          <<: *only-tags
