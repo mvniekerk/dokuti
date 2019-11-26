@@ -1,0 +1,237 @@
+{
+	"info": {
+		"_postman_id": "207bc2db-64a7-45d0-be7c-0a84a4e8191c",
+		"name": "DOKUTI.register-a3s-contract",
+		"description": "A Postman collection desgined to be executed remotely using Newman within the CI/CD context.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Is `auth-server` Up",
+			"item": [
+				{
+					"name": "auth-server health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e4919f68-801a-4394-acad-ee6ad9c0abfa",
+								"exec": [
+									"var expectedHttpStatus = 200;",
+									"var maxNumberOfTries = 10;",
+									"var sleepBetweenTries = 5000;",
+									"",
+									"if (!pm.environment.get(\"tries\")) {",
+									"    pm.environment.set(\"tries\", 1);",
+									"}",
+									"",
+									"if ((pm.response.code != expectedHttpStatus) && (pm.environment.get(\"tries\") < maxNumberOfTries)) {",
+									"     console.log('.... ... waiting for 200 response');",
+									"     ",
+									"     var tries = parseInt(pm.environment.get(\"tries\"), 10);",
+									"     pm.environment.set(\"tries\", tries + 1);",
+									"     setTimeout(function() {}, sleepBetweenTries);",
+									"     postman.setNextRequest(request.name);",
+									" } else {",
+									"     pm.environment.unset(\"tries\");",
+									"",
+									"     pm.test(\"Status code is \" + expectedHttpStatus, function () {",
+									"          pm.response.to.have.status(expectedHttpStatus);",
+									"     });",
+									"",
+									"     // more tests here...",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{auth-server-base-url}}/.well-known/openid-configuration",
+							"host": [
+								"{{auth-server-base-url}}"
+							],
+							"path": [
+								".well-known",
+								"openid-configuration"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f45e823a-4627-40f0-98b6-5d3a105bf0dd",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc65bf42-cf32-486f-a686-f5f4b4e2c26c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Get Access Token - A3S Bootsrap Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+						"exec": [
+							"pm.test(\"Set session_access_token environment variable.\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('access_token');",
+							"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+							"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+							"    console.log(\"session_access_token is \" +  jsonData.access_token);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "a3s-bootstrap-admin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Password1#",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{client-id}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client-secret}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "a3s",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{auth-server-base-url}}/connect/token",
+					"host": [
+						"{{auth-server-base-url}}"
+					],
+					"path": [
+						"connect",
+						"token"
+					]
+				},
+				"description": "Obtains an access token for the A3S Bootstrap admin user, which only has permissions to apply Security Contract definitions."
+			},
+			"response": []
+		},
+		{
+			"name": "PutSecurityContractDefinition",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "53f866e8-5434-4e46-8610-dbe1c3781067",
+						"exec": [
+							"pm.test(\"Response is OK - 204 no content\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "accessToken",
+							"value": "{{session_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-yaml",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "applications:\n    # This value will be used to create the client scope within the Identity Server. Therfore, it cannot contain any spaces, and should follow a fully smaller case convention.\n    # Perhaps we should add an explicit attribute to an application to model it's 'client-scope', making it independent from the name.\n  - fullname: dokuti   \n    applicationFunctions:\n      - name: dokuti.documentMaintenance\n        description: Functionality to maintain documents within Dokuti.\n        permissions:\n          - name: dokuti.documents.read\n            description: View a list of documents or a single document. Enables downloading documents.\n          - name: dokuti.documents.create\n            description: Create a new document. Enables assigning tags, attributes and groups to newly created documents.\n          - name: dokuti.documents.update\n            description: Updates a document. Also enables modifying tags, attributes and groups associated with the document.\n\n      - name: dokuti.attributeMaintenance\n        description: Functionality to maintain attributes within Dokuti.\n        permissions:\n          - name: dokuti.attributes.read\n            description: View list of document attributes. View a single document attribute.\n          - name: dokuti.attributes.create\n            description: Create a new document attribute.\n          - name: dokuti.attributes.delete\n            description: Enables deletion of document attributes.\n          - name: dokuti.attributes.update\n            description: Update a document attribute.\n\nclients:\n  - clientId: dokuti-test-client\n    name: \"Dokuti Test client\"\n    allowedGrantTypes:\n      - authorization_code\n      - password\n    redirectUris:\n      - \"https://www.getpostman.com/oauth2/callback\"\n    postLogoutRedirectUris:\n      - \"https://www.getpostman.com\"\n    allowedCorsOrigins:\n      - \"https://www.getpostman.com\"\n    allowedScopes:\n      - \"openid\"\n      - \"profile\"\n      - \"dokuti\"\n    clientSecrets:\n      - \"secret\"\n    allowedOfflineAccess: true\n\n\ndefaultConfigurations:\n    # The name here is purely for human readability and separating the default configurations into logical components.\n  - name: Dokuti Default configuration\n    # Section to configure the default state of applications with respect to any business functions that need to be configured.\n    applications:\n        # The name of the application. This must already exist or be defined in the 'applications' section of this document. If not found, it will be ignored.\n      - name: dokuti\n        # Default 'Business' functions that are to be created. Note: These are different from 'applicationFunctions' created in the 'applications' section of this document.\n        functions:\n            # Create a 'super admin' business function that contains all the possible application permissions.\n          - name: \"dokuti.SuperAdmin\"\n            description: \"A function that contains all possible permissions within the dokuti micro-service.\"\n            permissions:\n              - dokuti.documents.read\n              - dokuti.documents.create\n              - dokuti.documents.update\n              - dokuti.attributes.read\n              - dokuti.attributes.create\n              - dokuti.attributes.update\n              - dokuti.attributes.delete\n          - name: \"dokuti.documentUser\"\n            description: \"A function that contains all document related permissions within the dokuti micro-service.\"\n            permissions:\n              - dokuti.documents.read\n              - dokuti.documents.create\n              - dokuti.documents.update\n    # Default Roles to be created. Contains the functions that will be assigned to the Roles.\n    roles:\n      - name: \"Dokuti Super Admin\"\n        description: An dokuti Role that has all the dokuti functions associated with it.\n        # The server will attempt to assign these 'business' functions to the role. If the function does not exists, it will NOT be created, and will be simply NOT assigned to the Role. \n        functions:\n          - \"dokuti.SuperAdmin\"\n      - name: \"Dokuti User\"\n        description: An dokuti Role for user level access.\n        functions:\n          - \"dokuti.documentUser\"\n    # Defines a section for declaring new users and mapping roles to them.\n    users:\n      - username: dokuti-admin\n        name: dokuti-admin\n        surname: system user\n        email: dokuti-admin@localhost\n        # Note: Passwords require at least one capital, one number and one non-alpha-numeric character.\n        password: \"Password1#\"\n        # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.\n        roles:\n          - \"Dokuti Super Admin\"\n      - username: dokuti-user\n        name: dokuti-user\n        surname: system user\n        email: dokuti-user@localhost\n        # Note: Passwords require at least one capital, one number and one non-alpha-numeric character.\n        password: \"Password1#\"\n        # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.\n        roles:\n          - \"Dokuti User\"\n\n    teams:\n      - name: default-dokuti-team\n        description: A simple test default team.\n        users:\n          - dokuti-admin\n          - dokuti-user\n      - name: dokuti-admin-team\n        description: A simple test admin team.\n        users:\n          - dokuti-admin"
+				},
+				"url": {
+					"raw": "{{a3s-host}}/securityContracts",
+					"host": [
+						"{{a3s-host}}"
+					],
+					"path": [
+						"securityContracts"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

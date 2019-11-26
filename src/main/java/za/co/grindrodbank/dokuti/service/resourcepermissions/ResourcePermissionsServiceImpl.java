@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 @Service
 public class ResourcePermissionsServiceImpl implements ResourcePermissionsService {

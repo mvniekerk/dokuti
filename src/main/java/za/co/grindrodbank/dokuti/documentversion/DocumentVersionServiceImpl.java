@@ -17,7 +17,7 @@ import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 @Service
 public class DocumentVersionServiceImpl implements DocumentVersionService {

@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 public class DocumentEntitySpecifications {
     
