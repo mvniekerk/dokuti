@@ -203,7 +203,7 @@ CREATE TABLE _documents.document_acl(
 
 );
 -- ddl-end --
-COMMENT ON COLUMN _documents.document_acl.user_uuid IS 'the user_uuid as stored in Keycloak (or other identity storage) or
+COMMENT ON COLUMN _documents.document_acl.user_uuid IS 'the user_uuid as stored in A3S (or other identity storage) or
 the group_uuid as stored in the _documents schema';
 -- ddl-end --
 COMMENT ON COLUMN _documents.document_acl.permission IS 'READ < WRITE (and modify meta-data), < ROLLBACK < UN/ARCHIVE';
@@ -298,7 +298,7 @@ CREATE TABLE _documents.document_group_user(
 
 );
 -- ddl-end --
-COMMENT ON COLUMN _documents.document_group_user.user_uuid IS 'the user uuid as stored in Keycloak (or other identity storage)';
+COMMENT ON COLUMN _documents.document_group_user.user_uuid IS 'the user uuid as stored in A3S (or other identity storage)';
 -- ddl-end --
 COMMENT ON COLUMN _documents.document_group_user.__updated_by IS 'uuid of the user who granted these acl rights';
 -- ddl-end --

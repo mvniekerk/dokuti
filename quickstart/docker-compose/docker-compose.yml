@@ -4,6 +4,8 @@ services:
     image: "bitnami/postgresql:10.7.0"
     ports:
       - '5432:5432'
+    networks:
+      - dokuti-quickstart        
     environment:
       - POSTGRESQL_PASSWORD=postgres
       - POSTGRESQL_DATABASE=dokuti
@@ -11,9 +13,12 @@ services:
     # volumes:
     #   - 'postgresql_data:/bitnami'
   web:
-    build: ../../
+    build: 
+      context: ../../
     ports:
      - "8181:8080"
+    networks:
+      - dokuti-quickstart       
     volumes:
       - ./sample-application.yaml:/config/application.yaml
       - ./files:/tmp/dokuti-local-uploads
@@ -21,15 +26,64 @@ services:
       - postgresql
     entrypoint: sh -c './wait-for.sh postgresql:5432 -- ./entrypoint.sh' 
 
-  keycloak:
-    image: "jboss/keycloak:4.7.0.Final"
+
+  a3s-postgresql:
+    container_name: a3s-postgresql
+    networks:
+      - dokuti-quickstart    
+    image: "postgres:10.7-alpine"
+    restart: always
     ports:
-     - "9191:8080"
+      - "5478:5432"
     environment:
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
-      KEYCLOAK_IMPORT: "/tmp/dokuti-realm.json"
-    volumes:
-      - ./dokuti-realm.json:/tmp/dokuti-realm.json
-         
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=identity_server
+      - POSTGRES_PASSWORD=postgres
+    
+  a3s:
+    container_name: a3s
+    networks:
+      - dokuti-quickstart  
+    image: "grindrodbank/a3s"
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FLYWAY_ENABLE=true
+      - DATABASE_SERVER=a3s-postgresql
+      - DATABASE_NAME=identity_server
+      - DATABASE_PORT=5432
+      - FLYWAY_USER=postgres
+      - FLYWAY_PASSWORD=postgres
+      - FLYWAY_CONNECTION_RETRIES=5
+    depends_on:
+      - a3s-postgresql    
+
+  a3s-identity-server:
+    container_name: a3s-identity-server
+    networks:
+      - dokuti-quickstart  
+    image: "grindrodbank/a3s-identity-server"
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - a3s
+
+  newman:
+   container_name: register-contract-dokuti
+   networks:
+     - dokuti-quickstart    
+   image: "postman/newman_alpine33" 
+   command: run /etc/newman/DOKUTI.register-a3s-contract.postman_collection.json --global-var client-id='a3s-default' --global-var client-secret='secret'  --global-var a3s-host=http://a3s:80 --global-var auth-server-base-url=http://a3s-identity-server --delay-request 15000  
+   volumes:
+       - ../../postman:/etc/newman
+   depends_on:
+     - a3s-identity-server
+
+networks:
+  dokuti-quickstart:            
 

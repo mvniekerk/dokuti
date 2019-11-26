@@ -41,7 +41,8 @@ import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataSt
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.StorageFileNotFoundException;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
+
 
 @Service
 public class DocumentServiceImpl implements DocumentService {

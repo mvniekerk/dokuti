@@ -27,7 +27,7 @@ import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectma
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
 
 @RestController
-@PreAuthorize("hasRole('DOKUTI_USER') or hasRole('DOKUTI_ADMIN')")
+//@PreAuthorize("hasRole('DOKUTI_USER') or hasRole('DOKUTI_ADMIN')")
 public class DocumentTagControllerImpl implements TagsApi {
 
 	@Autowired
