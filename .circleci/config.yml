@@ -99,23 +99,6 @@ jobs:
                 -Dsonar.login=$SONAR_AUTH_TOKEN \
                 -Dsonar.branch.name=$CIRCLE_BRANCH \
                 -Dsonar.exclusions=srcgen/**/*
-  docker-build:
-    docker:
-      - image: docker
-    working_directory: ~/dokuti-docker
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: false
-      # build and push Docker image to dockerhub.
-      - run: |
-          TAG=0.3.0
-          docker build -t grindrodbank/dokuti:$TAG .     
-          docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push grindrodbank/dokuti:$TAG
-          # Tag and push latest
-          docker tag grindrodbank/dokuti:$TAG grindrodbank/dokuti:latest
-          docker push grindrodbank/dokuti:latest
   tagged-docker-build:
     docker:
       - image: docker
@@ -130,6 +113,9 @@ jobs:
           docker build -t grindrodbank/dokuti:$TAG .     
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push grindrodbank/dokuti:$TAG
+          # Tag and push latest
+          docker tag grindrodbank/dokuti:$TAG grindrodbank/dokuti:latest
+          docker push grindrodbank/dokuti:latest
   fossa-scan:
     docker:
       - image: golang:1.10.0-stretch
@@ -163,14 +149,7 @@ workflows:
           filters:    
             branches:    
               only: master
-      - docker-build:
-          requires:
-            - unit-test
-            - sonarqube
-            - fossa-scan
-          filters:
-            branches:
-              only: master
+
 
   tagged_build_push:
     jobs:
