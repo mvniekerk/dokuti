@@ -137,12 +137,6 @@ workflows:
   untagged_build_test:
     jobs:
       - generate-axios-client
-      - publish-axios-client:
-          requires:
-            - generate-axios-client
-          filters:
-            branches:
-              only: master
       - unit-test
       - sonarqube
       - fossa-scan:
