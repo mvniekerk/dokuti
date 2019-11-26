@@ -24,18 +24,16 @@ cd quickstart/docker-compose
 docker-compose up
 ```
 
-3 services are installed:
+5 services are installed:
 * Web 1 - The actual document service installed on port 8181
 * PostgreSQL Database installed on port 5432
-* Keycloak Authentication service installed on port 9191 and can be accessed by going to http://localhost:9191
+* A3S and and A3S-identity-server services
+* A3S PostgreSQL Database installed on port 5478
+
 
 ### Credentials for PostgreSQL database
 * Password: postgres
 * Database: dokuti
-
-### Credentials for Keycloak
-* Username: admin
-* Password: admin
 
 > This example uses:
 > * [curl](https://github.com/curl/curl) (a handy command line client to do HTTP requests) and 
@@ -46,11 +44,10 @@ docker-compose up
 ```bash
 TOKEN=`curl \
 -s -v \
--X POST http://localhost:9191/auth/realms/Dokuti/protocol/openid-connect/token \
+-X POST http://localhost:80/connect/token \
 -H 'Content-Type: application/x-www-form-urlencoded' \
--H 'Bearer-Token: 575c92bb-33fe-45b8-85ef-7cc5710e62eb' \
 -H 'cache-control: no-cache' \
--d 'grant_type=password&username=test-user&password=test-user&client_id=dokuti&client_secret=ee5c1c57-bf2f-43e6-9025-49344113c88d' \
+-d 'grant_type=password&username=dokuti-admin&password=Password1#&client_id=dokuti-test-client&client_secret=secret&scope=dokuti' \
 | jq '.access_token' -r` \
 && echo "TOKEN is :$TOKEN"
 ```

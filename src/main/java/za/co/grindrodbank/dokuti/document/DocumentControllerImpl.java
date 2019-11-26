@@ -45,10 +45,10 @@ import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 @RestController
-@PreAuthorize("hasRole('DOKUTI_USER') or hasRole('DOKUTI_ADMIN')")
+//@PreAuthorize("hasRole('DOKUTI_USER') or hasRole('DOKUTI_ADMIN')")
 public class DocumentControllerImpl implements DocumentsApi {
 	@Autowired
 	private DocumentService documentService;

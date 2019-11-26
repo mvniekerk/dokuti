@@ -4,7 +4,6 @@
 ****************************************************/
 package za.co.grindrodbank.dokuti.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -28,44 +27,39 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Import({ SecurityProperties.class })
 public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
 
-	@Autowired
-	private ResourceServerProperties resourceServerProperties;
+    @Autowired
+    private ResourceServerProperties resourceServerProperties;
 
-	@Autowired
-	private SecurityProperties securityProperties;
+    @Autowired
+    private SecurityProperties securityProperties;
 
-	@Override
-	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		resources.resourceId(resourceServerProperties.getResourceId());
-	}
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.resourceId(resourceServerProperties.getResourceId());
+    }
 
-	@Override
-	public void configure(final HttpSecurity http) throws Exception {
-		http.cors()
-			.configurationSource(corsConfigurationSource())
-			.and()
-			.headers()
-			.frameOptions()
-			.disable()
-			.and()
-			.csrf()
-			.disable()
-			.authorizeRequests()
-			.antMatchers("/actuator/*").permitAll()
-			.antMatchers(securityProperties.getApiMatcher()).authenticated();
-	}
+    @Override
+    public void configure(final HttpSecurity http) throws Exception {
+        http.cors()
+            .configurationSource(corsConfigurationSource())
+            .and()
+            .headers()
+            .frameOptions()
+            .disable()
+            .and()
+            .csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers("/actuator/*").permitAll()
+            .antMatchers(securityProperties.getApiMatcher()).authenticated();
+    }
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		if (null != securityProperties.getCorsConfiguration()) {
-			source.registerCorsConfiguration("/**", securityProperties.getCorsConfiguration());
-		}
-		return source;
-	}
-
-	@Bean
-	public JwtAccessTokenCustomizer jwtAccessTokenCustomizer(ObjectMapper mapper) {
-		return new JwtAccessTokenCustomizer(mapper);
-	}
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        if (null != securityProperties.getCorsConfiguration()) {
+            source.registerCorsConfiguration("/**", securityProperties.getCorsConfiguration());
+        }
+        return source;
+    }
 }

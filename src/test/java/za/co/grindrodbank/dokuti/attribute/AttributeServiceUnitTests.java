@@ -21,7 +21,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.attribute.AttributeRepository;
 import za.co.grindrodbank.dokuti.attribute.AttributeServiceImpl;
-import za.co.grindrodbank.dokuti.utilities.SecurityContextUtility;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
+
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SecurityContextUtility.class)
