@@ -85,6 +85,10 @@ public class DocumentEntity {
     @JsonBackReference
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DocumentFavouriteEntity> documentFavourites = new ArrayList<>();	
+    
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "shorten_key", nullable = false)
+    private String shortenKey;    
 
 	public String getContentType() {
 		return contentType;
@@ -181,6 +185,14 @@ public class DocumentEntity {
 
     public void setIsArchived(Boolean isArchived) {
         this.isArchived = isArchived;
+    }
+    
+    public String getShortenKey() {
+        return shortenKey;
+    }
+
+    public void setShortenKey(String shortenKey) {
+        this.shortenKey = shortenKey;
     }
 
     public DocumentVersionEntity getLatestDocumentVersion() {

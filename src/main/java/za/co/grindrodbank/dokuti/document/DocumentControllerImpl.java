@@ -19,6 +19,7 @@ import org.openapitools.model.DocumentInfoRequest;
 import org.openapitools.model.DocumentTagList;
 import org.openapitools.model.DocumentVersion;
 import org.openapitools.model.LookupTag;
+import org.openapitools.model.SharedObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -294,4 +295,34 @@ public class DocumentControllerImpl implements DocumentsApi {
 
     }   
 
+    @Override
+    public ResponseEntity<Document> shareDocument(UUID documentId, List<SharedObject> sharedObject) {
+
+        UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        List<DocumentAcl> permissions = documentEntity.getDocumentPermissions();
+        for (SharedObject so : sharedObject) {
+            if (so.getPermissions() != null) {
+                for (String p : so.getPermissions()) {
+                    DocumentAcl documentAcl = new DocumentAcl();
+                    documentAcl.setDocument(documentEntity);
+                    documentAcl.setPermission(p);
+                    documentAcl.setGrantedBy(userId);
+                    documentAcl.setMayAssign(false);
+                    if (Boolean.TRUE.equals(so.getTeamflag())) {
+                        documentAcl.setTeamId(UUID.fromString(so.getUuid()));
+                    } else {
+                        documentAcl.setUserId(UUID.fromString(so.getUuid()));
+                    }
+                    permissions.add(documentAcl);
+                }
+                
+            }
+        }
+        documentEntity = documentService.save(documentEntity);
+        Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+
+    }   
+    
 }

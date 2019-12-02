@@ -36,7 +36,9 @@ CREATE TABLE _documents.document (
 	__updated_on timestamp NOT NULL,
 	__updated_by uuid NOT NULL,
 	is_archived boolean NOT NULL DEFAULT false,
-	CONSTRAINT pk_document PRIMARY KEY (id)
+	shorten_key text,
+	CONSTRAINT pk_document PRIMARY KEY (id),
+	CONSTRAINT uniq_shorten_key UNIQUE (shorten_key)
 
 );
 -- ddl-end --
@@ -207,6 +209,7 @@ CREATE TABLE _documents.document_acl (
 	may_assign boolean NOT NULL DEFAULT false,
 	_granted_by uuid NOT NULL,
 	_granted_on timestamp NOT NULL,
+	team_uuid uuid NOT NULL,
 	CONSTRAINT document_share_acl_pk PRIMARY KEY (id)
 
 );
@@ -218,6 +221,8 @@ COMMENT ON COLUMN _documents.document_acl.permission IS 'READ < WRITE (and modif
 COMMENT ON COLUMN _documents.document_acl.may_assign IS 'able to assign document rights to others';
 -- ddl-end --
 COMMENT ON COLUMN _documents.document_acl._granted_by IS 'uuid of the user who granted these acl rights';
+-- ddl-end --
+COMMENT ON COLUMN _documents.document_acl.team_uuid IS 'the team_uuid as stored in A3S (or other identity storage) ';
 -- ddl-end --
 ALTER TABLE _documents.document_acl OWNER TO postgres;
 -- ddl-end --

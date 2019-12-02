@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -41,6 +43,7 @@ import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataSt
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.StorageFileNotFoundException;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
+import za.co.grindrodbank.dokuti.utilities.RandomString;
 import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 
@@ -76,25 +79,43 @@ public class DocumentServiceImpl implements DocumentService {
 		return document;
 	}
 
-	public DocumentEntity createNewDocument(MultipartFile file, String description) throws DatabaseLayerException {
-		DocumentEntity document = new DocumentEntity();
-		document.setContentType(file.getContentType());
-		document.setDescription(description);
-		document.setName(StringUtils.cleanPath(file.getOriginalFilename()));
-		document.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+    public DocumentEntity createNewDocument(MultipartFile file, String description) throws DatabaseLayerException {
+        DocumentEntity document = new DocumentEntity();
+        document.setContentType(file.getContentType());
+        document.setDescription(description);
+        document.setName(StringUtils.cleanPath(file.getOriginalFilename()));
+        document.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+        
+        int l = 6; 
+        int k = 0;
+        RandomString tickets = new RandomString(l, new SecureRandom());
+        document.setShortenKey(tickets.nextString());
+        for (;;) {
+            try {
+                document = documentRepository.save(document);
+                break;
+            } catch (DataIntegrityViolationException e) {
+                document.setShortenKey(tickets.nextString());
+                k++;
+                if (k > 12 ) {
+                    l++;
+                    k = 0;
+                    if (l > 8) {
+                        throw new RuntimeException("Error creating new document: cannot find shortent key");   
+                    }
+                    tickets = new RandomString(l, new SecureRandom());
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                throw new DatabaseLayerException("Error creating new document", e);
+            }
+        }
 
-		try {
-			document = documentRepository.save(document);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new DatabaseLayerException("Error creating new document", e);
-		}
+        createDocumentVersionWithFile(file, document);
+        document = addDocumentCreatorPermissionsToDocument(document);
 
-		createDocumentVersionWithFile(file, document);
-		document = addDocumentCreatorPermissionsToDocument(document);
-
-		return document;
-	}
+        return document;
+    }
 
 	public Resource getLatestDocumentData(DocumentEntity document)
 			throws ResourceNotFoundException, NotAuthorisedException, ChecksumFailedException {
@@ -182,7 +203,9 @@ public class DocumentServiceImpl implements DocumentService {
     }	
 	
 	public DocumentEntity save(DocumentEntity document) throws DatabaseLayerException {
-		try {
+	    
+    
+	    try {
 			return documentRepository.save(document);
 		} catch (Exception e) {
 			logger.error(e.getMessage());

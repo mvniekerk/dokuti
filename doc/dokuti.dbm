@@ -17,7 +17,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </schema>
 
-<table name="document" layer="0" collapse-mode="2" max-obj-count="8">
+<table name="document" layer="0" collapse-mode="2" max-obj-count="9">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[All documents]]></comment>
@@ -46,8 +46,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="is_archived" not-null="true" default-value="false">
 		<type name="boolean" length="0"/>
 	</column>
+	<column name="shorten_key">
+		<type name="text" length="0"/>
+	</column>
 	<constraint name="pk_document" type="pk-constr" table="_documents.document">
 		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_shorten_key" type="uq-constr" table="_documents.document">
+		<columns names="shorten_key" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -206,7 +212,7 @@ Suggest using a databasetype for this]]></comment>
 	<role name="postgres"/>
 </sequence>
 
-<table name="document_acl" layer="0" collapse-mode="2" max-obj-count="8">
+<table name="document_acl" layer="0" collapse-mode="2" max-obj-count="9">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<position x="386" y="23"/>
@@ -235,6 +241,10 @@ Suggest using a databasetype for this]]></comment>
 	</column>
 	<column name="_granted_on" not-null="true">
 		<type name="timestamp" length="0"/>
+	</column>
+	<column name="team_uuid" not-null="true">
+		<type name="uuid" length="0"/>
+		<comment><![CDATA[the team_uuid as stored in A3S (or other identity storage) ]]></comment>
 	</column>
 	<constraint name="document_share_acl_pk" type="pk-constr" table="_documents.document_acl">
 		<columns names="id" ref-type="src-columns"/>
@@ -277,7 +287,7 @@ Suggest using a databasetype for this]]></comment>
 <table name="user_favourite" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="888" y="111"/>
+	<position x="793" y="75"/>
 	<column name="user_uuid" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
