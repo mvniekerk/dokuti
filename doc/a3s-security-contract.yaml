@@ -45,6 +45,30 @@ clients:
       - "secret"
     allowedOfflineAccess: true
 
+  - clientId: dokuti-ui-client
+    name: "Dokuti UI client"
+    allowedGrantTypes:
+      - authorization_code
+      - password
+    redirectUris:
+      - "https://www.getpostman.com/oauth2/callback"
+      - "http://localhost:8181/oauth2-redirect.html"
+      - "http://localhost:8081/oauth2-redirect.html"
+    postLogoutRedirectUris:
+      - "https://www.getpostman.com"
+      - "http://localhost:8181"
+      - "http://localhost:8081"
+    allowedCorsOrigins:
+      - "https://www.getpostman.com"
+      - "http://localhost:8181"
+      - "http://localhost:8081"
+    allowedScopes:
+      - "openid"
+      - "profile"
+      - "dokuti"
+    clientSecrets:
+      - "secret"
+    allowedOfflineAccess: true
 
 defaultConfigurations:
     # The name here is purely for human readability and separating the default configurations into logical components.
