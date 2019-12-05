@@ -49,7 +49,6 @@ clients:
     name: "Dokuti UI client"
     allowedGrantTypes:
       - authorization_code
-      - password
     redirectUris:
       - "https://www.getpostman.com/oauth2/callback"
       - "http://localhost:8181/oauth2-redirect.html"
