@@ -84,15 +84,12 @@ public class DocumentServiceImpl implements DocumentService {
         document.setDescription(description);
         document.setName(StringUtils.cleanPath(file.getOriginalFilename()));
         document.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
-        
-        for (;;) {
-            try {
-                document = documentRepository.save(document);
-                break;
-            }  catch (Exception e) {
-                logger.error(e.getMessage());
-                throw new DatabaseLayerException("Error creating new document", e);
-            }
+
+        try {
+            document = documentRepository.save(document);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new DatabaseLayerException("Error creating new document", e);
         }
 
         createDocumentVersionWithFile(file, document);
