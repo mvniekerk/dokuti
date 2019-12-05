@@ -85,7 +85,7 @@ public class DocumentEntity {
     @JsonBackReference
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DocumentFavouriteEntity> documentFavourites = new ArrayList<>();	
-
+    
 	public String getContentType() {
 		return contentType;
 	}
@@ -182,7 +182,7 @@ public class DocumentEntity {
     public void setIsArchived(Boolean isArchived) {
         this.isArchived = isArchived;
     }
-
+    
     public DocumentVersionEntity getLatestDocumentVersion() {
 		Optional<DocumentVersionEntity> optionalLatestDocumentVersion = this.getDocumentVersions().stream().findFirst();
 

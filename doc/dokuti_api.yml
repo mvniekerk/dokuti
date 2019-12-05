@@ -702,7 +702,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
                 
-                
+  '/documents/{documentId}/share':
+    post:
+      tags:
+        - Documents
+      summary: Sharing with another user or a team
+      description: Sharing with another user or a team (both are identified by UUID)
+      operationId: shareDocument
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedObjects'      
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true    
+      responses:
+        '200':
+          description: Successful. Document shared.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to favourite Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+               
   '/documents/{documentId}/versions/{documentVersionId}/download':
     get:
       tags:
@@ -1736,3 +1791,39 @@ components:
         - tag: kyc
         - tag: oc
         - tag: regulatory
+        
+
+    SharedObject:
+      description: A single  shared object
+      required:
+        - teamflag
+        - uuid
+        - permissions
+      type: object
+      properties:
+        teamflag:
+          type: boolean
+          default: false       
+          example : false
+        uuid:
+          type: string
+          minLength: 1
+          maxLength: 255
+        permissions:
+          type: array
+          items:
+            type: string
+            minLength: 0
+            maxLength: 255  
+
+    SharedObjects:
+      description: A list of shared objects
+      type: array
+      items:
+         $ref: '#/components/schemas/SharedObject'
+
+
+
+      
+        
+        

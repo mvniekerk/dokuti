@@ -194,7 +194,7 @@ ALTER TABLE _documents.document_version OWNER TO postgres;
 CREATE TABLE _documents.document_acl(
 	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1 ),
 	document_id uuid NOT NULL,
-	user_uuid uuid NOT NULL,
+	user_uuid uuid,
 	permission text NOT NULL DEFAULT 'read',
 	may_assign boolean NOT NULL DEFAULT false,
 	_granted_by uuid NOT NULL,
