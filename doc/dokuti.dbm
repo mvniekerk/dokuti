@@ -17,7 +17,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </schema>
 
-<table name="document" layer="0" collapse-mode="2" max-obj-count="9">
+<table name="document" layer="0" collapse-mode="2" max-obj-count="8">
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[All documents]]></comment>
@@ -46,14 +46,8 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="is_archived" not-null="true" default-value="false">
 		<type name="boolean" length="0"/>
 	</column>
-	<column name="shorten_key">
-		<type name="text" length="0"/>
-	</column>
 	<constraint name="pk_document" type="pk-constr" table="_documents.document">
 		<columns names="id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="uniq_shorten_key" type="uq-constr" table="_documents.document">
-		<columns names="shorten_key" ref-type="src-columns"/>
 	</constraint>
 </table>
 

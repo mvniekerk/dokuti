@@ -43,7 +43,6 @@ import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataSt
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.StorageFileNotFoundException;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
-import za.co.grindrodbank.dokuti.utilities.RandomString;
 import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 
@@ -86,26 +85,11 @@ public class DocumentServiceImpl implements DocumentService {
         document.setName(StringUtils.cleanPath(file.getOriginalFilename()));
         document.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
         
-        int l = 6; 
-        int k = 0;
-        RandomString tickets = new RandomString(l, new SecureRandom());
-        document.setShortenKey(tickets.nextString());
         for (;;) {
             try {
                 document = documentRepository.save(document);
                 break;
-            } catch (DataIntegrityViolationException e) {
-                document.setShortenKey(tickets.nextString());
-                k++;
-                if (k > 12 ) {
-                    l++;
-                    k = 0;
-                    if (l > 8) {
-                        throw new RuntimeException("Error creating new document: cannot find shortent key");   
-                    }
-                    tickets = new RandomString(l, new SecureRandom());
-                }
-            } catch (Exception e) {
+            }  catch (Exception e) {
                 logger.error(e.getMessage());
                 throw new DatabaseLayerException("Error creating new document", e);
             }

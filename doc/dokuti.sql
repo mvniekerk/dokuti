@@ -36,9 +36,7 @@ CREATE TABLE _documents.document (
 	__updated_on timestamp NOT NULL,
 	__updated_by uuid NOT NULL,
 	is_archived boolean NOT NULL DEFAULT false,
-	shorten_key text,
-	CONSTRAINT pk_document PRIMARY KEY (id),
-	CONSTRAINT uniq_shorten_key UNIQUE (shorten_key)
+	CONSTRAINT pk_document PRIMARY KEY (id)
 
 );
 -- ddl-end --
