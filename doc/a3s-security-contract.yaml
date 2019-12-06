@@ -65,6 +65,7 @@ clients:
       - "openid"
       - "profile"
       - "dokuti"
+      - "a3s"
     clientSecrets:
       - "secret"
     allowedOfflineAccess: true
