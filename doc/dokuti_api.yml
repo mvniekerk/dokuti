@@ -1598,6 +1598,12 @@ components:
           $ref: '#/components/schemas/LookupTagList'
         attributes:
           $ref: '#/components/schemas/DocumentAttributeList'
+        permissions:
+          $ref: '#/components/schemas/PermissionList'
+        usersPermissions:
+          $ref: '#/components/schemas/UsersPermissionList'
+        teamsPermissions:
+          $ref: '#/components/schemas/TeamsPermissionList'          
     DocumentInfoRequest:
       type: object
       properties:
@@ -1809,8 +1815,37 @@ components:
         - tag: kyc
         - tag: oc
         - tag: regulatory
-        
-
+    PermissionList:
+      description: allowed document's permission for current user
+      type: array
+      items:
+        type: string
+        minLength: 0
+        maxLength: 255
+    Permission:
+      description: allowed document's permission for single user 
+      type: object
+      properties:
+        uuid:
+          type: string
+          minLength: 1
+          maxLength: 255
+        permissions:
+          type: array
+          items:
+            type: string
+            minLength: 0
+            maxLength: 255        
+    UsersPermissionList:    
+      description: allowed document's permission for non-current user
+      type: array
+      items:
+        $ref: '#/components/schemas/Permission'
+    TeamsPermissionList:    
+      description: allowed document's permission for teams
+      type: array
+      items:
+        $ref: '#/components/schemas/Permission'        
     SharedObject:
       description: A single  shared object
       required:
