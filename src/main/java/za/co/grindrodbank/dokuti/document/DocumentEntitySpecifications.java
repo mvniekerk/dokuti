@@ -127,10 +127,50 @@ public class DocumentEntitySpecifications {
                     return criteriaBuilder.equal(documentFavouritesJoin.get("userId"), userId);
                 }
                 return null;
-       
             }
-            
         };
     }
+    
+    
+    public static Specification<DocumentEntity> documentEntitiesWithSharedWithMeFilter(Boolean filterSharedWithMe) {
+        return new Specification<DocumentEntity>() {
+
+            private static final long serialVersionUID = -503975103325454018L;
+
+            @Override
+            public Predicate toPredicate(Root<DocumentEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                if (Boolean.TRUE.equals(filterSharedWithMe)) {
+                    Join<DocumentEntity, DocumentAcl> documentAclJoin = root.join("documentPermissions");
+                    UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+                    return criteriaBuilder.and(
+                            // 'shared with me' occurs when grantedBy is not current user
+                            criteriaBuilder.notEqual(documentAclJoin.get("grantedBy"), userId), 
+                            criteriaBuilder.equal(documentAclJoin.get("permission"),DocumentPermission.READ.toString()), 
+                            criteriaBuilder.equal(documentAclJoin.get("userId"), userId));
+                }
+                return null;
+            }
+        };
+    }  
+    
+    public static Specification<DocumentEntity> documentEntitiesWithSharedWithOthersFilter(Boolean filterSharedWithOthers) {
+        return new Specification<DocumentEntity>() {
+
+            private static final long serialVersionUID = 5205948678010085401L;
+
+            @Override
+            public Predicate toPredicate(Root<DocumentEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                if (Boolean.TRUE.equals(filterSharedWithOthers)) {
+                    Join<DocumentEntity, DocumentAcl> documentAclJoin = root.join("documentPermissions");
+                    UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+                    // 'shared with others' means  grantedBy is another is current user but userId is not current user
+                    return criteriaBuilder.and(criteriaBuilder.equal(documentAclJoin.get("grantedBy"), userId),
+                            criteriaBuilder.equal(documentAclJoin.get("permission"), DocumentPermission.READ.toString()), 
+                            criteriaBuilder.notEqual(documentAclJoin.get("userId"), userId));
+                }
+                return null;
+            }
+        };
+    }    
 	
 }

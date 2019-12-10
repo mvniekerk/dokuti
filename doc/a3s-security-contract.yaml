@@ -94,6 +94,24 @@ defaultConfigurations:
         # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.
         roles:
           - "Dokuti Super Admin"
+      - username: dokuti-admin2
+        name: dokuti-admin2
+        surname: system user2
+        email: dokuti-admin2@localhost
+        # Note: Passwords require at least one capital, one number and one non-alpha-numeric character.
+        password: "Password1#"
+        # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.
+        roles:
+          - "Dokuti Super Admin"  
+      - username: dokuti-admin3
+        name: dokuti-admin3
+        surname: system user3
+        email: dokuti-admin3@localhost
+        # Note: Passwords require at least one capital, one number and one non-alpha-numeric character.
+        password: "Password1#"
+        # The roles in this list will be assigned to the user. If the roles don't exist, they will NOT be created and will simply be ignored.
+        roles:
+          - "Dokuti Super Admin"                  
       - username: dokuti-user
         name: dokuti-user
         surname: system user
@@ -109,8 +127,14 @@ defaultConfigurations:
         description: A simple test default team.
         users:
           - dokuti-admin
+          - dokuti-admin2
+          - dokuti-admin3
           - dokuti-user
       - name: dokuti-admin-team
         description: A simple test admin team.
         users:
           - dokuti-admin
+          - dokuti-admin2
+          - dokuti-admin3
+                    
+          

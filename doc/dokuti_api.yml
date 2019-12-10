@@ -1625,6 +1625,10 @@ components:
         contentType:
           type: string
           example: text/plain
+        updatedBy:
+          type: string
+          format: uuid
+          example: '47948204-1a83-11ea-978f-2e728ce88125'
     DocumentAttributeRequest:
       type: object
       description: Object modelling a document attribute request.

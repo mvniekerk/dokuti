@@ -132,12 +132,15 @@ public interface DocumentService {
 	 *                         assigned to the document (And operator).
 	 * @param filterArchive    A archive filter that documents will be filtered by.                         
 	 *                         
-
+     * @param filterSharedWithOthers    A sharedWithOthers filter that documents will be filtered by.                         
+     *        
+     * @param filterSharedWithMe    A sharedWithMe filter that documents will be filtered by.                         
+     *                
 	 * @return A Pageable list of documents that match all the supplied filters.
 	 * @throws DatabaseLayerException
 	 */
 	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, Boolean filterByFavourites, List<String> tags,
-			List<String> attributeNames, Boolean filterArchive);
+			List<String> attributeNames, Boolean filterArchive, Boolean filterSharedWithOthers, Boolean filterSharedWithMe);
 
 	/**
 	 * Adds an attribute association to a document with a value.
