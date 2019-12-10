@@ -219,7 +219,7 @@ public class DocumentControllerUnitTests {
         list.add(document);
         Page<DocumentEntity> pagedResponse  = new PageImpl<>(list); 
        
-        Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
+        Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
         
@@ -261,7 +261,7 @@ public class DocumentControllerUnitTests {
         list.add(document);
         Page<DocumentEntity> pagedResponse  = new PageImpl<>(list);         
         
-        Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
+        Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
         

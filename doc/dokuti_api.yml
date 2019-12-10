@@ -95,6 +95,20 @@ paths:
             - expiry-date
             - renewal-date
             - contract-date
+        - name: filterSharedWithOthers
+          in: query 
+          required: false
+          description: Shared with others filter
+          schema:
+            type: boolean
+            default: false    
+        - name: filterSharedWithMe
+          in: query 
+          required: false
+          description: Shared with me filter
+          schema:
+            type: boolean
+            default: false              
         - name: orderBy
           in: query
           required: false
@@ -1611,6 +1625,10 @@ components:
         contentType:
           type: string
           example: text/plain
+        updatedBy:
+          type: string
+          format: uuid
+          example: '47948204-1a83-11ea-978f-2e728ce88125'
     DocumentAttributeRequest:
       type: object
       description: Object modelling a document attribute request.
@@ -1821,9 +1839,3 @@ components:
       type: array
       items:
          $ref: '#/components/schemas/SharedObject'
-
-
-
-      
-        
-        
