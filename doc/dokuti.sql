@@ -285,6 +285,25 @@ CREATE TABLE _documents.user_favourite (
 ALTER TABLE _documents.user_favourite OWNER TO postgres;
 -- ddl-end --
 
+-- object: _documents.document_acl_history | type: TABLE --
+-- DROP TABLE IF EXISTS _documents.document_acl_history CASCADE;
+CREATE TABLE _documents.document_acl_history (
+	id bigint NOT NULL,
+	document_id uuid NOT NULL,
+	"userId" uuid,
+	"teamId" uuid,
+	permission text NOT NULL,
+	granted_by uuid NOT NULL,
+	granted_on timestamp NOT NULL,
+	revoked_by uuid,
+	revoked_on timestamp,
+	CONSTRAINT document_acl_history_pk PRIMARY KEY (id)
+
+);
+-- ddl-end --
+ALTER TABLE _documents.document_acl_history OWNER TO postgres;
+-- ddl-end --
+
 -- object: "fk_document.id" | type: CONSTRAINT --
 -- ALTER TABLE _documents.document_attribute DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
 ALTER TABLE _documents.document_attribute ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
