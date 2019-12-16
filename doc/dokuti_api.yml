@@ -394,6 +394,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/acl':
+    get:
+      tags:
+        - Documents
+      summary: Gets the  permissions for a document.
+      description: Gets  permissions for a document.
+      operationId: getDocumentAcl
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true      
+        - name: page
+          in: query
+          required: false
+          description: The page to view.
+          schema:
+            type: integer
+            minimum: 0
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: The size of a page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            format: int32
+            default: 10      
+        - name: scope
+          in: query
+          required: false
+          description: current|users|teams
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 255
+            default: current
+            
+      responses:
+        '200':
+          description: Successful. Document permissions obtained.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonPermissionList'
+        '204':
+          description: No content.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get Document permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
   
   '/documents/{documentId}/archive':
     patch:
@@ -1598,12 +1680,6 @@ components:
           $ref: '#/components/schemas/LookupTagList'
         attributes:
           $ref: '#/components/schemas/DocumentAttributeList'
-        permissions:
-          $ref: '#/components/schemas/PermissionList'
-        usersPermissions:
-          $ref: '#/components/schemas/UsersPermissionList'
-        teamsPermissions:
-          $ref: '#/components/schemas/TeamsPermissionList'          
     DocumentInfoRequest:
       type: object
       properties:
@@ -1836,16 +1912,13 @@ components:
             type: string
             minLength: 0
             maxLength: 255        
-    UsersPermissionList:    
+
+    CommonPermissionList:    
       description: allowed document's permission for non-current user
       type: array
       items:
         $ref: '#/components/schemas/Permission'
-    TeamsPermissionList:    
-      description: allowed document's permission for teams
-      type: array
-      items:
-        $ref: '#/components/schemas/Permission'        
+        
     SharedObject:
       description: A single  shared object
       required:
