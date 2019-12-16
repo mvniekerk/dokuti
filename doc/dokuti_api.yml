@@ -1891,13 +1891,6 @@ components:
         - tag: kyc
         - tag: oc
         - tag: regulatory
-    PermissionList:
-      description: allowed document's permission for current user
-      type: array
-      items:
-        type: string
-        minLength: 0
-        maxLength: 255
     Permission:
       description: allowed document's permission for single user 
       type: object
