@@ -394,6 +394,144 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/acl':
+    get:
+      tags:
+        - Documents
+      summary: Gets the  permissions for a document.
+      description: Gets  permissions for a document.
+      operationId: getDocumentAcl
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true      
+        - name: page
+          in: query
+          required: false
+          description: The page to view.
+          schema:
+            type: integer
+            minimum: 0
+            format: int32
+            default: 0
+        - name: size
+          in: query
+          required: false
+          description: The size of a page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            format: int32
+            default: 10      
+        - name: scope
+          in: query
+          required: false
+          description: current|users|teams
+          schema:
+            type: string
+            minLength: 0
+            maxLength: 255
+            default: current
+            
+      responses:
+        '200':
+          description: Successful. Document permissions obtained.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonPermissionList'
+        '204':
+          description: No content.
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get Document permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  '/documents/{documentId}/lifetime/{userOrTeamId}':
+    get:
+      tags:
+        - Documents
+      summary: Gets the  life time for a document.
+      description: Gets the  life time for a document.
+      operationId: getUserDocumentLifeTime
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true   
+        - in: path
+          name: userOrTeamId
+          schema:
+            $ref: '#/components/schemas/userOrTeamId'
+          required: true                
+
+      responses:
+        '200':
+          description: Successful. Document lifetime obtained.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LifeTimeObjectList'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get Document permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   
   '/documents/{documentId}/archive':
     patch:
@@ -723,6 +861,61 @@ paths:
       summary: Sharing with another user or a team
       description: Sharing with another user or a team (both are identified by UUID)
       operationId: shareDocument
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedObjects'      
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true    
+      responses:
+        '200':
+          description: Successful. Document shared.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to favourite Document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  '/documents/{documentId}/unshare':
+    post:
+      tags:
+        - Documents
+      summary: Unsharing with another user or a team
+      description: Unsharing with another user or a team (both are identified by UUID)
+      operationId: ubShareDocument
       requestBody:
         content:
           application/json:
@@ -1662,6 +1855,11 @@ components:
       format: uuid
       description: The UUID of the document. This is the primary identifier for a document.
       example: aede8743-1bb8-407d-a975-77f3085a0d76
+    userOrTeamId:
+      type: string
+      format: uuid
+      description: The UUID of the user/team. This is the primary identifier for a user/team.
+      example: 2932854e-2006-11ea-a5e8-2e728ce88125
     attributeId:
       type: integer
       format: int32
@@ -1689,6 +1887,48 @@ components:
           $ref: '#/components/schemas/documentId'
         tags:
           $ref: '#/components/schemas/LookupTagList'
+          
+    DateTimePeriod:
+      type: object
+      description: The periiod of DateTime
+      properties:
+        grantedDateTime:
+          type: string
+          format: date-time
+          example: '2019-02-15T13:58:34.144Z'        
+        grantedBy:
+          type: string
+          format: uuid
+          example: '35ad9610-2010-11ea-978f-2e728ce88125'        
+        revokedDateTime:
+          type: string
+          format: date-time
+          example: '2019-06-25T12:18:24.144Z'        
+        revokedBy:
+          type: string
+          format: uuid
+          example: '40cc48de-2010-11ea-978f-2e728ce88125'        
+    
+    LifeTimeObject:
+      type: object
+      description: The lifetime for specific permission of user or team
+      properties:
+        permission-name:
+          type: string
+          minLength: 1
+          maxLength: 255 
+          example: READ
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/DateTimePeriod'
+    
+    LifeTimeObjectList:
+      description: The list of lifetimes for specific permissions of user or team.
+      type: array
+      items:
+        $ref: '#/components/schemas/LifeTimeObject'
+
     DocumentVersion:
       type: object
       description: >-
@@ -1809,8 +2049,27 @@ components:
         - tag: kyc
         - tag: oc
         - tag: regulatory
-        
+    Permission:
+      description: allowed document's permission for single user 
+      type: object
+      properties:
+        uuid:
+          type: string
+          minLength: 1
+          maxLength: 255
+        permissions:
+          type: array
+          items:
+            type: string
+            minLength: 0
+            maxLength: 255        
 
+    CommonPermissionList:    
+      description: allowed document's permission for non-current user
+      type: array
+      items:
+        $ref: '#/components/schemas/Permission'
+        
     SharedObject:
       description: A single  shared object
       required:

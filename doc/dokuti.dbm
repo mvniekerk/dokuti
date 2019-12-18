@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="10"
+<dbmodel pgmodeler-ver="0.9.2-beta" last-position="0,0" last-zoom="1" max-obj-count="12"
 	 default-schema="public" default-owner="postgres">
 <database name="dokuti" encoding="UTF8" is-template="false" allow-conns="true">
 	<role name="postgres"/>
@@ -21,7 +21,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[All documents]]></comment>
-	<position x="42" y="43"/>
+	<position x="41" y="48"/>
 	<column name="id" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
@@ -55,7 +55,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[for custom attributes added at run time by users]]></comment>
-	<position x="38" y="247"/>
+	<position x="37" y="252"/>
 	<column name="id" not-null="true">
 		<type name="bigint" length="0"/>
 	</column>
@@ -85,7 +85,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 	<comment><![CDATA[eg. Contract Renewal Date, and the validation regex will be dd-mm-yyyy would be:
 ^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$.]]></comment>
-	<position x="47" y="489"/>
+	<position x="46" y="494"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="32767" cache="1">
 		<type name="smallint" length="0"/>
@@ -118,7 +118,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[DENORMALISED for performance]]></comment>
-	<position x="483" y="267"/>
+	<position x="482" y="272"/>
 	<column name="document_id">
 		<type name="uuid" length="0"/>
 	</column>
@@ -138,7 +138,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="document_status" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="424" y="454"/>
+	<position x="423" y="459"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -168,7 +168,7 @@ Suggest using a databasetype for this]]></comment>
 	<schema name="_documents"/>
 	<role name="postgres"/>
 	<comment><![CDATA[this table holds the various instance meta-data of a particular document]]></comment>
-	<position x="843" y="396"/>
+	<position x="842" y="401"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -209,7 +209,7 @@ Suggest using a databasetype for this]]></comment>
 <table name="document_acl" layer="0" collapse-mode="2" max-obj-count="9">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="386" y="23"/>
+	<position x="385" y="28"/>
 	<column name="id" not-null="true"
 	 identity-type="ALWAYS" start="1" increment="1" min-value="1" max-value="9223372036854775807" cache="1">
 		<type name="bigint" length="0"/>
@@ -258,7 +258,7 @@ Suggest using a databasetype for this]]></comment>
 <table name="document_version_parts" layer="0" collapse-mode="2" max-obj-count="4">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="1230" y="400"/>
+	<position x="1229" y="405"/>
 	<column name="document_version_id" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
@@ -281,7 +281,7 @@ Suggest using a databasetype for this]]></comment>
 <table name="user_favourite" layer="0" collapse-mode="2" max-obj-count="3">
 	<schema name="_documents"/>
 	<role name="postgres"/>
-	<position x="793" y="75"/>
+	<position x="732" y="31"/>
 	<column name="user_uuid" not-null="true">
 		<type name="uuid" length="0"/>
 	</column>
@@ -297,6 +297,42 @@ Suggest using a databasetype for this]]></comment>
 	</constraint>
 	<constraint name="uniq_user_doc" type="uq-constr" table="_documents.user_favourite">
 		<columns names="user_uuid,document_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="document_acl_history" layer="0" collapse-mode="2" max-obj-count="10">
+	<schema name="_documents"/>
+	<role name="postgres"/>
+	<position x="399" y="614"/>
+	<column name="id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="document_id" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="userId">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="teamId">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="permission" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="granted_by" not-null="true">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="granted_on" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="revoked_by">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="revoked_on">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="document_acl_history_pk" type="pk-constr" table="_documents.document_acl_history">
+		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
 

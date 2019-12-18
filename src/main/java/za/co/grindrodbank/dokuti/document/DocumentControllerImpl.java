@@ -5,6 +5,7 @@
 package za.co.grindrodbank.dokuti.document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,7 @@ import org.openapitools.model.DocumentInfoRequest;
 import org.openapitools.model.DocumentTagList;
 import org.openapitools.model.DocumentVersion;
 import org.openapitools.model.LookupTag;
+import org.openapitools.model.Permission;
 import org.openapitools.model.SharedObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,7 @@ import za.co.grindrodbank.dokuti.documenttag.DocumentTagService;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
+import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
@@ -326,4 +329,111 @@ public class DocumentControllerImpl implements DocumentsApi {
 
     }   
     
+    
+    
+    private List<Permission> getPagedList(List<Permission> original, Integer page, Integer size) {
+      
+        if (page ==null || size == null) { 
+            return original;
+        }
+        
+        List<Permission> new_list = new ArrayList<Permission>(original);
+        int start = Math.min(original.size(), Math.abs(page * size));
+        new_list.subList(0, start).clear();
+        
+        int new_size = new_list.size();                   
+        int end = Math.min(size, new_size);        
+        new_list.subList(end, new_size).clear(); 
+        return new_list;
+        
+    }
+    
+    
+    private ResponseEntity<List<Permission>> getDocumentAclForCurreentUser(UUID documentId,Integer page,Integer size) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        List<String> myaccess = new ArrayList<>();
+        UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+        documentEntity.getDocumentPermissions().forEach(e -> {
+            if (userId.equals(e.getUserId())) {
+                myaccess.add(e.getPermission());
+            }
+        });
+        Permission permission = new Permission();
+        permission.setUuid(userId.toString());
+        permission.setPermissions(myaccess);
+        List<Permission> res = new ArrayList<Permission>();
+        res.add(permission);
+        return new ResponseEntity<>(getPagedList(res,page,size), HttpStatus.OK);
+    }
+    
+    
+    private ResponseEntity<List<Permission>> getDocumentAclForAllUsers(UUID documentId,Integer page,Integer size) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        UUID userId = UUID.fromString(SecurityContextUtility.getUserIdFromJwt());
+        HashMap<UUID, List<String>> usersMap = new HashMap<>();
+        documentEntity.getDocumentPermissions().forEach(e -> {
+            if (e.getUserId() != null && !userId.equals(e.getUserId())) {
+                if (usersMap.containsKey(e.getUserId())) {
+                    List<String> p = usersMap.get(e.getUserId());
+                    p.add(e.getPermission());
+                    //usersMap.put(e.getUserId(), p);
+                } else {
+                    List<String> p = new ArrayList<>();
+                    p.add(e.getPermission());
+                    usersMap.put(e.getUserId(), p);
+                }
+            }
+        });
+        
+        List<Permission> res = new ArrayList<Permission>();
+        
+        for (UUID i : usersMap.keySet()) {
+            Permission p = new Permission();
+            p.setUuid(i.toString());
+            p.setPermissions(usersMap.get(i));
+            res.add(p);
+        }
+        return new ResponseEntity<>(getPagedList(res,page,size), HttpStatus.OK);
+    }
+
+    private ResponseEntity<List<Permission>> getDocumentAclForTeams(UUID documentId,Integer page,Integer size) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        HashMap<UUID, List<String>> teamsMap = new HashMap<>();
+        documentEntity.getDocumentPermissions().forEach(e -> {
+            if (e.getTeamId() != null) {
+                if (teamsMap.containsKey(e.getTeamId())) {
+                    List<String> p = teamsMap.get(e.getTeamId());
+                    p.add(e.getPermission());
+                    teamsMap.put(e.getTeamId(), p);
+                } else {
+                    List<String> p = new ArrayList<>();
+                    p.add(e.getPermission());
+                    teamsMap.put(e.getTeamId(), p);
+                }
+            }
+        });
+        List<Permission> res = new ArrayList<Permission>();
+        for (UUID i : teamsMap.keySet()) {
+            Permission p = new Permission();
+            p.setUuid(i.toString());
+            p.setPermissions(teamsMap.get(i));
+            res.add(p);
+        }
+        return new ResponseEntity<>(getPagedList(res,page,size), HttpStatus.OK);
+    }
+    
+    
+    @Override
+    public ResponseEntity<List<Permission>> getDocumentAcl(UUID documentId,Integer page,Integer size,String scope) {
+
+        if (scope == null || "current".equals(scope) ) {
+            return getDocumentAclForCurreentUser(documentId,  page, size);
+        } else if ("users".equals(scope)) {
+            return getDocumentAclForAllUsers(documentId,  page, size);
+        } else if ("teams".equals(scope)) {
+            return getDocumentAclForTeams(documentId,  page, size);
+        } else  {
+            throw new InvalidRequestException("Invalid scope attribute.", null);
+        }
+    }
 }

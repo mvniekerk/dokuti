@@ -25,6 +25,10 @@ import org.mockito.Mockito;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.MockitoAnnotations;
 import org.openapitools.model.DocumentInfoRequest;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -47,9 +51,13 @@ import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperServiceImpl;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
+import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
-@RunWith(SpringRunner.class)
+
 @WebMvcTest(controllers = DocumentControllerImpl.class, excludeAutoConfiguration = MockMvcSecurityAutoConfiguration.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(SpringRunner.class)
+@PrepareForTest(SecurityContextUtility.class)
 public class DocumentControllerUnitTests {
 
 	@Autowired
@@ -165,6 +173,10 @@ public class DocumentControllerUnitTests {
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(document)).thenCallRealMethod();
 
+        UUID userId = UUID.randomUUID();
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
+        
 	    mvc.perform(patch("/documents/" + documentId.toString() + "/archive")
 	                  .contentType(MediaType.APPLICATION_JSON)
 	                  .characterEncoding("utf-8"))
@@ -192,6 +204,10 @@ public class DocumentControllerUnitTests {
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(document)).thenCallRealMethod();
 
+        UUID userId = UUID.randomUUID();
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
+        
         mvc.perform(patch("/documents/" + documentId.toString() + "/unarchive")
                      .contentType(MediaType.APPLICATION_JSON)
                      .characterEncoding("utf-8"))
@@ -223,6 +239,9 @@ public class DocumentControllerUnitTests {
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
         
+        UUID userId = UUID.randomUUID();
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
         
         mvc.perform(get("/documents/")
                      .contentType(MediaType.APPLICATION_JSON)
@@ -261,9 +280,14 @@ public class DocumentControllerUnitTests {
         list.add(document);
         Page<DocumentEntity> pagedResponse  = new PageImpl<>(list);         
         
+        
         Mockito.when(documentService.findAll(any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(pagedResponse);
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
         Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        
+        UUID userId2 = UUID.randomUUID();
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId2.toString());
         
         mvc.perform(get("/documents?filterFavouriteUser" + userId)
                       .contentType(MediaType.APPLICATION_JSON)

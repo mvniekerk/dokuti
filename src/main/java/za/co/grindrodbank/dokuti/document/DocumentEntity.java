@@ -34,6 +34,7 @@ import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
+import java.util.Objects;
 
 @Entity
 @Table(name = "document")
@@ -290,48 +291,21 @@ public class DocumentEntity {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DocumentEntity other = (DocumentEntity) obj;
-		if (contentType == null) {
-			if (other.contentType != null)
-				return false;
-		} else if (!contentType.equals(other.contentType))
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-        if (isArchived == null) {
-            if (other.isArchived != null)
-                return false;
-        } else if (!isArchived.equals(other.isArchived))
-            return false;			
-		return true;
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof DocumentEntity) {
+            DocumentEntity that = (DocumentEntity) object;
+            return Objects.equals(this.id, that.id) && Objects.equals(this.name, that.name) && Objects.equals(this.description, that.description) && Objects.equals(this.isArchived, that.isArchived)
+                    && Objects.equals(this.contentType, that.contentType);
+        }
+        return false;
+    }
 
+	
+	
     @Override
     public String toString() {
         return "DocumentEntity [id=" + id + ", name=" + name + ", description=" + description + ", isArchived=" + isArchived + ", contentType=" + contentType + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy + "]";
     }
 
-	
-	
 }

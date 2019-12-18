@@ -6,7 +6,6 @@ package za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectm
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openapitools.model.Attribute;
 import org.openapitools.model.Document;
 import org.openapitools.model.DocumentAttribute;
@@ -15,11 +14,9 @@ import org.openapitools.model.LookupTag;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
-
 
 @Service
 public class DatabaseEntityToApiDataTransferObjectMapperServiceImpl
@@ -56,8 +53,7 @@ public class DatabaseEntityToApiDataTransferObjectMapperServiceImpl
 			documentAttributes.add(documentAttribute);
 		});
 		document.setAttributes(documentAttributes);
-
-		return document;
+        return document;
 	}
 
 	public Page<Document> mapDocumentEntityPageToDocumentPage(Page<DocumentEntity> entities) {
