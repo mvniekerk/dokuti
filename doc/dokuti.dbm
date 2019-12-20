@@ -384,6 +384,12 @@ Suggest using a databasetype for this]]></comment>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="fk_document.id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="_documents.document" table="_documents.document_acl_history">
+	<columns names="document_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
 <relationship name="rel_document_attribute_document" type="relfk" layer="0"
 	 custom-color="#dc8529"
 	 src-table="_documents.document_attribute"
@@ -427,6 +433,11 @@ Suggest using a databasetype for this]]></comment>
 
 <relationship name="rel_document_favourite_document" type="relfk" layer="0"
 	 src-table="_documents.user_favourite"
+	 dst-table="_documents.document" reference-fk="fk_document.id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_document_acl_history_document" type="relfk" layer="0"
+	 src-table="_documents.document_acl_history"
 	 dst-table="_documents.document" reference-fk="fk_document.id"
 	 src-required="false" dst-required="false"/>
 

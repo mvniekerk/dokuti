@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "90dac3ef-0b71-4ccc-a130-39ec859410a5",
+		"_postman_id": "8a3db13f-a70d-478a-b6b5-fe2e2373fec4",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -3546,6 +3546,831 @@
 							"path": [
 								"documents",
 								"{{documentId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "unsharing-feature",
+			"item": [
+				{
+					"name": "Get Key Session Token for user 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fbd50411-4d86-41b9-a69d-1f7f1360641c",
+								"exec": [
+									" ",
+									" pm.environment.set(\"test_session\", _.random(1, 50000000));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dokuti-admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Password1#",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti-test-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "dokuti",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth-server-base-url}}/connect/token",
+							"host": [
+								"{{auth-server-base-url}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 1 by user 1 ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId_1\", jsonData.id);",
+									"    ",
+									"    pm.environment.set(\"user_uuid_1\", jsonData.updatedBy);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "doc 1 by user 1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Key Session Token for user 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fbd50411-4d86-41b9-a69d-1f7f1360641c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dokuti-admin2",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Password1#",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti-test-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "dokuti",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth-server-base-url}}/connect/token",
+							"host": [
+								"{{auth-server-base-url}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 2 by user 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId_2\", jsonData.id);",
+									"    ",
+									"    pm.environment.set(\"user_uuid_2\", jsonData.updatedBy);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "doc 1 by user 1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Key Session Token for user 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fbd50411-4d86-41b9-a69d-1f7f1360641c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dokuti-admin3",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Password1#",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti-test-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "dokuti",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth-server-base-url}}/connect/token",
+							"host": [
+								"{{auth-server-base-url}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document 3 by user 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51412238-8f3f-4aff-bad4-30646a88a647",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Set document ID environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set(\"documentId_3\", jsonData.id);",
+									"    ",
+									"    pm.environment.set(\"user_uuid_3\", jsonData.updatedBy);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "test-file.txt"
+								},
+								{
+									"key": "description",
+									"value": "doc 1 by user 1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						},
+						"description": "Creates a new document on the service."
+					},
+					"response": []
+				},
+				{
+					"name": "Share document 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cc0f3ab4-bcd8-4c0e-b0da-44cb0c8d0caf",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"teamflag\": false,\n    \"uuid\": \"{{user_uuid_2}}\",\n    \"permissions\": [\n      \"READ\",\"ARCHIVE\"\n    ]\n  }\n \n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId_3}}/share",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId_3}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Key Session Token for user 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fbd50411-4d86-41b9-a69d-1f7f1360641c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dokuti-admin2",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Password1#",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti-test-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "dokuti",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth-server-base-url}}/connect/token",
+							"host": [
+								"{{auth-server-base-url}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Share document 3 ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "582b52e6-66e7-45a4-8ac6-d1087093cdfe",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"teamflag\": false,\n    \"uuid\": \"{{user_uuid_1}}\",\n    \"permissions\": [\n     \"READ\",\"ARCHIVE\"\n    ]\n  }\n \n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId_3}}/share",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId_3}}",
+								"share"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Key Session Token for user 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7c5b79eb-dff1-4dee-bfda-9da489ae5edb",
+								"exec": [
+									"pm.test(\"Set session_access_token environment variable.\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.environment.set(\"session_access_token\", jsonData.access_token);",
+									"    pm.expect(jsonData.access_token.length).to.be.above(12);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fbd50411-4d86-41b9-a69d-1f7f1360641c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dokuti-admin3",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Password1#",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "dokuti-test-client",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "secret",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "dokuti",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth-server-base-url}}/connect/token",
+							"host": [
+								"{{auth-server-base-url}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UnShare permission from document 3  ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "726bd898-c887-4648-9a68-1468de281aec",
+								"exec": [
+									"pm.test(\"Response is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"teamflag\": false,\n    \"uuid\": \"{{user_uuid_2}}\",\n    \"permissions\": [\n     \"ARCHIVE\"\n    ]\n  }\n \n]"
+						},
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId_3}}/unshare",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId_3}}",
+								"unshare"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get document 3 lifetime",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId_3}}/lifetime/{{user_uuid_1}}",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId_3}}",
+								"lifetime",
+								"{{user_uuid_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get document 3 lifetime users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId_3}}/lifetime",
+							"host": [
+								"{{DOKUTI_BASE_URL}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId_3}}",
+								"lifetime"
 							]
 						}
 					},
