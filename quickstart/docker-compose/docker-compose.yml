@@ -74,17 +74,6 @@ services:
     depends_on:
       - a3s
 
-  # newman:
-  #  container_name: register-contract-dokuti
-  #  networks:
-  #    - dokuti-quickstart    
-  #  image: "postman/newman_alpine33" 
-  #  command: run /etc/newman/DOKUTI.register-a3s-contract.postman_collection.json --global-var client-id='a3s-default' --global-var client-secret='secret'  --global-var a3s-host=http://a3s:80 --global-var auth-server-base-url=http://a3s-identity-server --delay-request 15000  
-  #  volumes:
-  #      - ../../postman:/etc/newman
-  #  depends_on:
-  #    - a3s-identity-server
-
   register-security-contract:
     networks:
       - dokuti-quickstart
