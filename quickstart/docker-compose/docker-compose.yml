@@ -85,16 +85,16 @@ services:
   #    - a3s-identity-server
 
   register-security-contract:
-  networks:
-    - dokuti-quickstart
-  image: "endeveit/docker-jq"
-  volumes:
-    - ./scripts/:/scripts
-    - ../../doc/a3s-security-contract.yaml:/scripts/contract.yaml     
-  depends_on:
-    - a3s-identity-server   
-    - web
-  command: sh -c '/scripts/wait-for.sh a3s-identity-server:80 -- /scripts/register-contract.sh '  
+    networks:
+      - dokuti-quickstart
+    image: "endeveit/docker-jq"
+    volumes:
+      - ./scripts/:/scripts
+      - ../../doc/a3s-security-contract.yaml:/scripts/contract.yaml     
+    depends_on:
+      - a3s-identity-server   
+      - web
+    command: sh -c '/scripts/wait-for.sh a3s-identity-server:80 -- /scripts/register-contract.sh '  
 
 
 networks:
