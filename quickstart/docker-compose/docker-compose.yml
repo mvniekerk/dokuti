@@ -13,9 +13,7 @@ services:
     # volumes:
     #   - 'postgresql_data:/bitnami'
   dokuti:
-    #image: grindrodbank/dokuti:latest
-     build: 
-       context: ../../
+    image: grindrodbank/dokuti:latest
     ports:
      - "8181:8080"
     networks:
