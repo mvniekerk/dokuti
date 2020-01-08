@@ -21,8 +21,6 @@ services:
     volumes:
       - ./sample-application.yaml:/config/application.yaml
       - ./files:/tmp/dokuti-local-uploads
-      - ../../docker-container-scripts/wait-for.sh:/wait-for.sh
-      - ../../docker-container-scripts/entrypoint.sh:/entrypoint.sh
     depends_on:
       - postgresql
     entrypoint: sh -c './wait-for.sh postgresql:5432 -- ./entrypoint.sh' 
