@@ -41,3 +41,6 @@ helm-chart/dokuti/charts/*
 jmeter-result.xml
 jmeter.log
 
+
+#this file is a volume mapped copy of doc/a3s-security-contract.yaml
+quickstart/docker-compose/scripts/contract.yaml

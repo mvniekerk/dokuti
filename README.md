@@ -25,7 +25,7 @@ docker-compose up
 ```
 
 5 services are installed:
-* Web 1 - The actual document service installed on port 8181
+* dokuti - The actual document service installed on port 8181
 * PostgreSQL Database installed on port 5432
 * A3S and and A3S-identity-server services
 * A3S PostgreSQL Database installed on port 5478
