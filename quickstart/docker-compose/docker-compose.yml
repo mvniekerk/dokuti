@@ -12,9 +12,10 @@ services:
     ## To persist database
     # volumes:
     #   - 'postgresql_data:/bitnami'
-  web:
-    build: 
-      context: ../../
+  dokuti:
+    #image: grindrodbank/dokuti:latest
+     build: 
+       context: ../../
     ports:
      - "8181:8080"
     networks:
