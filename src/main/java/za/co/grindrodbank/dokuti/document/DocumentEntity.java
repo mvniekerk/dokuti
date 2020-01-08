@@ -33,6 +33,7 @@ import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
+import za.co.grindrodbank.dokuti.lifetime.DocumentLifeTimeEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 import java.util.Objects;
 
@@ -82,6 +83,11 @@ public class DocumentEntity {
 	@JsonBackReference
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DocumentAcl> documentPermissions = new ArrayList<>();
+	
+	
+    @JsonBackReference
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DocumentLifeTimeEntity> documentHistory = new ArrayList<>();	
 	
     @JsonBackReference
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -184,6 +190,14 @@ public class DocumentEntity {
         this.isArchived = isArchived;
     }
     
+    public List<DocumentLifeTimeEntity> getDocumentHistory() {
+        return documentHistory;
+    }
+
+    public void setDocumentHistory(List<DocumentLifeTimeEntity> documentHistory) {
+        this.documentHistory = documentHistory;
+    }
+
     public DocumentVersionEntity getLatestDocumentVersion() {
 		Optional<DocumentVersionEntity> optionalLatestDocumentVersion = this.getDocumentVersions().stream().findFirst();
 

@@ -476,6 +476,60 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   
+  '/documents/{documentId}/lifetime':
+    get:
+      tags:
+        - Documents
+      summary: Gets the list of users and teams uuids for a document.
+      description: Gets the list of users and teams uuids for a document.
+      operationId: getDocumentLifeTimeUserList
+      parameters:
+        - in: path
+          name: documentId
+          schema:
+            $ref: '#/components/schemas/documentId'
+          required: true   
+
+      responses:
+        '200':
+          description: Successful. Document lifetime users obtained.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LifeTimeUsersList'
+        '400':
+          description: Invalid parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authorized to get Document permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: An unexpeced error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  
+  
   '/documents/{documentId}/lifetime/{userOrTeamId}':
     get:
       tags:
@@ -915,7 +969,7 @@ paths:
         - Documents
       summary: Unsharing with another user or a team
       description: Unsharing with another user or a team (both are identified by UUID)
-      operationId: ubShareDocument
+      operationId: unShareDocument
       requestBody:
         content:
           application/json:
@@ -1909,6 +1963,21 @@ components:
           format: uuid
           example: '40cc48de-2010-11ea-978f-2e728ce88125'        
     
+    LifeTimeUsersList:
+      type: object
+      description: The list of users and teams for document lifetime
+      properties:
+        users:
+          items:
+            type: string
+            minLength: 0
+            maxLength: 255          
+        teams:
+          items:
+            type: string
+            minLength: 0
+            maxLength: 255           
+
     LifeTimeObject:
       type: object
       description: The lifetime for specific permission of user or team

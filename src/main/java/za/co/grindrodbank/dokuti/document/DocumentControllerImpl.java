@@ -4,21 +4,29 @@
 ****************************************************/
 package za.co.grindrodbank.dokuti.document;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.openapitools.api.ApiUtil;
 import org.openapitools.api.DocumentsApi;
 import org.openapitools.model.CreateDocumentResponse;
+import org.openapitools.model.DateTimePeriod;
 import org.openapitools.model.Document;
 import org.openapitools.model.DocumentAttribute;
 import org.openapitools.model.DocumentAttributeRequest;
 import org.openapitools.model.DocumentInfoRequest;
 import org.openapitools.model.DocumentTagList;
 import org.openapitools.model.DocumentVersion;
+import org.openapitools.model.LifeTimeObject;
+import org.openapitools.model.LifeTimeUsersList;
 import org.openapitools.model.LookupTag;
 import org.openapitools.model.Permission;
 import org.openapitools.model.SharedObject;
@@ -47,7 +55,9 @@ import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
 import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
+import za.co.grindrodbank.dokuti.lifetime.DocumentLifeTimeEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
+import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
 import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
@@ -319,10 +329,27 @@ public class DocumentControllerImpl implements DocumentsApi {
                         documentAcl.setUserId(UUID.fromString(so.getUuid()));
                     }
                     permissions.add(documentAcl);
+                    List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
+                    if (history == null) {
+                        documentEntity.setDocumentHistory(new ArrayList<>());
+                        history = documentEntity.getDocumentHistory();
+                    }
+                    DocumentLifeTimeEntity lt = new DocumentLifeTimeEntity();
+                    lt.setPermission(documentAcl.getPermission());
+                    lt.setGrantedBy(userId);
+                    lt.setDocument(documentEntity);
+                    if (Boolean.TRUE.equals(so.getTeamflag())) {
+                        lt.setTeamId(UUID.fromString(so.getUuid()));
+                    } else {
+                        lt.setUserId(UUID.fromString(so.getUuid()));
+                    }
+                    lt.setGrantedOn(LocalDateTime.now());
+                    history.add(lt);
                 }
                 
             }
         }
+        
         documentEntity = documentService.save(documentEntity);
         Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
         return new ResponseEntity<>(res, HttpStatus.OK);
@@ -436,4 +463,178 @@ public class DocumentControllerImpl implements DocumentsApi {
             throw new InvalidRequestException("Invalid scope attribute.", null);
         }
     }
+
+    
+    private void removePermissionForTeam(DocumentEntity documentEntity, List<DocumentAcl> permissions, String permission, UUID uuid) {
+
+        List<DocumentAcl> removedList = new ArrayList<>();
+        for (DocumentAcl acl : permissions) {
+            if (acl.getPermission() != null && acl.getPermission().equals(permission)  && acl.getTeamId() != null && acl.getTeamId().equals(uuid))  {
+                removedList.add(acl);
+                List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
+                for (DocumentLifeTimeEntity lt : history) {
+                    if (uuid.equals(lt.getTeamId()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy()))) {
+                        lt.setRevokedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+                        lt.setRevokedOn(LocalDateTime.now());
+                    }
+                    
+                }
+            }
+        }
+        permissions.removeAll(removedList);
+    }
+    
+    
+    private void removePermissionForUser(DocumentEntity documentEntity, List<DocumentAcl> permissions, String permission, UUID uuid) {
+
+        List<DocumentAcl> removedList = new ArrayList<>();
+        List<UUID> users = new ArrayList<>();
+
+        
+        for (DocumentAcl acl : permissions) {
+            if (acl.getUserId() != null && acl.getUserId().equals(uuid) &&  acl.getPermission() != null && acl.getPermission().equals(permission) ) {
+                removedList.add(acl);
+                List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
+                for (DocumentLifeTimeEntity lt : history) {
+                    if (uuid.equals(lt.getUserId()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy()))) {
+                        lt.setRevokedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+                        lt.setRevokedOn(LocalDateTime.now());
+                    }
+                }                
+                users.add(acl.getUserId());
+            }
+        }
+        permissions.removeAll(removedList);
+        for (UUID userId : users) {
+            removePermissionForGrantedBy(documentEntity, permissions, permission, userId);
+        }
+        
+    }
+
+    // recursive "un-share" permission for grantedBy user
+    private void removePermissionForGrantedBy(DocumentEntity documentEntity, List<DocumentAcl> permissions, String permission, UUID uuid) {
+
+        List<DocumentAcl> removedList = new ArrayList<>();
+        List<UUID> users = new ArrayList<>();
+        
+        for (DocumentAcl acl : permissions) {
+            if (acl.getGrantedBy() != null && acl.getGrantedBy().equals(uuid) &&  acl.getPermission() != null && acl.getPermission().equals(permission) ) {
+                removedList.add(acl);
+                List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
+                for (DocumentLifeTimeEntity lt : history) {
+                    if (uuid.equals(acl.getGrantedBy()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy()))) {
+                        lt.setRevokedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+                        lt.setRevokedOn(LocalDateTime.now());
+                    }
+                }                  
+                users.add(acl.getUserId());
+            }
+        }
+        permissions.removeAll(removedList);
+        for (UUID userId : users) {
+            removePermissionForGrantedBy(documentEntity, permissions, permission, userId);
+        }
+    }
+    
+    
+    @Override
+    public ResponseEntity<Document> unShareDocument(UUID documentId,List<SharedObject> sharedObject) {
+
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        List<DocumentAcl> permissions = documentEntity.getDocumentPermissions();
+        for (SharedObject so : sharedObject) {
+            if (so.getPermissions() != null) {
+                for (String p : so.getPermissions()) {
+                    if (Boolean.TRUE.equals(so.getTeamflag())) {
+                        removePermissionForTeam(documentEntity, permissions, p, UUID.fromString(so.getUuid())); 
+                    } else {
+                        removePermissionForUser(documentEntity, permissions, p, UUID.fromString(so.getUuid())); 
+                    }
+                }
+                
+            }
+        }
+        documentEntity = documentService.save(documentEntity);
+        Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+    
+    
+    @Override
+    public ResponseEntity<List<LifeTimeObject>> getUserDocumentLifeTime(UUID documentId,UUID userOrTeamId) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        List<LifeTimeObject> lts = new ArrayList<>();
+        List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
+        if (history == null) {
+            return new ResponseEntity<>(lts, HttpStatus.OK);
+        }
+        List<DocumentLifeTimeEntity> filteredHistory = new ArrayList<>();
+        for (DocumentLifeTimeEntity h: history) {
+            if (userOrTeamId.equals(h.getUserId()) || userOrTeamId.equals(h.getTeamId())) {
+                filteredHistory.add(h);
+            }
+        }
+        HashMap<String, List<DateTimePeriod>> map = new HashMap<>();
+        filteredHistory.forEach(e -> {
+            
+                ZoneOffset offset = OffsetDateTime.now().getOffset();
+                DateTimePeriod period = new DateTimePeriod();
+                period.setGrantedBy(e.getGrantedBy());
+                period.setGrantedDateTime(e.getGrantedOn().atOffset(offset));
+                period.setRevokedBy(e.getRevokedBy());
+                if (e.getRevokedOn() != null) {
+                     period.setRevokedDateTime(e.getRevokedOn().atOffset(offset));
+                }
+                
+                if (map.containsKey(e.getPermission())) {
+                    List<DateTimePeriod> p = map.get(e.getPermission());
+                    p.add(period);
+                } else {
+                    List<DateTimePeriod> p = new ArrayList<>();
+                    p.add(period);
+                    map.put(e.getPermission(), p);
+                }
+        });
+        
+        for (String permission : map.keySet()) {
+            LifeTimeObject lo = new LifeTimeObject();
+            lo.setPermissionName(permission);
+            lo.setPeriods(map.get(permission));
+            lts.add(lo);
+        }
+        return new ResponseEntity<>(lts, HttpStatus.OK);
+        
+    }
+    
+    @Override
+    public ResponseEntity<LifeTimeUsersList> getDocumentLifeTimeUserList(UUID documentId) {
+        DocumentEntity documentEntity = documentService.findById(documentId);
+        List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
+        Set<UUID> users = new HashSet<>();
+        Set<UUID> teams = new HashSet<>();
+        history.forEach(e -> {
+            if (e.getTeamId()!=null)  {
+                teams.add(e.getTeamId());
+            } else  if (e.getUserId()!=null)  {
+                users.add(e.getUserId());
+            }            
+        });
+        LifeTimeUsersList ltul = new LifeTimeUsersList();
+        ltul.setTeams(new ArrayList<>());
+        ltul.setUsers(new ArrayList<>());
+        users.forEach(e-> {
+            ltul.getUsers().add(e.toString());
+        });
+        teams.forEach(e-> {
+            ltul.getTeams().add(e.toString());
+        });  
+        
+        return new ResponseEntity<>(ltul, HttpStatus.OK);
+    }
+    
+    
 }
+
+
+
+

@@ -360,4 +360,11 @@ REFERENCES _documents.document (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
+-- object: "fk_document.id" | type: CONSTRAINT --
+-- ALTER TABLE _documents.document_acl_history DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
+ALTER TABLE _documents.document_acl_history ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
+REFERENCES _documents.document (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
 
