@@ -4,8 +4,9 @@ apk add curl jq
 apk add docker-compose
 
 cd quickstart/docker-compose
-docker-compose up 
+docker-compose up -d
 
+../../scripts/wait-for-service.sh dokuti 90 'Tomcat started on port(s): 8080 (http) with context path '
 
 TOKEN=`curl \
 -s -v \
