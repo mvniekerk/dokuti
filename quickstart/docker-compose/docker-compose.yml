@@ -1,17 +1,15 @@
 version: '3'
 services:
   postgresql:
-    image: "bitnami/postgresql:10.7.0"
+    image: "postgres:10.7-alpine"
     ports:
       - '5432:5432'
     networks:
       - dokuti-quickstart        
     environment:
-      - POSTGRESQL_PASSWORD=postgres
-      - POSTGRESQL_DATABASE=dokuti
-    ## To persist database
-    # volumes:
-    #   - 'postgresql_data:/bitnami'
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=dokuti
+      - POSTGRES_PASSWORD=postgres
   dokuti:
     image: grindrodbank/dokuti:latest
     ports:
