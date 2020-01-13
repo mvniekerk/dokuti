@@ -38,7 +38,7 @@ public class DocumentVersionEntity {
 	@Column(name = "__uploaded_by")
 	private UUID uploadedBy;
 
-	@Column(length = 32)
+	@Column(length = 64)
 	private String checksum;
 	
     @Column(name = "checksum_algo")
