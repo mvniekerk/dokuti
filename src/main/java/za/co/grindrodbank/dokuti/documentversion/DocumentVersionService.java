@@ -35,6 +35,6 @@ public interface DocumentVersionService {
 	 * @param document The document to create the new version for.
 	 * @return An instance of the newly created document version.
 	 */
-	public DocumentVersionEntity createDocumentVersion(DocumentEntity document, String checksum, String documentType);
+	public DocumentVersionEntity createDocumentVersion(DocumentEntity document, String checksum, String checksumAlgo, String documentType);
 
 }

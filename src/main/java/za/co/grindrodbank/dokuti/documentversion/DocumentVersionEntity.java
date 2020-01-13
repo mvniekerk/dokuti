@@ -41,6 +41,9 @@ public class DocumentVersionEntity {
 	@Column(length = 32)
 	private String checksum;
 	
+    @Column(name = "checksum_algo")
+    private String checksumAlgo;	
+	
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "document_type", nullable = false)
     private String documentType;	
@@ -96,6 +99,14 @@ public class DocumentVersionEntity {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public String getChecksumAlgo() {
+        return checksumAlgo;
+    }
+
+    public void setChecksumAlgo(String checksumAlgo) {
+        this.checksumAlgo = checksumAlgo;
     }
 
 }

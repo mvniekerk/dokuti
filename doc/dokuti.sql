@@ -169,6 +169,7 @@ CREATE TABLE _documents.document_version (
 	__uploaded_on timestamp NOT NULL,
 	__uploaded_by uuid NOT NULL,
 	document_type text,
+	checksum_algo text,
 	CONSTRAINT pk_document_version PRIMARY KEY (id),
 	CONSTRAINT un_version_id UNIQUE (version_id)
 
@@ -178,7 +179,9 @@ COMMENT ON TABLE _documents.document_version IS 'this table holds the various in
 -- ddl-end --
 COMMENT ON COLUMN _documents.document_version.version_id IS 'The uuid of the version instance that gets saved to the data store';
 -- ddl-end --
-COMMENT ON COLUMN _documents.document_version.checksum IS 'an MD5 digest to ensure file integrity';
+COMMENT ON COLUMN _documents.document_version.checksum IS 'an hash digest to ensure file integrity';
+-- ddl-end --
+COMMENT ON COLUMN _documents.document_version.checksum_algo IS 'hashing algorithm  used to calculate checksum';
 -- ddl-end --
 ALTER TABLE _documents.document_version OWNER TO postgres;
 -- ddl-end --
