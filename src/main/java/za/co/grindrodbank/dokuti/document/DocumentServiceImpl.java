@@ -127,7 +127,11 @@ public class DocumentServiceImpl implements DocumentService {
 		try {
 			File file = fileContent.getFile();
 			byte[] fileContentByteArray = Files.readAllBytes(file.toPath());
-			String calculatedFileContentChecksum = getFileContentChecksum(fileContentByteArray);
+			String checkSumAlgo = documentVersion.getChecksumAlgo();
+			if (StringUtils.isEmpty(checkSumAlgo)) {
+			    checkSumAlgo = "MD5"; // to support old checksums
+			}
+			String calculatedFileContentChecksum = getFileContentChecksum(fileContentByteArray, checkSumAlgo);
 
 			logger.debug("Calculated File Content Checksum: {} : FileVersionMetaData checksum: {}",
 					calculatedFileContentChecksum, documentVersion.getChecksum());
@@ -172,10 +176,11 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentVersionEntity documentVersionEntity = documentVersionService.findById(documentVersionId);
         
         String checksum = documentVersionEntity.getChecksum();
+        String checksumAlgo = documentVersionEntity.getChecksumAlgo();
         InputStream is;
         try {
             is = getDocumentDataForVersion(documentVersionEntity.getDocument(), documentVersionEntity).getInputStream();
-            createDocumentVersionWithInputStream(is, checksum, documentEntity);
+            createDocumentVersionWithInputStream(is, checksum, checksumAlgo, documentEntity);
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new ResourceNotFoundException("Error reading document data.", e);
@@ -205,11 +210,13 @@ public class DocumentServiceImpl implements DocumentService {
 	 * @return The new document version that was created for the document.
 	 */
 	private DocumentVersionEntity createDocumentVersionWithFile(MultipartFile file, DocumentEntity document) {
+	    String defaultChecksumAlgo = "SHA-256";
+	    
 		String fileContentChecksum = "";
 		String documentType ="";
 
 		try {
-			fileContentChecksum = getFileContentChecksum(file.getBytes());
+			fileContentChecksum = getFileContentChecksum(file.getBytes(), defaultChecksumAlgo);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
@@ -223,14 +230,13 @@ public class DocumentServiceImpl implements DocumentService {
         }
 		
 		DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document,
-				fileContentChecksum, documentType);
+				fileContentChecksum, defaultChecksumAlgo, documentType);
 		documentStoreService.store(file, document.getId(), newDocumentVersion.getId());
 
 		return newDocumentVersion;
 	}
 
-    private DocumentVersionEntity createDocumentVersionWithInputStream(InputStream is, String fileContentChecksum, DocumentEntity document) {
-        
+    private DocumentVersionEntity createDocumentVersionWithInputStream(InputStream is, String fileContentChecksum, String checksumAlgo, DocumentEntity document) {
         String documentType ="";
         Tika tika = new Tika();
         try {
@@ -240,17 +246,17 @@ public class DocumentServiceImpl implements DocumentService {
             throw new ResourceNotFoundException("Error reading document data.", e);
         }
         
-        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum, documentType);
+        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum, checksumAlgo, documentType);
         documentStoreService.store(is, document.getId(), newDocumentVersion.getId());
 
         return newDocumentVersion;
     }
 	
-	
-	public String getFileContentChecksum(byte[] fileByteArray) {
+	@Override
+	public String getFileContentChecksum(byte[] fileByteArray, String checksumAlgo) {
 
 		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			MessageDigest messageDigest = MessageDigest.getInstance(checksumAlgo);
 			byte[] messageDigestHash = messageDigest.digest(fileByteArray);
 			String messageDigestHashString = "";
 
@@ -393,3 +399,5 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 }
+
+
