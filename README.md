@@ -24,6 +24,11 @@ cd quickstart/docker-compose
 docker-compose up -d
 ```
 
+* Inspecting it should show that it's up:
+```bash
+docker-compose ps
+```
+
 5 services are installed:
 * dokuti - The actual document service installed on port 8181
 * PostgreSQL Database installed on port 5432
