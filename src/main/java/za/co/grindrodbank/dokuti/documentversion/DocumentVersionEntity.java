@@ -38,8 +38,11 @@ public class DocumentVersionEntity {
 	@Column(name = "__uploaded_by")
 	private UUID uploadedBy;
 
-	@Column(length = 32)
+	@Column(length = 64)
 	private String checksum;
+	
+    @Column(name = "checksum_algo")
+    private String checksumAlgo;	
 	
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "document_type", nullable = false)
@@ -96,6 +99,14 @@ public class DocumentVersionEntity {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public String getChecksumAlgo() {
+        return checksumAlgo;
+    }
+
+    public void setChecksumAlgo(String checksumAlgo) {
+        this.checksumAlgo = checksumAlgo;
     }
 
 }

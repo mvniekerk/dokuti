@@ -104,7 +104,7 @@ public interface DocumentService {
 	 * @return The calculated checksum on success, null if there was an error
 	 *         performing the calculation.
 	 */
-	public String getFileContentChecksum(byte[] fileByteArray);
+	public String getFileContentChecksum(byte[] fileByteArray, String checksumAlgo);
 
 	/**
 	 * Checks whether the calculated checksum for the content of a given file
