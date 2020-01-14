@@ -21,7 +21,12 @@ git clone git@github.com:GrindrodBank/dokuti.git
 ```bash
 cd dokuti
 cd quickstart/docker-compose
-docker-compose up
+docker-compose up -d
+```
+
+* Inspecting it should show that it's up:
+```bash
+docker-compose ps
 ```
 
 5 services are installed:
