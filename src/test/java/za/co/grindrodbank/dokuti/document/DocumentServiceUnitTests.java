@@ -253,7 +253,7 @@ public class DocumentServiceUnitTests {
 		mockDocumentVersion.setId(documentVersionId);
 		mockDocumentVersion.setUploadedBy(userId);
 
-		Mockito.when(documentDataStoreService.loadAsResource(any(UUID.class), any(UUID.class)))
+		Mockito.when(documentDataStoreService.loadAsResource(any(String.class)))
 				.thenReturn(mockResource);
 		Mockito.when(resourcePermission.accessingUserCanReadDocument(any(DocumentEntity.class))).thenReturn(true);
 
