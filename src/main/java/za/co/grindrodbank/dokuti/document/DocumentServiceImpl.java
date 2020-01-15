@@ -113,7 +113,7 @@ public class DocumentServiceImpl implements DocumentService {
 			// TODO: Decouple this from being being a file resource, as this is file system
 			// specific. The file stream should be sent back here,
 			// which is a more generic representation of the file content.
-			Resource fileContent = documentStoreService.loadAsResource(document.getId(), documentVersion.getId());
+			Resource fileContent = documentStoreService.loadAsResource(documentVersion.getChecksum());
 			checkIfFileContentChecksumMatches(documentVersion, fileContent);
 			return fileContent;
 		} catch (StorageFileNotFoundException e) {
@@ -231,7 +231,7 @@ public class DocumentServiceImpl implements DocumentService {
 		
 		DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document,
 				fileContentChecksum, defaultChecksumAlgo, documentType);
-		documentStoreService.store(file, document.getId(), newDocumentVersion.getId());
+		documentStoreService.store(file, newDocumentVersion.getChecksum());
 
 		return newDocumentVersion;
 	}
@@ -247,7 +247,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
         
         DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum, checksumAlgo, documentType);
-        documentStoreService.store(is, document.getId(), newDocumentVersion.getId());
+        documentStoreService.store(is, newDocumentVersion.getChecksum());
 
         return newDocumentVersion;
     }

@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,9 @@ public class FileSystemDocumentStoreService implements DocumentDataStoreService 
 	}
 
 	@Override
-	public void store(MultipartFile file, UUID documentUUID, UUID versionUUID) {
+	public void store(MultipartFile file, String id) {
 		String filename = StringUtils.cleanPath(file.getOriginalFilename());
-		Path pathToStoredFile = this.rootLocation.resolve(documentUUID.toString() + "/" + versionUUID.toString());
+		Path pathToStoredFile = this.rootLocation.resolve(id);
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file " + filename);
@@ -55,8 +54,8 @@ public class FileSystemDocumentStoreService implements DocumentDataStoreService 
 	}
 
     @Override
-    public void store(InputStream inputStream, UUID documentUUID, UUID versionUUID) {
-        Path pathToStoredFile = this.rootLocation.resolve(documentUUID.toString() + "/" + versionUUID.toString());
+    public void store(InputStream inputStream, String id) {
+        Path pathToStoredFile = this.rootLocation.resolve(id);
         try {
             Files.createDirectories(pathToStoredFile.getParent());
             Files.copy(inputStream, pathToStoredFile, StandardCopyOption.REPLACE_EXISTING);
@@ -83,19 +82,19 @@ public class FileSystemDocumentStoreService implements DocumentDataStoreService 
 	}
 
 	@Override
-	public Resource loadAsResource(UUID documentUUID, UUID versionUUID) {
+	public Resource loadAsResource(String id) {
 		try {
 			
-			Path pathToStoredFile = this.rootLocation.resolve(documentUUID.toString() + "/" + versionUUID.toString());
+			Path pathToStoredFile = this.rootLocation.resolve(id);
 			Resource resource = new UrlResource(pathToStoredFile.toUri());
 			if (resource.exists() || resource.isReadable()) {
 				return resource;
 			} else {
-				throw new StorageFileNotFoundException("Could not read file: " + versionUUID.toString());
+				throw new StorageFileNotFoundException("Could not read file: " + id);
 
 			}
 		} catch (MalformedURLException e) {
-			throw new StorageFileNotFoundException("Could not read file: " + versionUUID.toString(), e);
+			throw new StorageFileNotFoundException("Could not read file: " + id, e);
 		}
 	}
 
