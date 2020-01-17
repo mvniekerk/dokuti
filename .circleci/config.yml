@@ -97,8 +97,11 @@ jobs:
                 -Dsonar.organization=grindrodbank \
                 -Dsonar.login=$SONAR_AUTH_TOKEN \
                 -Dsonar.branch.name=$CIRCLE_BRANCH \
-                -Dsonar.exclusions=srcgen/**/*
-                -Dsonar.jacoco.reportPaths=~/dokuti-sonarqube/target/jacoco.exec                 
+                -Dsonar.exclusions=srcgen/**/* \
+                -Dsonar.jacoco.reportPaths=target/jacoco.exec
+      - run: |
+         ls -l
+         ls target/ -l
   tagged-docker-build:
     docker:
       - image: docker
