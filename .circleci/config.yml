@@ -89,8 +89,8 @@ jobs:
           key: dokuti-sonarqube-{{ checksum "pom.xml" }}
       - run: |
          mvn clean
-         mvn package \
-            org.jacoco:jacoco-maven-plugin:prepare-agent \
+         mvn org.jacoco:jacoco-maven-plugin:prepare-agent \
+            package \ 
             sonar:sonar \
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.projectKey=GrindrodBank_dokuti \
@@ -98,6 +98,7 @@ jobs:
                 -Dsonar.login=$SONAR_AUTH_TOKEN \
                 -Dsonar.branch.name=$CIRCLE_BRANCH \
                 -Dsonar.exclusions=srcgen/**/*
+                        
   tagged-docker-build:
     docker:
       - image: docker
