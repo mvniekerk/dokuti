@@ -25,7 +25,6 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     public AttributeEntity save(AttributeEntity attribute) {
-
         attribute.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
 
         return attributeRepository.save(attribute);
@@ -50,6 +49,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     public AttributeEntity findById(Short attributeId) {
+
         Optional<AttributeEntity> optionalAttribute = attributeRepository.findById(attributeId);
 
         if (!optionalAttribute.isPresent()) {
