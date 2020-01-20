@@ -49,7 +49,6 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     public AttributeEntity findById(Short attributeId) {
-
         Optional<AttributeEntity> optionalAttribute = attributeRepository.findById(attributeId);
 
         if (!optionalAttribute.isPresent()) {
