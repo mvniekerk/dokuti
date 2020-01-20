@@ -99,9 +99,8 @@ jobs:
                 -Dsonar.branch.name=$CIRCLE_BRANCH \
                 -Dsonar.exclusions=srcgen/**/* \
                 -Dsonar.jacoco.reportPaths=target/jacoco.exec
-      - run: |
-         ls -l
-         ls target/ -l
+      - store_artifacts:
+         path:  target          
   tagged-docker-build:
     docker:
       - image: docker
