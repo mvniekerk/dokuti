@@ -89,16 +89,19 @@ jobs:
           key: dokuti-sonarqube-{{ checksum "pom.xml" }}
       - run: |
          mvn clean
-         mvn package \
-                -Dmaven.test.skip=true \
-            org.jacoco:jacoco-maven-plugin:prepare-agent \
+         mvn org.jacoco:jacoco-maven-plugin:prepare-agent \
+            package \
+            org.jacoco:jacoco-maven-plugin:report \
             sonar:sonar \
                 -Dsonar.host.url=https://sonarcloud.io \
                 -Dsonar.projectKey=GrindrodBank_dokuti \
                 -Dsonar.organization=grindrodbank \
                 -Dsonar.login=$SONAR_AUTH_TOKEN \
                 -Dsonar.branch.name=$CIRCLE_BRANCH \
-                -Dsonar.exclusions=srcgen/**/*
+                -Dsonar.exclusions=srcgen/**/* \
+                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+      - store_artifacts:
+         path:  target          
   tagged-docker-build:
     docker:
       - image: docker

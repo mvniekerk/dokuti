@@ -17,62 +17,61 @@ import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
 import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
-
 @Service
 public class AttributeServiceImpl implements AttributeService {
 
-	@Autowired
-	private AttributeRepository attributeRepository;
+    @Autowired
+    private AttributeRepository attributeRepository;
 
-	@Override
-	public AttributeEntity save(AttributeEntity attribute) {
-		attribute.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+    @Override
+    public AttributeEntity save(AttributeEntity attribute) {
+        attribute.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
 
-		return attributeRepository.save(attribute);
-	}
+        return attributeRepository.save(attribute);
+    }
 
-	public AttributeEntity createAttribute(String name, String validationRegex) {
-		AttributeEntity attribute = new AttributeEntity(name, validationRegex);
+    public AttributeEntity createAttribute(String name, String validationRegex) {
+        AttributeEntity attribute = new AttributeEntity(name, validationRegex);
 
-		if (!attribute.validationRegexIsValid()) {
-			throw new InvalidRequestException("Invalid validation regular expression provided for attribute.", null);
-		}
+        if (!attribute.validationRegexIsValid()) {
+            throw new InvalidRequestException("Invalid validation regular expression provided for attribute.", null);
+        }
 
-		attribute.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+        attribute.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
 
-		try {
-			attribute = attributeRepository.save(attribute);
-		} catch (Exception e) {
-			throw new DatabaseLayerException("Error saving new document attribute.", e);
-		}
+        try {
+            attribute = attributeRepository.save(attribute);
+        } catch (Exception e) {
+            throw new DatabaseLayerException("Error saving new document attribute.", e);
+        }
 
-		return attribute;
-	}
+        return attribute;
+    }
 
-	public AttributeEntity findById(Short attributeId) {
-		Optional<AttributeEntity> optionalAttribute = attributeRepository.findById(attributeId);
+    public AttributeEntity findById(Short attributeId) {
+        Optional<AttributeEntity> optionalAttribute = attributeRepository.findById(attributeId);
 
-		if (!optionalAttribute.isPresent()) {
-			throw new ResourceNotFoundException("Attribute not found", null);
-		}
+        if (!optionalAttribute.isPresent()) {
+            throw new ResourceNotFoundException("Attribute not found", null);
+        }
 
-		return optionalAttribute.get();
-	}
-	
-	public AttributeEntity updateAttribute(Short attributeId, String name, String validationRegex) {
-		AttributeEntity attributeEntity = findById(attributeId);
-		attributeEntity.setName(name);
-		attributeEntity.setValidationRegex(validationRegex);
+        return optionalAttribute.get();
+    }
 
-		if (!attributeEntity.validationRegexIsValid()) {
-			throw new InvalidRequestException("Invalid validation regular expression provided for attribute.", null);
-		}
+    public AttributeEntity updateAttribute(Short attributeId, String name, String validationRegex) {
+        AttributeEntity attributeEntity = findById(attributeId);
+        attributeEntity.setName(name);
+        attributeEntity.setValidationRegex(validationRegex);
 
-		return save(attributeEntity);
-	}
+        if (!attributeEntity.validationRegexIsValid()) {
+            throw new InvalidRequestException("Invalid validation regular expression provided for attribute.", null);
+        }
 
-	public Page<AttributeEntity> findAll(Pageable pageable) {
-		return attributeRepository.findAll(pageable);
-	}
+        return save(attributeEntity);
+    }
+
+    public Page<AttributeEntity> findAll(Pageable pageable) {
+        return attributeRepository.findAll(pageable);
+    }
 
 }
