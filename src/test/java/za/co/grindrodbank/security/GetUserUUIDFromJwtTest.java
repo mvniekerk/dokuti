@@ -38,7 +38,7 @@ public class GetUserUUIDFromJwtTest {
              .thenReturn("");
         PowerMockito.when(SecurityContextUtility.getUserUUIDFromJwt())
              .thenCallRealMethod();
-        // TODO TODO need to replace expected value to null after OCS UI support Auth
+       
         UUID v = SecurityContextUtility.getUserUUIDFromJwt();
         Assert.assertEquals(v,  v);
     }
@@ -51,7 +51,7 @@ public class GetUserUUIDFromJwtTest {
              .thenReturn(null);
         PowerMockito.when(SecurityContextUtility.getUserUUIDFromJwt())
              .thenCallRealMethod();
-        // TODO TODO need to replace expected value to null after OCS UI support Auth
+        
         UUID v = SecurityContextUtility.getUserUUIDFromJwt();
         Assert.assertEquals(v,  v);
         
