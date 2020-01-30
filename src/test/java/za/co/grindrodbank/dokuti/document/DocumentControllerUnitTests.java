@@ -6,6 +6,7 @@ package za.co.grindrodbank.dokuti.document;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -32,7 +33,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -57,7 +57,7 @@ import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissions
 import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
 
-@WebMvcTest(controllers = DocumentControllerImpl.class, excludeAutoConfiguration = MockMvcSecurityAutoConfiguration.class)
+@WebMvcTest(controllers = DocumentControllerImpl.class)
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(SpringRunner.class)
 @PrepareForTest(SecurityContextUtility.class)
@@ -333,13 +333,85 @@ public class DocumentControllerUnitTests {
                       .contentType(MediaType.APPLICATION_JSON)
                       .characterEncoding("utf-8"))
                       .andExpect(status().is(200));
+        assertTrue("should be one favorited user", document.getDocumentFavourites().size() == 1); 
+        assertTrue("favorited user should match current user", userId.equals(document.getDocumentFavourites().get(0).getUserId())); 
         
+        UUID userId2 = UUID.randomUUID();
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId2.toString());
         
-        document.setDocumentFavourites(null);
         mvc.perform(post("/documents/" + documentId + "/favourite")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andExpect(status().is(200));
+       assertTrue("should 2 favorited users", document.getDocumentFavourites().size() == 2); 
+        
+    }
+
+    
+    // this test similar above except setDocumentFavourites(null) instead of empty list
+    @Test
+    public void givenDocument_whenFavoriteDocument_thenReturnFavouriteDocumnet2() throws Exception {
+
+        UUID documentId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(false);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+        document.setDocumentFavourites(null);
+
+        Mockito.when(documentService.findById(documentId)).thenReturn(document);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        Mockito.when(documentService.save(document)).thenReturn(document);
+        
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());        
+        
+        mvc.perform(post("/documents/" + documentId + "/favourite")
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .characterEncoding("utf-8"))
+                      .andExpect(status().is(200));
+        assertTrue("should be one favorited doc now", document.getDocumentFavourites().size() == 1); 
+        assertTrue("favorited user should match current user", userId.equals(document.getDocumentFavourites().get(0).getUserId())); 
+    }
+    
+
+    
+
+    // /documents/{documentId}/unfavourite
+    @Test
+    public void givenDocument_whenUnfavoriteDocument_thenReturnUnfavouriteDocumnet() throws Exception {
+
+        UUID documentId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(false);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+        document.setDocumentFavourites(null);
+
+        Mockito.when(documentService.findById(documentId)).thenReturn(document);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        Mockito.when(documentService.save(document)).thenReturn(document);
+        
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());        
         
         List<DocumentFavouriteEntity> favorites = new ArrayList<>();
         DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
@@ -348,17 +420,50 @@ public class DocumentControllerUnitTests {
         documentFavouriteEntity.setUserId(userId);
         document.setDocumentFavourites(favorites);
         
-        mvc.perform(post("/documents/" + documentId + "/favourite")
+        mvc.perform(post("/documents/" + documentId + "/unfavourite")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andExpect(status().is(200));
         
+        assertTrue("should zero favorited doc now", document.getDocumentFavourites().size() == 0); 
     }
     
-
-    // /documents/{documentId}/unfavourite
     @Test
-    public void givenDocument_whenUnfavoriteDocument_thenReturnUnfavouriteDocumnet() throws Exception {
+    public void givenDocument_whenUnfavoriteDocument_thenReturnUnfavouriteDocumnet2() throws Exception {
+
+        UUID documentId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(false);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+        document.setDocumentFavourites(null);
+
+        Mockito.when(documentService.findById(documentId)).thenReturn(document);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        Mockito.when(documentService.save(document)).thenReturn(document);
+        
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());        
+        
+        mvc.perform(post("/documents/" + documentId + "/unfavourite")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8"))
+                .andExpect(status().is(200));
+        
+        assertTrue("should zero favorited doc now", document.getDocumentFavourites().size() == 0); 
+    }    
+    
+    @Test
+    public void givenDocument_whenUnfavoriteDocument_thenReturnUnfavouriteDocumnet3() throws Exception {
 
         UUID documentId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
@@ -384,30 +489,12 @@ public class DocumentControllerUnitTests {
         Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());        
         
         mvc.perform(post("/documents/" + documentId + "/unfavourite")
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .characterEncoding("utf-8"))
-                      .andExpect(status().is(200));
-        
-        
-        document.setDocumentFavourites(null);
-        mvc.perform(post("/documents/" + documentId + "/unfavourite")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andExpect(status().is(200));
         
-        List<DocumentFavouriteEntity> favorites = new ArrayList<>();
-        DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
-        favorites.add(documentFavouriteEntity);
-        documentFavouriteEntity.setDocument(document);
-        documentFavouriteEntity.setUserId(userId);
-        document.setDocumentFavourites(favorites);
-        
-        mvc.perform(post("/documents/" + documentId + "/unfavourite")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8"))
-                .andExpect(status().is(200));
-    }
-    
+        assertTrue("should zero favorited doc now", document.getDocumentFavourites().size() == 0); 
+    } 
     
     
     
@@ -462,11 +549,16 @@ public class DocumentControllerUnitTests {
                       .characterEncoding("utf-8"))
                       .andExpect(status().is(200));
         
+        
+        assertTrue("should 4 permissions per document", document.getDocumentPermissions().size() == 4); 
+        
         mvc.perform(post("/documents/" + documentId + "/unshare")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(sharedObjects)) 
                 .characterEncoding("utf-8"))
                 .andExpect(status().is(200)); 
+        
+        assertTrue("should be 4 permissions per document", document.getDocumentPermissions().size() == 0); 
     }    
     
     // /documents/{documentId}/acl
@@ -497,23 +589,48 @@ public class DocumentControllerUnitTests {
         PowerMockito.mockStatic(SecurityContextUtility.class);
         Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());        
         
-        mvc.perform(get("/documents/" + documentId + "/acl?scope=users")
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .characterEncoding("utf-8"))
-                      .andExpect(status().is(200));
-        mvc.perform(get("/documents/" + documentId + "/acl?scope=teams")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8"))
-                .andExpect(status().is(200));
         mvc.perform(get("/documents/" + documentId + "/acl")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
-                .andExpect(status().is(200));
-        mvc.perform(get("/documents/" + documentId + "/acl?scope=current")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8"))
-                .andExpect(status().is(200));
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].uuid", is(userId.toString())))
+                .andExpect(jsonPath("$[0].permissions", hasSize(0)));
+    } 
+    
+    
+    @Test
+    public void givenDocument_whenGetDocumentAcl_thenReturnCommonPermissionList2() throws Exception {
+
+        UUID documentId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        DocumentEntity document = new DocumentEntity();
+        document.setId(documentId);
+        document.setContentType("text/plain");
+        document.setDescription("Document Desc");
+        document.setName("Document Name");
+        document.setIsArchived(false);
+        document.setDocumentVersions(new HashSet<>());
+        document.setDocumentTags(new ArrayList<>());
+        document.setDocumentPermissions(new ArrayList<>());
+        document.setDocumentAttributes(new ArrayList<>());
+        document.setDocumentFavourites(new ArrayList<>());
         
 
+        Mockito.when(documentService.findById(documentId)).thenReturn(document);
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityPageToDocumentPage(any())).thenCallRealMethod();
+        Mockito.when(databaseEntityToApiDataTranfserObjectMapperServiceImpl.mapDocumentEntityToDocument(any())).thenCallRealMethod();
+        Mockito.when(documentService.save(document)).thenReturn(document);
+        
+        PowerMockito.mockStatic(SecurityContextUtility.class);
+        Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());        
+        
+        mvc.perform(get("/documents/" + documentId + "/acl?scope=teams")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8"))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$", hasSize(0)));
     } 
+    
 }

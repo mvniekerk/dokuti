@@ -361,14 +361,14 @@ public class DocumentControllerImpl implements DocumentsApi {
             return original;
         }
         
-        List<Permission> new_list = new ArrayList<>(original);
+        List<Permission> newList = new ArrayList<>(original);
         int start = Math.min(original.size(), Math.abs(page * size));
-        new_list.subList(0, start).clear();
+        newList.subList(0, start).clear();
         
-        int new_size = new_list.size();                   
-        int end = Math.min(size, new_size);        
-        new_list.subList(end, new_size).clear(); 
-        return new_list;
+        int newSize = newList.size();                   
+        int end = Math.min(size, newSize);        
+        newList.subList(end, newSize).clear(); 
+        return newList;
         
     }
     
