@@ -11,7 +11,8 @@ public class H2CustomFunctions {
 		super();
 	}
 
-	public static UUID gen_random_uuid() {
+//	public static UUID gen_random_uuid() {
+	public static UUID genRandomUuid() {
 		return UUID.randomUUID();
 	}
 }

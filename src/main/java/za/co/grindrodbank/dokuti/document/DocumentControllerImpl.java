@@ -316,7 +316,6 @@ public class DocumentControllerImpl implements DocumentsApi {
         DocumentEntity documentEntity = documentService.findById(documentId);
         List<DocumentAcl> permissions = documentEntity.getDocumentPermissions();
         for (SharedObject so : sharedObject) {
-            if (so.getPermissions() != null) {
                 for (String p : so.getPermissions()) {
                     DocumentAcl documentAcl = new DocumentAcl();
                     documentAcl.setDocument(documentEntity);
@@ -346,8 +345,6 @@ public class DocumentControllerImpl implements DocumentsApi {
                     lt.setGrantedOn(LocalDateTime.now());
                     history.add(lt);
                 }
-                
-            }
         }
         
         documentEntity = documentService.save(documentEntity);
@@ -364,14 +361,14 @@ public class DocumentControllerImpl implements DocumentsApi {
             return original;
         }
         
-        List<Permission> new_list = new ArrayList<Permission>(original);
+        List<Permission> newList = new ArrayList<>(original);
         int start = Math.min(original.size(), Math.abs(page * size));
-        new_list.subList(0, start).clear();
+        newList.subList(0, start).clear();
         
-        int new_size = new_list.size();                   
-        int end = Math.min(size, new_size);        
-        new_list.subList(end, new_size).clear(); 
-        return new_list;
+        int newSize = newList.size();                   
+        int end = Math.min(size, newSize);        
+        newList.subList(end, newSize).clear(); 
+        return newList;
         
     }
     
@@ -388,7 +385,7 @@ public class DocumentControllerImpl implements DocumentsApi {
         Permission permission = new Permission();
         permission.setUuid(userId.toString());
         permission.setPermissions(myaccess);
-        List<Permission> res = new ArrayList<Permission>();
+        List<Permission> res = new ArrayList<>();
         res.add(permission);
         return new ResponseEntity<>(getPagedList(res,page,size), HttpStatus.OK);
     }
@@ -412,7 +409,7 @@ public class DocumentControllerImpl implements DocumentsApi {
             }
         });
         
-        List<Permission> res = new ArrayList<Permission>();
+        List<Permission> res = new ArrayList<>();
         
         for (UUID i : usersMap.keySet()) {
             Permission p = new Permission();
@@ -439,7 +436,7 @@ public class DocumentControllerImpl implements DocumentsApi {
                 }
             }
         });
-        List<Permission> res = new ArrayList<Permission>();
+        List<Permission> res = new ArrayList<>();
         for (UUID i : teamsMap.keySet()) {
             Permission p = new Permission();
             p.setUuid(i.toString());
@@ -473,7 +470,7 @@ public class DocumentControllerImpl implements DocumentsApi {
                 removedList.add(acl);
                 List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
                 for (DocumentLifeTimeEntity lt : history) {
-                    if (uuid.equals(lt.getTeamId()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy()))) {
+                    if (uuid.equals(lt.getTeamId()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null || "".equals(lt.getRevokedBy().toString()))) {
                         lt.setRevokedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
                         lt.setRevokedOn(LocalDateTime.now());
                     }
@@ -496,7 +493,7 @@ public class DocumentControllerImpl implements DocumentsApi {
                 removedList.add(acl);
                 List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
                 for (DocumentLifeTimeEntity lt : history) {
-                    if (uuid.equals(lt.getUserId()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy()))) {
+                    if (uuid.equals(lt.getUserId()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy().toString()))) {
                         lt.setRevokedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
                         lt.setRevokedOn(LocalDateTime.now());
                     }
@@ -522,7 +519,7 @@ public class DocumentControllerImpl implements DocumentsApi {
                 removedList.add(acl);
                 List<DocumentLifeTimeEntity> history = documentEntity.getDocumentHistory();
                 for (DocumentLifeTimeEntity lt : history) {
-                    if (uuid.equals(acl.getGrantedBy()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy()))) {
+                    if (uuid.equals(acl.getGrantedBy()) && lt.getPermission().equals(permission) && (lt.getRevokedBy()==null|| "".equals(lt.getRevokedBy().toString()))) {
                         lt.setRevokedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
                         lt.setRevokedOn(LocalDateTime.now());
                     }
@@ -543,7 +540,6 @@ public class DocumentControllerImpl implements DocumentsApi {
         DocumentEntity documentEntity = documentService.findById(documentId);
         List<DocumentAcl> permissions = documentEntity.getDocumentPermissions();
         for (SharedObject so : sharedObject) {
-            if (so.getPermissions() != null) {
                 for (String p : so.getPermissions()) {
                     if (Boolean.TRUE.equals(so.getTeamflag())) {
                         removePermissionForTeam(documentEntity, permissions, p, UUID.fromString(so.getUuid())); 
@@ -551,8 +547,6 @@ public class DocumentControllerImpl implements DocumentsApi {
                         removePermissionForUser(documentEntity, permissions, p, UUID.fromString(so.getUuid())); 
                     }
                 }
-                
-            }
         }
         documentEntity = documentService.save(documentEntity);
         Document res = databaseEntityToApiDataTranfserObjectMapperService.mapDocumentEntityToDocument(documentEntity);
@@ -622,12 +616,8 @@ public class DocumentControllerImpl implements DocumentsApi {
         LifeTimeUsersList ltul = new LifeTimeUsersList();
         ltul.setTeams(new ArrayList<>());
         ltul.setUsers(new ArrayList<>());
-        users.forEach(e-> {
-            ltul.getUsers().add(e.toString());
-        });
-        teams.forEach(e-> {
-            ltul.getTeams().add(e.toString());
-        });  
+        users.forEach(e-> ltul.getUsers().add(e.toString()));
+        teams.forEach(e-> ltul.getTeams().add(e.toString()));  
         
         return new ResponseEntity<>(ltul, HttpStatus.OK);
     }

@@ -258,13 +258,13 @@ public class DocumentServiceImpl implements DocumentService {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance(checksumAlgo);
 			byte[] messageDigestHash = messageDigest.digest(fileByteArray);
-			String messageDigestHashString = "";
+			StringBuilder messageDigestHashString = new StringBuilder();
 
 			for (int i = 0; i < messageDigestHash.length; i++) {
-				messageDigestHashString += Integer.toString((messageDigestHash[i] & 0xff) + 0x100, 16).substring(1);
+				messageDigestHashString.append( Integer.toString((messageDigestHash[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			return messageDigestHashString;
+			return messageDigestHashString.toString();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 
@@ -380,12 +380,12 @@ public class DocumentServiceImpl implements DocumentService {
 				creatorUserId);
 		// Create a list of all the possible DocumentPermissions ENUM values, as we want
 		// to assign all the available permissions to to the document creator.
-		List<DocumentPermission> allDocumentPermissions = new ArrayList<DocumentPermission>(
+		List<DocumentPermission> allDocumentPermissions = new ArrayList<>(
 				EnumSet.allOf(DocumentPermission.class));
 
 		try {
 			allDocumentPermissions.forEach(permissionValue -> {
-				logger.debug("Adding the {} permission to Document {} for user {}", permissionValue.toString(),
+				logger.debug("Adding the {} permission to Document {} for user {}", permissionValue,
 						document.getId(), creatorUserId);
 				document.addPermission(creatorUserId, permissionValue, true, creatorUserId);
 			});
