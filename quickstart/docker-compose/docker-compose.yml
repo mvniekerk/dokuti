@@ -1,7 +1,7 @@
 version: '3'
 services:
   postgresql:
-    image: "postgres:10.7-alpine"
+    image: "postgres:11-alpine"
     ports:
       - '5432:5432'
     networks:
@@ -28,7 +28,7 @@ services:
     container_name: a3s-postgresql
     networks:
       - dokuti-quickstart    
-    image: "postgres:10.7-alpine"
+    image: "postgres:11-alpine"
     restart: always
     ports:
       - "5478:5432"
