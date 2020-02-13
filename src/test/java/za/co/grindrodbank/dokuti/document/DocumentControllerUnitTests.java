@@ -170,7 +170,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
 
         Mockito.when(documentService.save(document)).thenReturn(document);
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -201,7 +201,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
 
         Mockito.when(documentService.save(document)).thenReturn(document);
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -232,7 +232,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
 
         List<DocumentEntity> list = new ArrayList<>();
         list.add(document);
@@ -270,7 +270,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         
         List<DocumentFavouriteEntity> favorites = new ArrayList<>();
         DocumentFavouriteEntity documentFavouriteEntity = new DocumentFavouriteEntity();
@@ -318,7 +318,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(new ArrayList<>());
 
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -364,7 +364,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(null);
 
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -402,7 +402,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(null);
 
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -443,7 +443,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(null);
 
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -477,7 +477,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(new ArrayList<>());
 
         Mockito.when(documentService.findById(documentId)).thenReturn(document);
@@ -515,7 +515,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(new ArrayList<>());
         
         List<SharedObject> sharedObjects = new ArrayList<>();
@@ -577,7 +577,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(new ArrayList<>());
         
 
@@ -614,7 +614,7 @@ public class DocumentControllerUnitTests {
         document.setDocumentVersions(new HashSet<>());
         document.setDocumentTags(new ArrayList<>());
         document.setDocumentPermissions(new ArrayList<>());
-        document.setDocumentAttributes(new ArrayList<>());
+        //document.setDocumentAttributes(new ArrayList<>());
         document.setDocumentFavourites(new ArrayList<>());
         
 

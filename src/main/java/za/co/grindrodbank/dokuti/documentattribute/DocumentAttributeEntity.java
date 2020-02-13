@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
+import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 
 @Entity
 @Table(name = "document_attribute")
@@ -39,8 +40,8 @@ public class DocumentAttributeEntity {
 
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "document_id", insertable = false, updatable = false)
-	private DocumentEntity document;
+	@JoinColumn(name = "document_version_id", insertable = false, updatable = false)
+	private DocumentVersionEntity documentVersion;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "attribute_label", insertable = false, updatable = false)
@@ -65,15 +66,15 @@ public class DocumentAttributeEntity {
 		this.id = id;
 	}
 
-	public DocumentEntity getDocument() {
-		return document;
-	}
+	public DocumentVersionEntity getDocumentVersion() {
+        return documentVersion;
+    }
 
-	public void setDocument(DocumentEntity document) {
-		this.document = document;
-	}
+    public void setDocumentVersion(DocumentVersionEntity documentVersion) {
+        this.documentVersion = documentVersion;
+    }
 
-	public AttributeEntity getAttribute() {
+    public AttributeEntity getAttribute() {
 		return attribute;
 	}
 
@@ -105,10 +106,10 @@ public class DocumentAttributeEntity {
 		this.updatedBy = updatedBy;
 	}
 
-	public DocumentAttributeEntity(DocumentEntity document, AttributeEntity attribute, String value) {
-		this.document = document;
+	public DocumentAttributeEntity(DocumentVersionEntity documentVersion, AttributeEntity attribute, String value) {
+		this.documentVersion = documentVersion;
 		this.attribute = attribute;
-		this.id = new DocumentAttributeId(document.getId(), attribute.getId());
+		this.id = new DocumentAttributeId(documentVersion.getId(), attribute.getId());
 		this.value = value;
 	}
 
@@ -125,13 +126,13 @@ public class DocumentAttributeEntity {
 			return false;
 
 		DocumentAttributeEntity that = (DocumentAttributeEntity) o;
-		return Objects.equals(document, that.document) && Objects.equals(attribute, that.attribute)
+		return Objects.equals(documentVersion, that.documentVersion) && Objects.equals(attribute, that.attribute)
 				&& Objects.equals(value, that.value);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(document, attribute);
+		return Objects.hash(documentVersion, attribute);
 	}
 
 	public boolean isValid() {

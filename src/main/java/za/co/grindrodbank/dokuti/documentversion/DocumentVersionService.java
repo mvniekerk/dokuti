@@ -6,7 +6,10 @@ package za.co.grindrodbank.dokuti.documentversion;
 
 import java.util.UUID;
 
+import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
+import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
+import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
 
@@ -37,4 +40,29 @@ public interface DocumentVersionService {
 	 */
 	public DocumentVersionEntity createDocumentVersion(DocumentEntity document, String checksum, String checksumAlgo, String documentType);
 
+	
+    /**
+     * Adds an attribute association to a document with a value.
+     * 
+     * @param documentVersion  The documentVersion to associate the document with.
+     * @param attribute The attribute to associate with the document.
+     * @param value     The value of the attribute to associate with the document.
+     * @return An instance of the created DocumentAttribute.
+     * @throws DatabaseLayerException
+     */
+    public DocumentAttributeEntity addDocumentAttribute(DocumentVersionEntity documentVersion, AttributeEntity attribute,
+            String value) throws DatabaseLayerException;
+    
+    
+    /**
+     * Removes a document attribute association from the document.
+     * 
+     * @param documentVersion  The documentVersion to remove the attribute association from.
+     * @param attribute The attribute to remove from the document.
+     * @throws DatabaseLayerException
+     */
+    public void removeDocumentAttribute(DocumentVersionEntity documentVersion, AttributeEntity attribute)
+            throws DatabaseLayerException;
+    
+    
 }

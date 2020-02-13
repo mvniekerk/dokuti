@@ -5,7 +5,12 @@
 package za.co.grindrodbank.dokuti.documentversion;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,7 +27,9 @@ import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
+import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 
 @Entity
 @Table(name = "document_version")
@@ -52,7 +60,10 @@ public class DocumentVersionEntity {
 	@JoinColumn(name = "document_id")
 	@JsonIgnore
 	private DocumentEntity document;
-
+	
+    @OneToMany(mappedBy = "documentVersion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DocumentAttributeEntity> documentAttributes = new ArrayList<>();	
+	
 	public UUID getId() {
 		return id;
 	}
@@ -109,4 +120,45 @@ public class DocumentVersionEntity {
         this.checksumAlgo = checksumAlgo;
     }
 
+    public List<DocumentAttributeEntity> getDocumentAttributes() {
+        return documentAttributes;
+    }
+
+    public void setDocumentAttributes(List<DocumentAttributeEntity> documentAttributes) {
+        this.documentAttributes = documentAttributes;
+    }
+
+    /**
+     * Associates an attribute, and it's value, to a document.
+     * 
+     * @param attribute The attribute to associate with the document.
+     * @param value     The value of the attribute association.
+     * @return An instance of the added document attribute.
+     */
+    public DocumentAttributeEntity addAttribute(AttributeEntity attribute, String value, UUID addedBy) {
+        DocumentAttributeEntity documentAttribute = new DocumentAttributeEntity(this, attribute, value);
+        documentAttribute.setUpdatedBy(addedBy);
+
+        documentAttributes.add(documentAttribute);
+
+        return documentAttribute;
+    }
+
+    /**
+     * Removes an attribute association from the document.
+     * 
+     * @param attribute The attribute to remove from the document.
+     */
+    public void removeAttribute(AttributeEntity attribute) {
+        for (Iterator<DocumentAttributeEntity> iterator = documentAttributes.iterator(); iterator.hasNext();) {
+            DocumentAttributeEntity documentAttribute = iterator.next();
+
+            if (documentAttribute.getDocumentVersion().equals(this) && documentAttribute.getAttribute().equals(attribute)) {
+                iterator.remove();
+                documentAttribute.getAttribute().getDocumentAttributes().remove(documentAttribute);
+                documentAttribute.setDocumentVersion(null);
+                documentAttribute.setAttribute(null);
+            }
+        }
+    }    
 }

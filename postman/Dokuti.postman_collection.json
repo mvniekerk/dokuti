@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8a3db13f-a70d-478a-b6b5-fe2e2373fec4",
+		"_postman_id": "b8027f9e-5284-4a54-b294-78357e848792",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2840,13 +2840,15 @@
 							"raw": "{\n\t\"value\": \"test-attribute-value-one\"\n}"
 						},
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/attributes/{{attributeId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/versions/{{documentVersionId}}/attributes/{{attributeId}}",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{documentId}}",
+								"versions",
+								"{{documentVersionId}}",
 								"attributes",
 								"{{attributeId}}"
 							]
@@ -2886,13 +2888,15 @@
 							"raw": "{\n\t\"value\": \"doc-attribute-val-updated\"\n}"
 						},
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/attributes/{{attributeId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/versions/{{documentVersionId}}/attributes/{{attributeId}}",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{documentId}}",
+								"versions",
+								"{{documentVersionId}}",
 								"attributes",
 								"{{attributeId}}"
 							]
@@ -2925,13 +2929,15 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/attributes/{{attributeId}}",
+							"raw": "{{DOKUTI_BASE_URL}}/documents/{{documentId}}/versions/{{documentVersionId}}/attributes/{{attributeId}}",
 							"host": [
 								"{{DOKUTI_BASE_URL}}"
 							],
 							"path": [
 								"documents",
 								"{{documentId}}",
+								"versions",
+								"{{documentVersionId}}",
 								"attributes",
 								"{{attributeId}}"
 							]

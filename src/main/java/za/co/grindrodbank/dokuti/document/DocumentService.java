@@ -13,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
-import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.exceptions.ChecksumFailedException;
 import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
@@ -142,27 +140,6 @@ public interface DocumentService {
 	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, Boolean filterByFavourites, List<String> tags,
 			List<String> attributeNames, Boolean filterArchive, Boolean filterSharedWithOthers, Boolean filterSharedWithMe);
 
-	/**
-	 * Adds an attribute association to a document with a value.
-	 * 
-	 * @param document  The document to associate the document with.
-	 * @param attribute The attribute to associate with the document.
-	 * @param value     The value of the attribute to associate with the document.
-	 * @return An instance of the created DocumentAttribute.
-	 * @throws DatabaseLayerException
-	 */
-	public DocumentAttributeEntity addDocumentAttribute(DocumentEntity document, AttributeEntity attribute,
-			String value) throws DatabaseLayerException;
-
-	/**
-	 * Removes a document attribute association from the document.
-	 * 
-	 * @param document  The document to remove the attribute association from.
-	 * @param attribute The attribute to remove from the document.
-	 * @throws DatabaseLayerException
-	 */
-	public void removeDocumentAttribute(DocumentEntity document, AttributeEntity attribute)
-			throws DatabaseLayerException;
 
 	public void removeAllDocumentTags(DocumentEntity document);
 	

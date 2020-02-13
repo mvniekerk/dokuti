@@ -34,7 +34,9 @@ import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.document.DocumentRepository;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
+import za.co.grindrodbank.dokuti.documentversion.DocumentVersionRepository;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
+import za.co.grindrodbank.dokuti.documentversion.DocumentVersionServiceImpl;
 import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
@@ -48,8 +50,15 @@ public class DocumentServiceUnitTests {
 	@Mock
 	private DocumentRepository documentRepository;
 
-	@Mock
+
+    @Mock
+    private DocumentVersionRepository documentVersionRepository;	
+	
+    @Mock
 	private DocumentVersionService documentVersionService;
+    
+    @InjectMocks
+    private DocumentVersionServiceImpl documentVersionServiceImpl;    
 
 	@Mock
 	private DocumentDataStoreService documentDataStoreService;
@@ -100,15 +109,13 @@ public class DocumentServiceUnitTests {
 	}
 
 	@Test
-	public void givenDocumentAndAttribute_whenAddAttribute_thenReturnDocumentAttribute() {
-		UUID documentId = UUID.randomUUID();
+	public void givenDocumentVersionAndAttribute_whenAddAttribute_thenReturnDocumentAttribute() {
+		UUID documentVersionId = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
 
-		DocumentEntity documentMock = new DocumentEntity();
-		documentMock.setId(documentId);
-		documentMock.setContentType("text/plain");
-		documentMock.setDescription("Mocked document description");
-		documentMock.setName("Mocked document name");
+		DocumentVersionEntity documentVersionMock = new DocumentVersionEntity();
+		documentVersionMock.setId(documentVersionId);
+
 
 		AttributeEntity attributeEntityMock = new AttributeEntity();
 		attributeEntityMock.setId((short) 1);
@@ -116,13 +123,13 @@ public class DocumentServiceUnitTests {
 		attributeEntityMock.setValidationRegex("[a-y]");
 		attributeEntityMock.setUpdatedBy(userId);
 
-		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
+		Mockito.when(documentVersionRepository.save(any(DocumentVersionEntity.class))).thenReturn(documentVersionMock);
 
 		PowerMockito.mockStatic(SecurityContextUtility.class);
 		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
 
 		String documentAttributeValue = "test attribute value";
-		DocumentAttributeEntity documentAttribute = documentService.addDocumentAttribute(documentMock,
+		DocumentAttributeEntity documentAttribute = documentVersionServiceImpl.addDocumentAttribute(documentVersionMock,
 				attributeEntityMock, documentAttributeValue);
 
 		assertEquals("Failure - Document Attribute values are not equal", documentAttributeValue,
@@ -136,14 +143,11 @@ public class DocumentServiceUnitTests {
 	 */
 	@Test(expected = InvalidRequestException.class)
 	public void givenDocumentAttributeWithIncorrectContractExpiryDateValue_thenInvalidRequestExceptionThrown() {
-		UUID documentId = UUID.randomUUID();
+		UUID documentVersionId = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
 
-		DocumentEntity documentMock = new DocumentEntity();
-		documentMock.setId(documentId);
-		documentMock.setContentType("text/plain");
-		documentMock.setDescription("Mocked document description");
-		documentMock.setName("Mocked document name");
+		DocumentVersionEntity documentVersionMock = new DocumentVersionEntity();
+		documentVersionMock.setId(documentVersionId);
 
 		AttributeEntity attributeEntityMock = new AttributeEntity();
 		attributeEntityMock.setId((short) 1);
@@ -152,14 +156,14 @@ public class DocumentServiceUnitTests {
 				"(^(((0[1-9]|1[0-9]|2[0-8])[\\/](0[1-9]|1[012]))|((29|30|31)[\\/](0[13578]|1[02]))|((29|30)[\\/](0[4,6,9]|11)))[\\/](19|[2-9][0-9])\\d\\d$)|(^29[\\/]02[\\/](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)$)");
 		attributeEntityMock.setUpdatedBy(userId);
 
-		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
+		Mockito.when(documentVersionRepository.save(any(DocumentVersionEntity.class))).thenReturn(documentVersionMock);
 
 		PowerMockito.mockStatic(SecurityContextUtility.class);
 		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
 
 		String documentAttributeValue = "test attribute value";
 
-		documentService.addDocumentAttribute(documentMock,
+		documentVersionServiceImpl.addDocumentAttribute(documentVersionMock,
 				attributeEntityMock, documentAttributeValue);
 	}
 
@@ -171,14 +175,11 @@ public class DocumentServiceUnitTests {
 	 */
 	@Test
 	public void givenDocumentAttributeWithCorrectContractExpiryDateValue_thenDocumentAttributeCreated() {
-		UUID documentId = UUID.randomUUID();
+		UUID documentVersionId = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
 
-		DocumentEntity documentMock = new DocumentEntity();
-		documentMock.setId(documentId);
-		documentMock.setContentType("text/plain");
-		documentMock.setDescription("Mocked document description");
-		documentMock.setName("Mocked document name");
+		DocumentVersionEntity documentVersionMock = new DocumentVersionEntity();
+		documentVersionMock.setId(documentVersionId);
 
 		AttributeEntity attributeEntityMock = new AttributeEntity();
 		attributeEntityMock.setId((short) 1);
@@ -187,13 +188,13 @@ public class DocumentServiceUnitTests {
 				"(^(((0[1-9]|1[0-9]|2[0-8])[\\/](0[1-9]|1[012]))|((29|30|31)[\\/](0[13578]|1[02]))|((29|30)[\\/](0[4,6,9]|11)))[\\/](19|[2-9][0-9])\\d\\d$)|(^29[\\/]02[\\/](19|[2-9][0-9])(00|04|08|12|16|20|24|28|32|36|40|44|48|52|56|60|64|68|72|76|80|84|88|92|96)$)");
 		attributeEntityMock.setUpdatedBy(userId);
 
-		Mockito.when(documentRepository.save(any(DocumentEntity.class))).thenReturn(documentMock);
-
+		Mockito.when(documentVersionRepository.save(any(DocumentVersionEntity.class) )).thenReturn(documentVersionMock);
+		
 		PowerMockito.mockStatic(SecurityContextUtility.class);
 		Mockito.when(SecurityContextUtility.getUserIdFromJwt()).thenReturn(userId.toString());
 
 		String documentAttributeValue = "22/04/2019";
-		DocumentAttributeEntity documentAttribute = documentService.addDocumentAttribute(documentMock,
+		DocumentAttributeEntity documentAttribute = documentVersionServiceImpl.addDocumentAttribute(documentVersionMock,
 				attributeEntityMock, documentAttributeValue);
 
 		assertEquals("Failure - Document Attribute values are not equal", documentAttributeValue,
