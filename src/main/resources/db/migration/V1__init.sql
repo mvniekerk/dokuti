@@ -53,12 +53,12 @@ ALTER TABLE _documents.document OWNER TO postgres;
 -- object: _documents.document_attribute | type: TABLE --
 -- DROP TABLE IF EXISTS _documents.document_attribute CASCADE;
 CREATE TABLE _documents.document_attribute(
-	document_id uuid,
+	document_version_id uuid,
 	attribute_value text,
 	attribute_label smallint NOT NULL,
 	__updated_on timestamp NOT NULL,
 	__updated_by uuid NOT NULL,
-	CONSTRAINT pk_document_attribute PRIMARY KEY (document_id, attribute_label)
+	CONSTRAINT pk_document_attribute PRIMARY KEY (document_version_id, attribute_label)
 
 );
 -- ddl-end --
@@ -316,8 +316,8 @@ CREATE SEQUENCE _documents.hibernate_sequence
 
 -- object: "fk_document.id" | type: CONSTRAINT --
 -- ALTER TABLE _documents.document_attribute DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
-ALTER TABLE _documents.document_attribute ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
-REFERENCES _documents.document (id) MATCH FULL
+ALTER TABLE _documents.document_attribute ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_version_id)
+REFERENCES _documents.document_version (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 

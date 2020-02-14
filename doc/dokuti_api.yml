@@ -3,7 +3,7 @@ info:
   description: >-
     API Definition for the Document Utility Service. This service allows
     uploading and sharing of documents.
-  version: 0.4.0
+  version: 0.5.0
   title: Document Utility Service
 paths:
   /documents:
@@ -1241,7 +1241,7 @@ paths:
           schema:
             $ref: '#/components/schemas/documentId'
           required: true
-  '/documents/{documentId}/attributes/{attributeId}':
+  '/documents/{documentId}/versions/{documentVersionId}/attributes/{attributeId}':
     post:
       tags:
         - Document Attributes
@@ -1295,6 +1295,11 @@ paths:
           name: documentId
           schema:
             $ref: '#/components/schemas/documentId'
+          required: true
+        - in: path          
+          name: documentVersionId
+          schema:
+            $ref: '#/components/schemas/documentVersionId'
           required: true
         - in: path
           name: attributeId
@@ -1355,6 +1360,11 @@ paths:
           schema:
             $ref: '#/components/schemas/documentId'
           required: true
+        - in: path          
+          name: documentVersionId
+          schema:
+            $ref: '#/components/schemas/documentVersionId'  
+          required: true            
         - in: path
           name: attributeId
           schema:
@@ -1405,6 +1415,11 @@ paths:
           schema:
             $ref: '#/components/schemas/documentId'
           required: true
+        - in: path          
+          name: documentVersionId
+          schema:
+            $ref: '#/components/schemas/documentVersionId'   
+          required: true            
         - in: path
           name: attributeId
           schema:

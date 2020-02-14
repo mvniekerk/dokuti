@@ -16,21 +16,22 @@ public class DocumentAttributeId implements Serializable {
 
 	private static final long serialVersionUID = 5457839083831390791L;
 
-	@Column(name = "document_id")
-	private UUID documentId;
+	@Column(name = "document_version_id")
+	private UUID documentVersionId;
 
 	@Column(name = "attribute_label")
 	private Short attributeId;
 
-	public UUID getDocumentId() {
-		return documentId;
-	}
 
-	public void setDocumentId(UUID documentId) {
-		this.documentId = documentId;
-	}
+	public UUID getDocumentVersionId() {
+        return documentVersionId;
+    }
 
-	public Short getAttributeId() {
+    public void setDocumentVersionId(UUID documentVersionId) {
+        this.documentVersionId = documentVersionId;
+    }
+
+    public Short getAttributeId() {
 		return attributeId;
 	}
 
@@ -38,8 +39,8 @@ public class DocumentAttributeId implements Serializable {
 		this.attributeId = attributeId;
 	}
 
-	public DocumentAttributeId(UUID documentId, Short attributeId) {
-		this.documentId = documentId;
+	public DocumentAttributeId(UUID documentVersionId, Short attributeId) {
+		this.documentVersionId = documentVersionId;
 		this.attributeId = attributeId;
 	}
 
@@ -55,12 +56,12 @@ public class DocumentAttributeId implements Serializable {
 			return false;
 
 		DocumentAttributeId that = (DocumentAttributeId) o;
-		return Objects.equals(documentId, that.documentId) && Objects.equals(attributeId, that.attributeId);
+		return Objects.equals(documentVersionId, that.documentVersionId) && Objects.equals(attributeId, that.attributeId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(documentId, attributeId);
+		return Objects.hash(documentVersionId, attributeId);
 	}
 
 }

@@ -22,14 +22,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
-import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
@@ -76,9 +71,6 @@ public class DocumentEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document", cascade = CascadeType.ALL)
 	@OrderBy("tag")
 	private List<DocumentTagEntity> documentTags;
-
-	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<DocumentAttributeEntity> documentAttributes = new ArrayList<>();
 
 	@JsonBackReference
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -157,14 +149,6 @@ public class DocumentEntity {
 		this.documentVersions = documentVersions;
 	}
 
-	public List<DocumentAttributeEntity> getDocumentAttributes() {
-		return documentAttributes;
-	}
-
-	public void setDocumentAttributes(List<DocumentAttributeEntity> documentAttributes) {
-		this.documentAttributes = documentAttributes;
-	}
-
 	public List<DocumentAcl> getDocumentPermissions() {
 		return documentPermissions;
 	}
@@ -208,39 +192,7 @@ public class DocumentEntity {
 		return null;
 	}
 
-	/**
-	 * Associates an attribute, and it's value, to a document.
-	 * 
-	 * @param attribute The attribute to associate with the document.
-	 * @param value     The value of the attribute association.
-	 * @return An instance of the added document attribute.
-	 */
-	public DocumentAttributeEntity addAttribute(AttributeEntity attribute, String value, UUID addedBy) {
-		DocumentAttributeEntity documentAttribute = new DocumentAttributeEntity(this, attribute, value);
-		documentAttribute.setUpdatedBy(addedBy);
 
-		documentAttributes.add(documentAttribute);
-
-		return documentAttribute;
-	}
-
-	/**
-	 * Removes an attribute association from the document.
-	 * 
-	 * @param attribute The attribute to remove from the document.
-	 */
-	public void removeAttribute(AttributeEntity attribute) {
-		for (Iterator<DocumentAttributeEntity> iterator = documentAttributes.iterator(); iterator.hasNext();) {
-			DocumentAttributeEntity documentAttribute = iterator.next();
-
-			if (documentAttribute.getDocument().equals(this) && documentAttribute.getAttribute().equals(attribute)) {
-				iterator.remove();
-				documentAttribute.getAttribute().getDocumentAttributes().remove(documentAttribute);
-				documentAttribute.setDocument(null);
-				documentAttribute.setAttribute(null);
-			}
-		}
-	}
 
 	/**
 	 * ; Adds a new document permission to the document.

@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.openapitools.api.ApiUtil;
 import org.openapitools.api.DocumentsApi;
 import org.openapitools.model.CreateDocumentResponse;
 import org.openapitools.model.DateTimePeriod;
@@ -43,7 +42,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,7 +55,6 @@ import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
 import za.co.grindrodbank.dokuti.lifetime.DocumentLifeTimeEntity;
 import za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectmapper.DatabaseEntityToApiDataTransferObjectMapperService;
-import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
 import za.co.grindrodbank.dokuti.utilities.ParseOrderByQueryParam;
 import za.co.grindrodbank.security.service.accesstokenpermissions.SecurityContextUtility;
 
@@ -122,18 +119,20 @@ public class DocumentControllerImpl implements DocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<DocumentAttribute> createDocumentAttribute(UUID documentId, Integer attributeId,
+	public ResponseEntity<DocumentAttribute> createDocumentAttribute(UUID documentId, UUID documentVersionId, Integer attributeId,
 			DocumentAttributeRequest documentAttributeRequest) {
-		DocumentAttribute documentAttribute = createOrUpdateDocumentAttribute(documentId, attributeId,
+		DocumentAttribute documentAttribute = createOrUpdateDocumentAttribute(documentVersionId, attributeId,
 				documentAttributeRequest);
 
 		return new ResponseEntity<>(documentAttribute, HttpStatus.OK);
 	}
 
-	private DocumentAttribute createOrUpdateDocumentAttribute(UUID documentId, Integer attributeId,
+	private DocumentAttribute createOrUpdateDocumentAttribute(UUID documentVersionId, Integer attributeId,
 			DocumentAttributeRequest documentAttributeRequest) {
-		DocumentAttributeEntity documentAttributeEntity = documentService.addDocumentAttribute(
-				documentService.findById(documentId), attributeService.findById(attributeId.shortValue()),
+	    
+	    
+		DocumentAttributeEntity documentAttributeEntity = documentVersionService.addDocumentAttribute(
+		        documentVersionService.findById(documentVersionId), attributeService.findById(attributeId.shortValue()),
 				documentAttributeRequest.getValue());
 
 		return databaseEntityToApiDataTranfserObjectMapperService
@@ -141,18 +140,20 @@ public class DocumentControllerImpl implements DocumentsApi {
 	}
 
 	@Override
-	public ResponseEntity<DocumentAttribute> updateDocumentAttribute(UUID documentId, Integer attributeId,
+	public ResponseEntity<DocumentAttribute> updateDocumentAttribute(UUID documentId, UUID documentVersionId, Integer attributeId,
 			DocumentAttributeRequest documentAttributeRequest) {
 
-		return new ResponseEntity<>(createOrUpdateDocumentAttribute(documentId, attributeId, documentAttributeRequest),
+		return new ResponseEntity<>(createOrUpdateDocumentAttribute(documentVersionId, attributeId, documentAttributeRequest),
 				HttpStatus.OK);
 	}
 
 	@Override
-	public ResponseEntity<Void> deleteDocumentAttribute(UUID documentId, Integer attributeId) {
-		documentService.removeDocumentAttribute(documentService.findById(documentId),
-				attributeService.findById(attributeId.shortValue()));
-
+	public ResponseEntity<Void> deleteDocumentAttribute(UUID documentId, UUID documentVersionId, Integer attributeId) {
+		
+        
+	    documentVersionService.removeDocumentAttribute(documentVersionService.findById(documentVersionId),
+              attributeService.findById(attributeId.shortValue()));	    
+	    
 		return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 	}
 

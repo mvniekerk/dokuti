@@ -12,8 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
+import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
+import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.ResourcePermissionsService;
@@ -76,4 +79,37 @@ public class DocumentVersionServiceImpl implements DocumentVersionService {
 
 	}
 
+    @Override
+    public DocumentAttributeEntity addDocumentAttribute(DocumentVersionEntity documentVersion, AttributeEntity attribute, String value) throws DatabaseLayerException {
+        
+        DocumentAttributeEntity documentAttribute = documentVersion.addAttribute(attribute, value,
+                UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+
+        if (!documentAttribute.isValid()) {
+            throw new InvalidRequestException("Invalid value supplied for document attribute", null);
+        }
+
+        try {
+            documentVersionRepository.save(documentVersion);
+
+            return documentAttribute;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new DatabaseLayerException("Error saving document after assinging attribute.", e);
+        }
+    }
+
+    @Override
+    public void removeDocumentAttribute(DocumentVersionEntity documentVersion, AttributeEntity attribute) throws DatabaseLayerException {
+        try {
+            documentVersion.removeAttribute(attribute);
+            documentVersionRepository.save(documentVersion);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new DatabaseLayerException("Error removing document attribute from document", e);
+        }
+        
+    }
+    
 }
