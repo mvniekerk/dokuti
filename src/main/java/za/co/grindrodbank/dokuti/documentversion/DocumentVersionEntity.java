@@ -129,9 +129,9 @@ public class DocumentVersionEntity {
     }
 
     /**
-     * Associates an attribute, and it's value, to a document.
+     * Associates an attribute, and it's value, to a document version.
      * 
-     * @param attribute The attribute to associate with the document.
+     * @param attribute The attribute to associate with the document version.
      * @param value     The value of the attribute association.
      * @return An instance of the added document attribute.
      */
@@ -145,9 +145,9 @@ public class DocumentVersionEntity {
     }
 
     /**
-     * Removes an attribute association from the document.
+     * Removes an attribute association from the document version.
      * 
-     * @param attribute The attribute to remove from the document.
+     * @param attribute The attribute to remove from the document version.
      */
     public void removeAttribute(AttributeEntity attribute) {
         for (Iterator<DocumentAttributeEntity> iterator = documentAttributes.iterator(); iterator.hasNext();) {

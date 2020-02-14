@@ -42,7 +42,7 @@ public interface DocumentVersionService {
 
 	
     /**
-     * Adds an attribute association to a document with a value.
+     * Adds an attribute association to a document version with a value.
      * 
      * @param documentVersion  The documentVersion to associate the document with.
      * @param attribute The attribute to associate with the document.
@@ -55,7 +55,7 @@ public interface DocumentVersionService {
     
     
     /**
-     * Removes a document attribute association from the document.
+     * Removes a document attribute association from the document version.
      * 
      * @param documentVersion  The documentVersion to remove the attribute association from.
      * @param attribute The attribute to remove from the document.
