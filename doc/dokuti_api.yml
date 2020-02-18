@@ -1651,8 +1651,8 @@ paths:
     post:
       tags:
         - Attributes
-      summary: Create a attributes
-      description: Creates a attributes without associating it with any document.
+      summary: Create a list of attributes
+      description: Creates a list of attributes without associating it with any document.
       operationId: addAttribute
       requestBody:
         content:
