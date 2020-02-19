@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import za.co.grindrodbank.dokuti.events.PaginatedResultsRetrievedEvent;
@@ -41,11 +40,14 @@ public class AttributeControllerImpl implements AttributesApi {
 	private DatabaseEntityToApiDataTransferObjectMapperService databaseEntityToApiDataTransfserObjectMapperService;
 
 	@Override
-	public ResponseEntity<Attribute> addAttribute(AttributeRequest createAttributeRequest) {
-		return new ResponseEntity<>(databaseEntityToApiDataTransfserObjectMapperService
-				.mapAttributeEntityToAttribute(attributeService.createAttribute(createAttributeRequest.getName(),
-						createAttributeRequest.getValidationRegex())),
-				HttpStatus.OK);
+	public ResponseEntity<List<Attribute>> addAttribute(List<AttributeRequest> attributeRequest) {
+	    
+	    List<Attribute> attributes = new ArrayList<>();
+	    attributeRequest.forEach(e -> 
+	        attributes.add(
+	                databaseEntityToApiDataTransfserObjectMapperService.mapAttributeEntityToAttribute(
+	                                    attributeService.createAttribute(e.getName(), e.getValidationRegex()))));
+		return new ResponseEntity<>(attributes, HttpStatus.OK);
 	}
 
 	@Override

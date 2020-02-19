@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b8027f9e-5284-4a54-b294-78357e848792",
+		"_postman_id": "054060d4-77b5-4081-812a-825793d368de",
 		"name": "Dokuti - Documentation Collection",
 		"description": "Postman collection for interacting with the dokuti service, a general purpose utility document store.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -2389,7 +2389,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "test-file2.txt"
+									"src": "test-file.txt"
 								},
 								{
 									"key": "description",
@@ -2628,9 +2628,16 @@
 									"",
 									"pm.test(\"Set attribute ID environment variable.\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.environment.set(\"attributeId\", jsonData.id);",
-									"});"
+									"    pm.expect(jsonData.length).to.be.equal(2);",
+									"    pm.environment.set(\"attributeId\", jsonData[0].id);",
+									"    ",
+									"    pm.expect(jsonData[0].name).to.be.equal(\"test-name-one\");",
+									"    pm.expect(jsonData[0].validationRegex).to.be.equal( \"[a-y]\");",
+									"    pm.expect(jsonData[1].name).to.be.equal(\"test-name-two\");",
+									"    pm.expect(jsonData[1].validationRegex).to.be.equal(\"[a-c]\");   ",
+									"});",
+									"",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -2648,7 +2655,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"test-name-one\",\n\t\"validationRegex\": \"[a-y]\"\n}"
+							"raw": "[{\n\t\"name\": \"test-name-one\",\n\t\"validationRegex\": \"[a-y]\"\n},\n\n{\n\t\"name\": \"test-name-two\",\n\t\"validationRegex\": \"[a-c]\"\n}\n\n]"
 						},
 						"url": {
 							"raw": "{{DOKUTI_BASE_URL}}/attributes",

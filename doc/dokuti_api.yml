@@ -1651,21 +1651,21 @@ paths:
     post:
       tags:
         - Attributes
-      summary: Create an attribute
-      description: Creates an attribute without associating it with any document.
+      summary: Create a list of attributes
+      description: Creates a list of attributes without associating it with any document.
       operationId: addAttribute
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AttributeRequest'
+              $ref: '#/components/schemas/AttributeRequestList'
       responses:
         '201':
           description: Successful. Attribute successfully created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Attribute'
+                $ref: '#/components/schemas/AttributeList'
         '400':
           description: Invalid parameters.
           content:
@@ -1815,6 +1815,11 @@ components:
           type: string
           description: The attribute validation regular expression.
           example: Some validation regex
+    AttributeRequestList:
+      type: array
+      description: A list of attribute request
+      items:
+        $ref: '#/components/schemas/AttributeRequest'
     Attribute:
       type: object
       description: Object modelling a document attribute.
