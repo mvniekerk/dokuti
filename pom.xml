@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.8.RELEASE</version> <!-- NOTE: if this is upgraded make sure to correct/check on the overidden versions within <dependencyManagement> section of pom -->
+		<version>2.2.3.RELEASE</version> <!-- NOTE: if this is upgraded make sure to correct/check on the overidden versions within <dependencyManagement> section of pom -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -49,11 +49,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.security.oauth.boot</groupId>
 			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
-			<version>2.2.0.RELEASE</version>
-		</dependency>
+			<version>2.2.1.RELEASE</version>
+		</dependency>  
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -171,30 +173,34 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-	
-	<!-- 
-		Account for security issues picked up by github 
-		Spring by default pulls in `jackson-databind` version 2.9.9.3
-		
-		CVE-2019-14540 More needs 2.9.10 or later  https://nvd.nist.gov/vuln/detail/CVE-2019-14540
-		CVE-2019-16335 More needs 2.9.10 or later  https://nvd.nist.gov/vuln/detail/CVE-2019-16335
-		
-		Latest maven releases at: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-		Jackson release info. at: https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.9
-	 -->
+
 	<dependencyManagement>
 		<dependencies>
+			<!-- Deserialization of Untrusted Data Fixed in: 2.8.11.5, 2.9.10.3 -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>2.9.10.1</version>
+				<version>2.10.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
-				<version>2.9.10</version>
+				<version>2.10.2</version>
 			</dependency>
+			<!-- Deserialization of Untrusted Data Introduced through: io.springfox:springfox-swagger2@2.8.0 
+				Fixed in: 24.1.1-android, 24.1.1-jre -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>28.2-jre</version>
+			</dependency>
+			<!-- Cross-site Scripting (XSS) Fixed in: 6.1.0.Final -->
+			<dependency>
+				<groupId>org.hibernate.validator</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>6.1.2.Final</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 </project>

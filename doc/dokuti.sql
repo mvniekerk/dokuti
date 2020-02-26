@@ -169,6 +169,7 @@ CREATE TABLE _documents.document_version (
 	__uploaded_on timestamp NOT NULL,
 	__uploaded_by uuid NOT NULL,
 	document_type text,
+	checksum_algo text,
 	CONSTRAINT pk_document_version PRIMARY KEY (id),
 	CONSTRAINT un_version_id UNIQUE (version_id)
 
@@ -178,7 +179,9 @@ COMMENT ON TABLE _documents.document_version IS 'this table holds the various in
 -- ddl-end --
 COMMENT ON COLUMN _documents.document_version.version_id IS 'The uuid of the version instance that gets saved to the data store';
 -- ddl-end --
-COMMENT ON COLUMN _documents.document_version.checksum IS 'an MD5 digest to ensure file integrity';
+COMMENT ON COLUMN _documents.document_version.checksum IS 'an hash digest to ensure file integrity';
+-- ddl-end --
+COMMENT ON COLUMN _documents.document_version.checksum_algo IS 'hashing algorithm  used to calculate checksum';
 -- ddl-end --
 ALTER TABLE _documents.document_version OWNER TO postgres;
 -- ddl-end --
@@ -207,6 +210,7 @@ CREATE TABLE _documents.document_acl (
 	may_assign boolean NOT NULL DEFAULT false,
 	_granted_by uuid NOT NULL,
 	_granted_on timestamp NOT NULL,
+	team_uuid uuid NOT NULL,
 	CONSTRAINT document_share_acl_pk PRIMARY KEY (id)
 
 );
@@ -218,6 +222,8 @@ COMMENT ON COLUMN _documents.document_acl.permission IS 'READ < WRITE (and modif
 COMMENT ON COLUMN _documents.document_acl.may_assign IS 'able to assign document rights to others';
 -- ddl-end --
 COMMENT ON COLUMN _documents.document_acl._granted_by IS 'uuid of the user who granted these acl rights';
+-- ddl-end --
+COMMENT ON COLUMN _documents.document_acl.team_uuid IS 'the team_uuid as stored in A3S (or other identity storage) ';
 -- ddl-end --
 ALTER TABLE _documents.document_acl OWNER TO postgres;
 -- ddl-end --
@@ -282,6 +288,25 @@ CREATE TABLE _documents.user_favourite (
 ALTER TABLE _documents.user_favourite OWNER TO postgres;
 -- ddl-end --
 
+-- object: _documents.document_acl_history | type: TABLE --
+-- DROP TABLE IF EXISTS _documents.document_acl_history CASCADE;
+CREATE TABLE _documents.document_acl_history (
+	id bigint NOT NULL,
+	document_id uuid NOT NULL,
+	"userId" uuid,
+	"teamId" uuid,
+	permission text NOT NULL,
+	granted_by uuid NOT NULL,
+	granted_on timestamp NOT NULL,
+	revoked_by uuid,
+	revoked_on timestamp,
+	CONSTRAINT document_acl_history_pk PRIMARY KEY (id)
+
+);
+-- ddl-end --
+ALTER TABLE _documents.document_acl_history OWNER TO postgres;
+-- ddl-end --
+
 -- object: "fk_document.id" | type: CONSTRAINT --
 -- ALTER TABLE _documents.document_attribute DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
 ALTER TABLE _documents.document_attribute ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
@@ -334,6 +359,13 @@ ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- object: "fk_document.id" | type: CONSTRAINT --
 -- ALTER TABLE _documents.user_favourite DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
 ALTER TABLE _documents.user_favourite ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
+REFERENCES _documents.document (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: "fk_document.id" | type: CONSTRAINT --
+-- ALTER TABLE _documents.document_acl_history DROP CONSTRAINT IF EXISTS "fk_document.id" CASCADE;
+ALTER TABLE _documents.document_acl_history ADD CONSTRAINT "fk_document.id" FOREIGN KEY (document_id)
 REFERENCES _documents.document (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --

@@ -22,18 +22,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
-import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
-import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.favourite.DocumentFavouriteEntity;
+import za.co.grindrodbank.dokuti.lifetime.DocumentLifeTimeEntity;
 import za.co.grindrodbank.dokuti.service.resourcepermissions.DocumentPermission;
+import java.util.Objects;
 
 @Entity
 @Table(name = "document")
@@ -75,17 +72,19 @@ public class DocumentEntity {
 	@OrderBy("tag")
 	private List<DocumentTagEntity> documentTags;
 
-	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<DocumentAttributeEntity> documentAttributes = new ArrayList<>();
-
 	@JsonBackReference
 	@OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<DocumentAcl> documentPermissions = new ArrayList<>();
 	
+	
+    @JsonBackReference
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DocumentLifeTimeEntity> documentHistory = new ArrayList<>();	
+	
     @JsonBackReference
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DocumentFavouriteEntity> documentFavourites = new ArrayList<>();	
-
+    
 	public String getContentType() {
 		return contentType;
 	}
@@ -150,14 +149,6 @@ public class DocumentEntity {
 		this.documentVersions = documentVersions;
 	}
 
-	public List<DocumentAttributeEntity> getDocumentAttributes() {
-		return documentAttributes;
-	}
-
-	public void setDocumentAttributes(List<DocumentAttributeEntity> documentAttributes) {
-		this.documentAttributes = documentAttributes;
-	}
-
 	public List<DocumentAcl> getDocumentPermissions() {
 		return documentPermissions;
 	}
@@ -182,6 +173,14 @@ public class DocumentEntity {
     public void setIsArchived(Boolean isArchived) {
         this.isArchived = isArchived;
     }
+    
+    public List<DocumentLifeTimeEntity> getDocumentHistory() {
+        return documentHistory;
+    }
+
+    public void setDocumentHistory(List<DocumentLifeTimeEntity> documentHistory) {
+        this.documentHistory = documentHistory;
+    }
 
     public DocumentVersionEntity getLatestDocumentVersion() {
 		Optional<DocumentVersionEntity> optionalLatestDocumentVersion = this.getDocumentVersions().stream().findFirst();
@@ -193,39 +192,7 @@ public class DocumentEntity {
 		return null;
 	}
 
-	/**
-	 * Associates an attribute, and it's value, to a document.
-	 * 
-	 * @param attribute The attribute to associate with the document.
-	 * @param value     The value of the attribute association.
-	 * @return An instance of the added document attribute.
-	 */
-	public DocumentAttributeEntity addAttribute(AttributeEntity attribute, String value, UUID addedBy) {
-		DocumentAttributeEntity documentAttribute = new DocumentAttributeEntity(this, attribute, value);
-		documentAttribute.setUpdatedBy(addedBy);
 
-		documentAttributes.add(documentAttribute);
-
-		return documentAttribute;
-	}
-
-	/**
-	 * Removes an attribute association from the document.
-	 * 
-	 * @param attribute The attribute to remove from the document.
-	 */
-	public void removeAttribute(AttributeEntity attribute) {
-		for (Iterator<DocumentAttributeEntity> iterator = documentAttributes.iterator(); iterator.hasNext();) {
-			DocumentAttributeEntity documentAttribute = iterator.next();
-
-			if (documentAttribute.getDocument().equals(this) && documentAttribute.getAttribute().equals(attribute)) {
-				iterator.remove();
-				documentAttribute.getAttribute().getDocumentAttributes().remove(documentAttribute);
-				documentAttribute.setDocument(null);
-				documentAttribute.setAttribute(null);
-			}
-		}
-	}
 
 	/**
 	 * ; Adds a new document permission to the document.
@@ -290,48 +257,21 @@ public class DocumentEntity {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DocumentEntity other = (DocumentEntity) obj;
-		if (contentType == null) {
-			if (other.contentType != null)
-				return false;
-		} else if (!contentType.equals(other.contentType))
-			return false;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-        if (isArchived == null) {
-            if (other.isArchived != null)
-                return false;
-        } else if (!isArchived.equals(other.isArchived))
-            return false;			
-		return true;
-	}
+    @Override
+    public boolean equals(Object object) {
+        if (object instanceof DocumentEntity) {
+            DocumentEntity that = (DocumentEntity) object;
+            return Objects.equals(this.id, that.id) && Objects.equals(this.name, that.name) && Objects.equals(this.description, that.description) && Objects.equals(this.isArchived, that.isArchived)
+                    && Objects.equals(this.contentType, that.contentType);
+        }
+        return false;
+    }
 
+	
+	
     @Override
     public String toString() {
         return "DocumentEntity [id=" + id + ", name=" + name + ", description=" + description + ", isArchived=" + isArchived + ", contentType=" + contentType + ", updatedOn=" + updatedOn + ", updatedBy=" + updatedBy + "]";
     }
 
-	
-	
 }

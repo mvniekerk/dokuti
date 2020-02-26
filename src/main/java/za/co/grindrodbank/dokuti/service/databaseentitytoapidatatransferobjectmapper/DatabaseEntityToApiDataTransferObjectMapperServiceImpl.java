@@ -6,7 +6,6 @@ package za.co.grindrodbank.dokuti.service.databaseentitytoapidatatransferobjectm
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openapitools.model.Attribute;
 import org.openapitools.model.Document;
 import org.openapitools.model.DocumentAttribute;
@@ -15,50 +14,48 @@ import org.openapitools.model.LookupTag;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
 import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
 import za.co.grindrodbank.dokuti.document.DocumentEntity;
 import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
-
 
 @Service
 public class DatabaseEntityToApiDataTransferObjectMapperServiceImpl
 		implements DatabaseEntityToApiDataTransferObjectMapperService {
 
-	public Document mapDocumentEntityToDocument(DocumentEntity entity) {
-		Document document = new Document();
-		// Map the base properties.
-		BeanUtils.copyProperties(entity, document);
-		// Map all document versions.
-		List<DocumentVersion> documentVersions = new ArrayList<>();
-		entity.getDocumentVersions().forEach(documentVersionEntity -> {
-			DocumentVersion documentVersion = new DocumentVersion();
-			BeanUtils.copyProperties(documentVersionEntity, documentVersion);
-			documentVersion.setCreatedDateTime(documentVersionEntity.getCreatedDateTime().toOffsetDateTime());
-			documentVersions.add(documentVersion);
-		});
-		document.setDocumentVersions(documentVersions);
-		// Map all associated Tags.
-		List<LookupTag> documentTags = new ArrayList<>();
-		entity.getDocumentTags().forEach(documentTagEntity -> {
-			LookupTag tag = new LookupTag();
-			tag.setTag(documentTagEntity.getId().getTag());
-			documentTags.add(tag);
-		});
-		document.setTags(documentTags);
+    public Document mapDocumentEntityToDocument(DocumentEntity entity) {
+        Document document = new Document();
+        // Map the base properties.
+        BeanUtils.copyProperties(entity, document);
+        // Map all document versions.
+        List<DocumentVersion> documentVersions = new ArrayList<>();
+        entity.getDocumentVersions().forEach(documentVersionEntity -> {
+            DocumentVersion documentVersion = new DocumentVersion();
+            BeanUtils.copyProperties(documentVersionEntity, documentVersion);
+            documentVersion.setCreatedDateTime(documentVersionEntity.getCreatedDateTime().toOffsetDateTime());
+            documentVersions.add(documentVersion);
+        });
+        document.setDocumentVersions(documentVersions);
+        // Map all associated Tags.
+        List<LookupTag> documentTags = new ArrayList<>();
+        entity.getDocumentTags().forEach(documentTagEntity -> {
+            LookupTag tag = new LookupTag();
+            tag.setTag(documentTagEntity.getId().getTag());
+            documentTags.add(tag);
+        });
+        document.setTags(documentTags);
 
-		// Map all associated Document Attributes.
-		List<DocumentAttribute> documentAttributes = new ArrayList<>();
-		entity.getDocumentAttributes().forEach(documentAttributeEntity -> {
-			DocumentAttribute documentAttribute = mapDocumentAttributeEntityToDocumentAttribute(
-					documentAttributeEntity);
+        // Map all associated Document Attributes.
+        List<DocumentAttribute> documentAttributes = new ArrayList<>();
+        if (entity.getLatestDocumentVersion() != null) {
+            entity.getLatestDocumentVersion().getDocumentAttributes().forEach(documentAttributeEntity -> {
+                DocumentAttribute documentAttribute = mapDocumentAttributeEntityToDocumentAttribute(documentAttributeEntity);
 
-			documentAttributes.add(documentAttribute);
-		});
-		document.setAttributes(documentAttributes);
-
-		return document;
-	}
+                documentAttributes.add(documentAttribute);
+            });
+        }
+        document.setAttributes(documentAttributes);
+        return document;
+    }
 
 	public Page<Document> mapDocumentEntityPageToDocumentPage(Page<DocumentEntity> entities) {
 		return entities.map(entity -> mapDocumentEntityToDocument(entity));

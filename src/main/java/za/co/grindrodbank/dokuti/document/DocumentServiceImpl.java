@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,14 +29,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import za.co.grindrodbank.dokuti.attribute.AttributeEntity;
-import za.co.grindrodbank.dokuti.documentattribute.DocumentAttributeEntity;
 import za.co.grindrodbank.dokuti.documenttag.DocumentTagRepository;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionEntity;
 import za.co.grindrodbank.dokuti.documentversion.DocumentVersionService;
 import za.co.grindrodbank.dokuti.exceptions.ChecksumFailedException;
 import za.co.grindrodbank.dokuti.exceptions.DatabaseLayerException;
-import za.co.grindrodbank.dokuti.exceptions.InvalidRequestException;
 import za.co.grindrodbank.dokuti.exceptions.NotAuthorisedException;
 import za.co.grindrodbank.dokuti.exceptions.ResourceNotFoundException;
 import za.co.grindrodbank.dokuti.service.documentdatastoreservice.DocumentDataStoreService;
@@ -76,25 +75,25 @@ public class DocumentServiceImpl implements DocumentService {
 		return document;
 	}
 
-	public DocumentEntity createNewDocument(MultipartFile file, String description) throws DatabaseLayerException {
-		DocumentEntity document = new DocumentEntity();
-		document.setContentType(file.getContentType());
-		document.setDescription(description);
-		document.setName(StringUtils.cleanPath(file.getOriginalFilename()));
-		document.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
+    public DocumentEntity createNewDocument(MultipartFile file, String description) throws DatabaseLayerException {
+        DocumentEntity document = new DocumentEntity();
+        document.setContentType(file.getContentType());
+        document.setDescription(description);
+        document.setName(StringUtils.cleanPath(file.getOriginalFilename()));
+        document.setUpdatedBy(UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
 
-		try {
-			document = documentRepository.save(document);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new DatabaseLayerException("Error creating new document", e);
-		}
+        try {
+            document = documentRepository.save(document);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new DatabaseLayerException("Error creating new document", e);
+        }
 
-		createDocumentVersionWithFile(file, document);
-		document = addDocumentCreatorPermissionsToDocument(document);
+        createDocumentVersionWithFile(file, document);
+        document = addDocumentCreatorPermissionsToDocument(document);
 
-		return document;
-	}
+        return document;
+    }
 
 	public Resource getLatestDocumentData(DocumentEntity document)
 			throws ResourceNotFoundException, NotAuthorisedException, ChecksumFailedException {
@@ -111,7 +110,7 @@ public class DocumentServiceImpl implements DocumentService {
 			// TODO: Decouple this from being being a file resource, as this is file system
 			// specific. The file stream should be sent back here,
 			// which is a more generic representation of the file content.
-			Resource fileContent = documentStoreService.loadAsResource(document.getId(), documentVersion.getId());
+			Resource fileContent = documentStoreService.loadAsResource(documentVersion.getChecksum());
 			checkIfFileContentChecksumMatches(documentVersion, fileContent);
 			return fileContent;
 		} catch (StorageFileNotFoundException e) {
@@ -125,7 +124,11 @@ public class DocumentServiceImpl implements DocumentService {
 		try {
 			File file = fileContent.getFile();
 			byte[] fileContentByteArray = Files.readAllBytes(file.toPath());
-			String calculatedFileContentChecksum = getFileContentChecksum(fileContentByteArray);
+			String checkSumAlgo = documentVersion.getChecksumAlgo();
+			if (StringUtils.isEmpty(checkSumAlgo)) {
+			    checkSumAlgo = "MD5"; // to support old checksums
+			}
+			String calculatedFileContentChecksum = getFileContentChecksum(fileContentByteArray, checkSumAlgo);
 
 			logger.debug("Calculated File Content Checksum: {} : FileVersionMetaData checksum: {}",
 					calculatedFileContentChecksum, documentVersion.getChecksum());
@@ -170,10 +173,11 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentVersionEntity documentVersionEntity = documentVersionService.findById(documentVersionId);
         
         String checksum = documentVersionEntity.getChecksum();
+        String checksumAlgo = documentVersionEntity.getChecksumAlgo();
         InputStream is;
         try {
             is = getDocumentDataForVersion(documentVersionEntity.getDocument(), documentVersionEntity).getInputStream();
-            createDocumentVersionWithInputStream(is, checksum, documentEntity);
+            createDocumentVersionWithInputStream(is, checksum, checksumAlgo, documentEntity);
         } catch (IOException e) {
             logger.error(e.getMessage());
             throw new ResourceNotFoundException("Error reading document data.", e);
@@ -182,7 +186,9 @@ public class DocumentServiceImpl implements DocumentService {
     }	
 	
 	public DocumentEntity save(DocumentEntity document) throws DatabaseLayerException {
-		try {
+	    
+    
+	    try {
 			return documentRepository.save(document);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -201,11 +207,13 @@ public class DocumentServiceImpl implements DocumentService {
 	 * @return The new document version that was created for the document.
 	 */
 	private DocumentVersionEntity createDocumentVersionWithFile(MultipartFile file, DocumentEntity document) {
+	    String defaultChecksumAlgo = "SHA-256";
+	    
 		String fileContentChecksum = "";
 		String documentType ="";
 
 		try {
-			fileContentChecksum = getFileContentChecksum(file.getBytes());
+			fileContentChecksum = getFileContentChecksum(file.getBytes(), defaultChecksumAlgo);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
@@ -219,14 +227,13 @@ public class DocumentServiceImpl implements DocumentService {
         }
 		
 		DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document,
-				fileContentChecksum, documentType);
-		documentStoreService.store(file, document.getId(), newDocumentVersion.getId());
+				fileContentChecksum, defaultChecksumAlgo, documentType);
+		documentStoreService.store(file, newDocumentVersion.getChecksum());
 
 		return newDocumentVersion;
 	}
 
-    private DocumentVersionEntity createDocumentVersionWithInputStream(InputStream is, String fileContentChecksum, DocumentEntity document) {
-        
+    private DocumentVersionEntity createDocumentVersionWithInputStream(InputStream is, String fileContentChecksum, String checksumAlgo, DocumentEntity document) {
         String documentType ="";
         Tika tika = new Tika();
         try {
@@ -236,25 +243,25 @@ public class DocumentServiceImpl implements DocumentService {
             throw new ResourceNotFoundException("Error reading document data.", e);
         }
         
-        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum, documentType);
-        documentStoreService.store(is, document.getId(), newDocumentVersion.getId());
+        DocumentVersionEntity newDocumentVersion = documentVersionService.createDocumentVersion(document, fileContentChecksum, checksumAlgo, documentType);
+        documentStoreService.store(is, newDocumentVersion.getChecksum());
 
         return newDocumentVersion;
     }
 	
-	
-	public String getFileContentChecksum(byte[] fileByteArray) {
+	@Override
+	public String getFileContentChecksum(byte[] fileByteArray, String checksumAlgo) {
 
 		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			MessageDigest messageDigest = MessageDigest.getInstance(checksumAlgo);
 			byte[] messageDigestHash = messageDigest.digest(fileByteArray);
-			String messageDigestHashString = "";
+			StringBuilder messageDigestHashString = new StringBuilder();
 
 			for (int i = 0; i < messageDigestHash.length; i++) {
-				messageDigestHashString += Integer.toString((messageDigestHash[i] & 0xff) + 0x100, 16).substring(1);
+				messageDigestHashString.append( Integer.toString((messageDigestHash[i] & 0xff) + 0x100, 16).substring(1));
 			}
 
-			return messageDigestHashString;
+			return messageDigestHashString.toString();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 
@@ -262,8 +269,9 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
+	@Override
 	public Page<DocumentEntity> findAll(Pageable pageable, String documentName, Boolean filterByFavourites, List<String> tags,
-			List<String> attributeNames, Boolean filterArchive) {
+			List<String> attributeNames, Boolean filterArchive, Boolean filterSharedWithOthers, Boolean filterSharedWithMe) {
 		// The documents list must only contain documents where the accessing user has a
 		// read permission. Make consideration for potential filter name here too.
 		Specification<DocumentEntity> specification = Specification
@@ -291,6 +299,15 @@ public class DocumentServiceImpl implements DocumentService {
 		// Only list favorited documents if filterFavouriteUser provided
         specification = Specification.where(DocumentEntitySpecifications
                 .documentEntitiesWithFavouriteUserFilter(filterByFavourites).and(specification));
+        
+        // Only list shared with me documents
+        specification = Specification.where(DocumentEntitySpecifications
+                .documentEntitiesWithSharedWithMeFilter(filterSharedWithMe).and(specification));
+
+        //Only list shared with others documents    
+        specification = Specification.where(DocumentEntitySpecifications
+                .documentEntitiesWithSharedWithOthersFilter(filterSharedWithOthers).and(specification));
+        
 		
 		try {
 			return documentRepository.findAll(specification, pageable);
@@ -302,37 +319,6 @@ public class DocumentServiceImpl implements DocumentService {
 
 	}
 
-	public DocumentAttributeEntity addDocumentAttribute(DocumentEntity document, AttributeEntity attribute,
-			String value) throws DatabaseLayerException {
-		DocumentAttributeEntity documentAttribute = document.addAttribute(attribute, value,
-				UUID.fromString(SecurityContextUtility.getUserIdFromJwt()));
-
-		if (!documentAttribute.isValid()) {
-			throw new InvalidRequestException("Invalid value supplied for document attribute", null);
-		}
-
-		try {
-			documentRepository.save(document);
-
-			return documentAttribute;
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new DatabaseLayerException("Error saving document after assinging attribute.", e);
-		}
-
-	}
-
-	public void removeDocumentAttribute(DocumentEntity document, AttributeEntity attribute)
-			throws DatabaseLayerException {
-		try {
-			document.removeAttribute(attribute);
-			documentRepository.save(document);
-
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw new DatabaseLayerException("Error removing document attribute from document", e);
-		}
-	}
 
 	public void removeAllDocumentTags(DocumentEntity document) {
 		try {
@@ -360,12 +346,12 @@ public class DocumentServiceImpl implements DocumentService {
 				creatorUserId);
 		// Create a list of all the possible DocumentPermissions ENUM values, as we want
 		// to assign all the available permissions to to the document creator.
-		List<DocumentPermission> allDocumentPermissions = new ArrayList<DocumentPermission>(
+		List<DocumentPermission> allDocumentPermissions = new ArrayList<>(
 				EnumSet.allOf(DocumentPermission.class));
 
 		try {
 			allDocumentPermissions.forEach(permissionValue -> {
-				logger.debug("Adding the {} permission to Document {} for user {}", permissionValue.toString(),
+				logger.debug("Adding the {} permission to Document {} for user {}", permissionValue,
 						document.getId(), creatorUserId);
 				document.addPermission(creatorUserId, permissionValue, true, creatorUserId);
 			});
@@ -379,3 +365,5 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 }
+
+

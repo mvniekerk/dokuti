@@ -34,7 +34,7 @@ public class SecurityContextUtility {
 
     private static final String ANONYMOUS = "anonymous";
 
-    // TODO need to replace securityEnabled/UUID.randomUUID().toString() to null after OCS UI support Auth
+   
     private static boolean securityEnabled = true;
 
     @Value("${rest.security.enabled}")
@@ -106,7 +106,7 @@ public class SecurityContextUtility {
         return null;
     }
 
-    // TODO need to replace securityEnabled/UUID.randomUUID().toString() to null after OCS UI support Auth
+    
     public static String getUserIdFromJwt() {
         if (securityEnabled) {
             Map<String, Object> claims = getClaimsFromJwt();

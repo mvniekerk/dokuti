@@ -1,20 +1,17 @@
 version: '3'
 services:
   postgresql:
-    image: "bitnami/postgresql:10.7.0"
+    image: "postgres:11-alpine"
     ports:
       - '5432:5432'
     networks:
       - dokuti-quickstart        
     environment:
-      - POSTGRESQL_PASSWORD=postgres
-      - POSTGRESQL_DATABASE=dokuti
-    ## To persist database
-    # volumes:
-    #   - 'postgresql_data:/bitnami'
-  web:
-    build: 
-      context: ../../
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=dokuti
+      - POSTGRES_PASSWORD=postgres
+  dokuti:
+    image: grindrodbank/dokuti:latest
     ports:
      - "8181:8080"
     networks:
@@ -31,7 +28,7 @@ services:
     container_name: a3s-postgresql
     networks:
       - dokuti-quickstart    
-    image: "postgres:10.7-alpine"
+    image: "postgres:11-alpine"
     restart: always
     ports:
       - "5478:5432"
@@ -70,20 +67,28 @@ services:
       - 80:80
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - FLYWAY_ENABLE=true
+      - DATABASE_SERVER=a3s-postgresql
+      - DATABASE_NAME=identity_server
+      - DATABASE_PORT=5432
+      - FLYWAY_USER=postgres
+      - FLYWAY_PASSWORD=postgres
+      - FLYWAY_CONNECTION_RETRIES=5
     depends_on:
-      - a3s
+      - a3s-postgresql
 
-  newman:
-   container_name: register-contract-dokuti
-   networks:
-     - dokuti-quickstart    
-   image: "postman/newman_alpine33" 
-   command: run /etc/newman/DOKUTI.register-a3s-contract.postman_collection.json --global-var client-id='a3s-default' --global-var client-secret='secret'  --global-var a3s-host=http://a3s:80 --global-var auth-server-base-url=http://a3s-identity-server --delay-request 15000  
-   volumes:
-       - ../../postman:/etc/newman
-   depends_on:
-     - a3s-identity-server
+  register-security-contract:
+    networks:
+      - dokuti-quickstart
+    image: "endeveit/docker-jq"
+    volumes:
+      - ./scripts/:/scripts
+      - ../../doc/a3s-security-contract.yaml:/scripts/contract.yaml     
+    depends_on:
+      - a3s-identity-server   
+      - dokuti
+    command: sh -c '/scripts/wait-for.sh a3s-identity-server:80 -- /scripts/register-contract.sh '  
+
 
 networks:
   dokuti-quickstart:            
-

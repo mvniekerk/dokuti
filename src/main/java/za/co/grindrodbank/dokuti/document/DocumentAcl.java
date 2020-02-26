@@ -32,6 +32,10 @@ public class DocumentAcl {
 
 	@Column(name = "user_uuid")
 	private UUID userId;
+	
+    @Column(name = "team_uuid")
+    private UUID teamId;	
+	
 	@Type(type = "org.hibernate.type.TextType")
 	private String permission;
 
@@ -116,8 +120,16 @@ public class DocumentAcl {
 	public void setDocument(DocumentEntity document) {
 		this.document = document;
 	}
+	
+	public UUID getTeamId() {
+        return teamId;
+    }
 
-	@Override
+    public void setTeamId(UUID teamId) {
+        this.teamId = teamId;
+    }
+
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -128,6 +140,7 @@ public class DocumentAcl {
 		result = prime * result + ((mayAssign == null) ? 0 : mayAssign.hashCode());
 		result = prime * result + ((permission == null) ? 0 : permission.hashCode());
 		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		result = prime * result + ((teamId == null) ? 0 : teamId.hashCode());
 		return result;
 	}
 
@@ -193,8 +206,15 @@ public class DocumentAcl {
 			}
 		} else if (!userId.equals(other.userId)) {
 			return false;
-		}
-
+		} 
+        if (teamId == null) {
+            if (other.teamId != null) {
+                return false;
+            }
+        } else if (!teamId.equals(other.teamId)) {
+            return false;
+        } 
+		
 		return true;
 	}
 

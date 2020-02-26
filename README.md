@@ -21,11 +21,16 @@ git clone git@github.com:GrindrodBank/dokuti.git
 ```bash
 cd dokuti
 cd quickstart/docker-compose
-docker-compose up
+docker-compose up -d
+```
+
+* Inspecting it should show that it's up:
+```bash
+docker-compose ps
 ```
 
 5 services are installed:
-* Web 1 - The actual document service installed on port 8181
+* dokuti - The actual document service installed on port 8181
 * PostgreSQL Database installed on port 5432
 * A3S and and A3S-identity-server services
 * A3S PostgreSQL Database installed on port 5478
